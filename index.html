@@ -62,7 +62,7 @@
   <div class="stat-card"><div class="stat-label">Active States</div><div class="stat-val" id="stat-states" style="color:#4ade80">7</div></div>
   <div class="stat-card"><div class="stat-label">Population</div><div class="stat-val" id="stat-pop" style="color:#60a5fa">—</div></div>
   <div class="stat-card"><div class="stat-label">Current Avg/Day</div><div class="stat-val" id="stat-current" style="color:#f9fafb">—</div></div>
-  <div class="stat-card"><div class="stat-label">Projected Avg/Day</div><div class="stat-val" id="stat-proj" style="color:#e879f9">—</div></div>
+  <div class="stat-card" id="proj-card"><div class="stat-label">Projected Avg/Day <span style="font-size:9px;color:#484f58">(fully ramped)</span></div><div class="stat-val" id="stat-proj" style="color:#e879f9">—</div><div id="stat-proj-breakdown" style="margin-top:6px;font-size:10px;line-height:1.7"></div></div>
 </div>
 
 <div class="view-toggle">
@@ -193,12 +193,31 @@ function updateStats() {
   const totalPop = activeStates.reduce((s,st) => s + (STATE_DATA[st]?.pop||0), 0);
   document.getElementById("stat-states").textContent = activeStates.length;
   document.getElementById("stat-pop").textContent = totalPop.toFixed(1) + "M";
-  const junStart = chartData.findIndex(d => d.month === "Jun");
-  const projAvg = junStart > 0
-    ? Math.round(chartData.slice(junStart, junStart+30).reduce((s,d)=>s+d.value,0)/30) : 0;
+
+  // Current avg: read from actual data (Mar-Apr window)
   const currentAvg = Math.round(chartData.slice(60,110).reduce((s,d)=>s+d.value,0)/50);
   document.getElementById("stat-current").textContent = "$" + currentAvg.toLocaleString();
+
+  // Projected avg: always read LAST 30 days (Dec, fully ramped for all active phases)
+  const projSlice = chartData.filter(d => d.month === "Dec");
+  const projAvg = projSlice.length > 0
+    ? Math.round(projSlice.reduce((s,d)=>s+d.value,0)/projSlice.length) : 0;
   document.getElementById("stat-proj").textContent = projAvg > 0 ? "$" + projAvg.toLocaleString() : "—";
+
+  // Breakdown: show contribution of each active phase at full ramp
+  const decDay = projSlice[Math.floor(projSlice.length/2)] || {};
+  const rows = [
+    {label:"Existing", val: decDay.existingVal||0, color:"#4ade80"},
+    {label:"Phase 1 (PA·OH·MI·IL)", val: decDay.p1Val||0, color:"#60a5fa"},
+    {label:"Phase 2 (CO·MN)", val: decDay.p2Val||0, color:"#f59e0b"},
+    {label:"Phase 3 (NJ·GA·WI·MO)", val: (decDay.p3Val||0), color:"#e879f9"},
+  ].filter(r => r.val > 0);
+  document.getElementById("stat-proj-breakdown").innerHTML = rows.map(r =>
+    `<div style="display:flex;justify-content:space-between;gap:8px">
+      <span style="color:#6e7681">${r.label}</span>
+      <span style="color:${r.color};font-weight:600">$${r.val.toLocaleString()}</span>
+    </div>`
+  ).join("");
 }
 
 function renderPhases() {
