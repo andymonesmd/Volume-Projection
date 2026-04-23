@@ -47,8 +47,29 @@
   .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
   .legend-label { font-size: 9px; color: #6e7681; }
   .footnote { font-size: 9px; color: #30363d; margin-top: 4px; }
+  .totals-wrap { margin-top: 18px; border: 1px solid #21262d; border-radius: 10px; overflow: hidden; }
+  .totals-header { padding: 10px 14px; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; align-items: center; }
+  .totals-header-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6e7681; }
+  .monthly-grid { display: grid; grid-template-columns: repeat(6, 1fr); }
+  .month-cell { padding: 10px 12px; border-right: 1px solid #21262d; border-bottom: 1px solid #21262d; }
+  .month-cell:nth-child(6n) { border-right: none; }
+  .month-cell:nth-last-child(-n+6) { border-bottom: none; }
+  .month-cell-name { font-size: 9px; color: #6e7681; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .month-cell-val { font-size: 14px; font-weight: 700; }
+  .month-cell-type { font-size: 9px; margin-top: 2px; }
+  .annual-row { padding: 12px 14px; border-top: 1px solid #30363d; background: #161b22; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .annual-label { font-size: 10px; color: #6e7681; text-transform: uppercase; letter-spacing: 1px; }
+  .annual-vals { display: flex; gap: 24px; align-items: baseline; flex-wrap: wrap; }
+  .annual-item { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .annual-item-label { font-size: 9px; color: #6e7681; }
+  .annual-item-val { font-size: 17px; font-weight: 700; }
   @media (max-width: 600px) {
     .stats { grid-template-columns: repeat(2,1fr); }
+    .monthly-grid { grid-template-columns: repeat(3, 1fr); }
+    .month-cell:nth-child(6n) { border-right: 1px solid #21262d; }
+    .month-cell:nth-child(3n) { border-right: none; }
+    .month-cell:nth-last-child(-n+6) { border-bottom: 1px solid #21262d; }
+    .month-cell:nth-last-child(-n+3) { border-bottom: none; }
   }
 </style>
 </head>
@@ -91,6 +112,15 @@
 </div>
 <div class="footnote">Projections are cumulative and additive — each phase builds on top of existing revenue. Calibrated from observed per-state lift. Actual results will vary.</div>
 
+<div class="totals-wrap">
+  <div class="totals-header">
+    <span class="totals-header-label">Monthly totals</span>
+    <span style="font-size:9px;color:#484f58">actual Jan–Apr · projected May–Dec</span>
+  </div>
+  <div class="monthly-grid" id="monthly-grid"></div>
+  <div class="annual-row" id="annual-row"></div>
+</div>
+
 <script>
 const STATE_DATA = {
   IN:  { group:"existing", pop:6.9,  dailyContrib:70,  locked:true  },
@@ -120,6 +150,8 @@ const PHASE_META = {
   phase3a:  { label:"Phase 3A",  color:"#e879f9", states:["NJ","GA"] },
   phase3b:  { label:"Phase 3B",  color:"#f87171", states:["WI","MO"] },
 };
+
+const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 let activeStates = Object.keys(STATE_DATA).filter(s => STATE_DATA[s].locked);
 let currentView = "phases";
@@ -189,19 +221,66 @@ function generateData() {
   return data;
 }
 
+function fmtK(v) {
+  if(v >= 1000000) return "$" + (v/1000000).toFixed(2) + "M";
+  if(v >= 1000) return "$" + (v/1000).toFixed(1) + "k";
+  return "$" + Math.round(v);
+}
+
+function renderMonthlyTotals() {
+  const monthTotals = {};
+  const monthTypes = {};
+  ALL_MONTHS.forEach(m => { monthTotals[m] = 0; monthTypes[m] = "actual"; });
+
+  chartData.forEach(d => {
+    if(ALL_MONTHS.includes(d.month)) {
+      monthTotals[d.month] += d.value;
+      if(d.type === "proj") monthTypes[d.month] = "proj";
+    }
+  });
+
+  const actualTotal = ALL_MONTHS.filter(m => monthTypes[m] === "actual").reduce((s,m) => s + monthTotals[m], 0);
+  const projTotal   = ALL_MONTHS.filter(m => monthTypes[m] === "proj").reduce((s,m) => s + monthTotals[m], 0);
+  const grandTotal  = actualTotal + projTotal;
+
+  document.getElementById("monthly-grid").innerHTML = ALL_MONTHS.map(m => {
+    const isActual = monthTypes[m] === "actual";
+    const color = isActual ? "#4ade80" : "#60a5fa";
+    const dimColor = isActual ? "#2a6644" : "#2a4a6e";
+    return `<div class="month-cell">
+      <div class="month-cell-name">${m}</div>
+      <div class="month-cell-val" style="color:${color}">${fmtK(monthTotals[m])}</div>
+      <div class="month-cell-type" style="color:${dimColor}">${isActual ? "actual" : "projected"}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("annual-row").innerHTML = `
+    <span class="annual-label">2026 annual total</span>
+    <div class="annual-vals">
+      <div class="annual-item">
+        <span class="annual-item-label">actual YTD</span>
+        <span class="annual-item-val" style="color:#4ade80">$${Math.round(actualTotal).toLocaleString()}</span>
+      </div>
+      <div class="annual-item">
+        <span class="annual-item-label">projected remainder</span>
+        <span class="annual-item-val" style="color:#60a5fa">$${Math.round(projTotal).toLocaleString()}</span>
+      </div>
+      <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d">
+        <span class="annual-item-label">full year estimate</span>
+        <span class="annual-item-val" style="color:#e879f9">$${Math.round(grandTotal).toLocaleString()}</span>
+      </div>
+    </div>`;
+}
+
 function updateStats() {
   const totalPop = activeStates.reduce((s,st) => s + (STATE_DATA[st]?.pop||0), 0);
   document.getElementById("stat-states").textContent = activeStates.length;
   document.getElementById("stat-pop").textContent = totalPop.toFixed(1) + "M";
-
   const currentAvg = Math.round(chartData.slice(60,110).reduce((s,d)=>s+d.value,0)/50);
   document.getElementById("stat-current").textContent = "$" + currentAvg.toLocaleString();
-
   const projSlice = chartData.filter(d => d.month === "Dec");
-  const projAvg = projSlice.length > 0
-    ? Math.round(projSlice.reduce((s,d)=>s+d.value,0)/projSlice.length) : 0;
+  const projAvg = projSlice.length > 0 ? Math.round(projSlice.reduce((s,d)=>s+d.value,0)/projSlice.length) : 0;
   document.getElementById("stat-proj").textContent = projAvg > 0 ? "$" + projAvg.toLocaleString() : "—";
-
   const decDay = projSlice[Math.floor(projSlice.length/2)] || {};
   const rows = [
     {label:"Existing", val: decDay.existingVal||0, color:"#4ade80"},
@@ -213,8 +292,7 @@ function updateStats() {
     `<div style="display:flex;justify-content:space-between;gap:8px">
       <span style="color:#6e7681">${r.label}</span>
       <span style="color:${r.color};font-weight:600">$${r.val.toLocaleString()}</span>
-    </div>`
-  ).join("");
+    </div>`).join("");
 }
 
 function renderPhases() {
@@ -232,8 +310,7 @@ function renderPhases() {
       <div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":""}</div>
       <div class="phase-card-states">${meta.states.join(" · ")}</div>
       <div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div>
-      <div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>
-    `;
+      <div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
     if(!isLocked) card.onclick = () => togglePhase(key);
     wrap.appendChild(card);
   });
@@ -296,43 +373,29 @@ function draw() {
   const W = wrap.offsetWidth;
   const H = 300;
   const dpr = window.devicePixelRatio || 1;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + "px";
-  canvas.style.height = H + "px";
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + "px"; canvas.style.height = H + "px";
   const ctx = canvas.getContext("2d");
   ctx.scale(dpr, dpr);
-
   const cW = W - PAD.left - PAD.right;
   const cH = H - PAD.top - PAD.bottom;
   const maxY = Math.max(...chartData.map(d=>d.value)) * 1.18;
-
-  ctx.fillStyle = "#0d1117";
-  ctx.fillRect(0,0,W,H);
-
+  ctx.fillStyle = "#0d1117"; ctx.fillRect(0,0,W,H);
   [0,0.25,0.5,0.75,1].forEach(t => {
     const v = Math.round(maxY * t);
     const y = PAD.top + cH - t*cH;
-    ctx.strokeStyle = t===0 ? "#30363d" : "#161b22";
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = t===0 ? "#30363d" : "#161b22"; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
-    ctx.fillStyle = "#484f58";
-    ctx.font = "10px monospace";
-    ctx.textAlign = "right";
+    ctx.fillStyle = "#484f58"; ctx.font = "10px monospace"; ctx.textAlign = "right";
     ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`, PAD.left-6, y+3.5);
   });
-
-  const phases = [
-    {startM:"May",endM:"Jul",color:"#60a5fa",label:"P1 ramp"},
-    {startM:"Aug",endM:"Sep",color:"#f59e0b",label:"P2 ramp"},
-    {startM:"Oct",endM:"Dec",color:"#e879f9",label:"P3 ramp"},
-  ];
-  phases.forEach(({startM,endM,color,label}) => {
+  [{startM:"May",endM:"Jul",color:"#60a5fa",label:"P1 ramp"},
+   {startM:"Aug",endM:"Sep",color:"#f59e0b",label:"P2 ramp"},
+   {startM:"Oct",endM:"Dec",color:"#e879f9",label:"P3 ramp"}].forEach(({startM,endM,color,label}) => {
     const si = chartData.findIndex(d=>d.month===startM&&d.type==="proj");
     const ei = chartData.reduce((last,d,i)=>d.month===endM?i:last,-1);
     if(si<0||ei<0) return;
-    const x1=PAD.left+(si/chartData.length)*cW;
-    const x2=PAD.left+((ei+1)/chartData.length)*cW;
+    const x1=PAD.left+(si/chartData.length)*cW, x2=PAD.left+((ei+1)/chartData.length)*cW;
     ctx.fillStyle=color+"0d"; ctx.fillRect(x1,PAD.top,x2-x1,cH);
     ctx.fillStyle=color+"66"; ctx.font="9px monospace"; ctx.textAlign="center";
     ctx.fillText(label,(x1+x2)/2,PAD.top+12);
@@ -340,7 +403,6 @@ function draw() {
     ctx.beginPath(); ctx.moveTo(x1,PAD.top); ctx.lineTo(x1,PAD.top+cH); ctx.stroke();
     ctx.setLineDash([]);
   });
-
   const todayIdx = chartData.findIndex(d=>d.month==="May"&&d.type==="proj");
   if(todayIdx>0){
     const tx=PAD.left+(todayIdx/chartData.length)*cW;
@@ -350,39 +412,33 @@ function draw() {
     ctx.fillStyle="#ffffff55"; ctx.font="bold 9px monospace"; ctx.textAlign="center";
     ctx.fillText("NOW",tx,PAD.top-4);
   }
-
   const bW = Math.max(1.2,(cW/chartData.length)-0.4);
   chartData.forEach((d,i) => {
     const x = PAD.left+(i/chartData.length)*cW;
     const alpha = i===hoveredIdx ? "ff" : "bb";
     if(d.type==="actual"){
       const bh=(d.value/maxY)*cH;
-      ctx.fillStyle="#4ade80"+alpha;
-      ctx.fillRect(x,PAD.top+cH-bh,bW,bh);
+      ctx.fillStyle="#4ade80"+alpha; ctx.fillRect(x,PAD.top+cH-bh,bW,bh);
     } else {
       let stackY=PAD.top+cH;
       [{val:d.existingVal,color:"#4ade80"},{val:d.p1Val,color:"#60a5fa"},
        {val:d.p2Val,color:"#f59e0b"},{val:d.p3Val,color:"#e879f9"}].forEach(({val,color})=>{
         if(!val||val<=0) return;
         const sh=(val/maxY)*cH; stackY-=sh;
-        ctx.fillStyle=color+alpha;
-        ctx.fillRect(x,stackY,bW,sh);
+        ctx.fillStyle=color+alpha; ctx.fillRect(x,stackY,bW,sh);
       });
     }
   });
-
   ctx.strokeStyle="#ffffff44"; ctx.lineWidth=1.5;
   ctx.beginPath(); let started=false;
   chartData.forEach((d,i)=>{
     if(d.type!=="actual") return;
     const slice=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");
     const avg=slice.reduce((a,s)=>a+s.value,0)/slice.length;
-    const x=PAD.left+(i/chartData.length)*cW+bW/2;
-    const y=PAD.top+cH-(avg/maxY)*cH;
+    const x=PAD.left+(i/chartData.length)*cW+bW/2, y=PAD.top+cH-(avg/maxY)*cH;
     if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
   });
   ctx.stroke();
-
   let lastM="";
   chartData.forEach((d,i)=>{
     if(d.month!==lastM){
@@ -439,6 +495,7 @@ function refresh(){
   renderPhases();
   renderStates();
   draw();
+  renderMonthlyTotals();
 }
 
 document.getElementById("chart").addEventListener("mousemove", showTooltip);
