@@ -1,509 +1,255 @@
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Roman Health — Revenue Projection 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0d1117; color: #e6edf3; font-family: monospace; padding: 18px; min-height: 100vh; }
-  h1 { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
-  .subtitle { font-size: 10px; color: #6e7681; margin-bottom: 14px; }
-  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
-  .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 12px; }
-  .stat-label { font-size: 10px; color: #6e7681; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
-  .stat-val { font-size: 18px; font-weight: 700; }
-  .view-toggle { display: flex; gap: 6px; margin-bottom: 12px; }
-  .view-btn { padding: 4px 12px; border-radius: 5px; font-size: 10px; font-family: monospace;
-    border: 1px solid #30363d; background: transparent; color: #6e7681; cursor: pointer;
-    text-transform: uppercase; letter-spacing: 1px; transition: all 0.15s; }
-  .view-btn.active { border-color: #388bfd; background: rgba(31,111,235,0.13); color: #60a5fa; }
-  .phases-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .phase-card { padding: 10px 14px; border-radius: 8px; min-width: 130px; border: 1.5px solid #30363d;
-    background: #161b22; cursor: pointer; transition: all 0.15s; user-select: none; }
-  .phase-card.locked { cursor: default; }
-  .phase-card-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-  .phase-card-states { font-size: 10px; color: #6e7681; margin-bottom: 6px; }
-  .phase-card-contrib { font-size: 13px; color: #e6edf3; font-weight: 600; }
-  .phase-progress { margin-top: 6px; height: 3px; background: #21262d; border-radius: 2px; }
-  .phase-progress-bar { height: 100%; border-radius: 2px; transition: width 0.25s; }
-  .states-wrap { margin-bottom: 14px; }
-  .state-group { margin-bottom: 8px; }
-  .state-group-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
-  .state-btns { display: flex; flex-wrap: wrap; gap: 5px; }
-  .state-btn { padding: 4px 10px; border-radius: 5px; font-size: 11px; font-family: monospace;
-    border: 1.5px solid #30363d; background: transparent; color: #484f58; cursor: pointer; transition: all 0.15s; }
-  .state-btn.locked { cursor: default; }
-  .chart-wrap { position: relative; background: #0d1117; border: 1px solid #21262d; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-  canvas { display: block; cursor: crosshair; width: 100%; }
-  #tooltip { position: absolute; background: rgba(28,33,40,0.93); border: 1px solid #30363d; border-radius: 8px;
-    padding: 8px 12px; font-size: 11px; pointer-events: none; z-index: 10; min-width: 160px; display: none; }
-  .tt-date { color: #6e7681; font-size: 10px; margin-bottom: 5px; }
-  .tt-val { font-weight: 700; font-size: 18px; margin-bottom: 6px; }
-  .tt-breakdown { border-top: 1px solid #30363d; padding-top: 6px; }
-  .tt-row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 2px; }
-  .tt-row-label { color: #6e7681; }
-  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-  .legend-label { font-size: 9px; color: #6e7681; }
-  .footnote { font-size: 9px; color: #30363d; margin-top: 4px; }
-  .totals-wrap { margin-top: 18px; border: 1px solid #21262d; border-radius: 10px; overflow: hidden; }
-  .totals-header { padding: 10px 14px; border-bottom: 1px solid #21262d; display: flex; justify-content: space-between; align-items: center; }
-  .totals-header-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6e7681; }
-  .monthly-grid { display: grid; grid-template-columns: repeat(6, 1fr); }
-  .month-cell { padding: 10px 12px; border-right: 1px solid #21262d; border-bottom: 1px solid #21262d; }
-  .month-cell:nth-child(6n) { border-right: none; }
-  .month-cell:nth-last-child(-n+6) { border-bottom: none; }
-  .month-cell-name { font-size: 9px; color: #6e7681; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .month-cell-val { font-size: 14px; font-weight: 700; }
-  .month-cell-type { font-size: 9px; margin-top: 2px; }
-  .annual-row { padding: 12px 14px; border-top: 1px solid #30363d; background: #161b22; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-  .annual-label { font-size: 10px; color: #6e7681; text-transform: uppercase; letter-spacing: 1px; }
-  .annual-vals { display: flex; gap: 24px; align-items: baseline; flex-wrap: wrap; }
-  .annual-item { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-  .annual-item-label { font-size: 9px; color: #6e7681; }
-  .annual-item-val { font-size: 17px; font-weight: 700; }
-  @media (max-width: 600px) {
-    .stats { grid-template-columns: repeat(2,1fr); }
-    .monthly-grid { grid-template-columns: repeat(3, 1fr); }
-    .month-cell:nth-child(6n) { border-right: 1px solid #21262d; }
-    .month-cell:nth-child(3n) { border-right: none; }
-    .month-cell:nth-last-child(-n+6) { border-bottom: 1px solid #21262d; }
-    .month-cell:nth-last-child(-n+3) { border-bottom: none; }
-  }
+  *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.monthly-grid{grid-template-columns:repeat(3,1fr)}.month-cell:nth-child(6n){border-right:1px solid #21262d}.month-cell:nth-child(3n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}.month-cell:nth-last-child(-n+3){border-bottom:none}}
 </style>
 </head>
 <body>
-
 <h1>Roman Health — 2026 Revenue · Actual + Projected</h1>
-<div class="subtitle">Toggle phases below · Chart updates in real time · Projections are cumulative and additive</div>
-
+<div class="subtitle">Toggle phases · Chart updates in real time · Projections are cumulative and additive</div>
 <div class="stats">
   <div class="stat-card"><div class="stat-label">Active States</div><div class="stat-val" id="stat-states" style="color:#4ade80">7</div></div>
   <div class="stat-card"><div class="stat-label">Population</div><div class="stat-val" id="stat-pop" style="color:#60a5fa">—</div></div>
   <div class="stat-card"><div class="stat-label">Current Avg/Day</div><div class="stat-val" id="stat-current" style="color:#f9fafb">—</div></div>
-  <div class="stat-card" id="proj-card"><div class="stat-label">Projected Avg/Day <span style="font-size:9px;color:#484f58">(fully ramped)</span></div><div class="stat-val" id="stat-proj" style="color:#e879f9">—</div><div id="stat-proj-breakdown" style="margin-top:6px;font-size:10px;line-height:1.7"></div></div>
+  <div class="stat-card"><div class="stat-label">Projected Avg/Day <span style="font-size:9px;color:#484f58">(fully ramped)</span></div><div class="stat-val" id="stat-proj" style="color:#e879f9">—</div><div id="stat-proj-breakdown" style="margin-top:6px;font-size:10px;line-height:1.7"></div></div>
 </div>
-
 <div class="view-toggle">
   <button class="view-btn active" onclick="setView('phases')" id="btn-phases">By Phase</button>
   <button class="view-btn" onclick="setView('states')" id="btn-states">By State</button>
 </div>
-
 <div id="phases-view" class="phases-wrap"></div>
 <div id="states-view" class="states-wrap" style="display:none"></div>
-
 <div class="chart-wrap" id="chart-wrap">
   <canvas id="chart"></canvas>
-  <div id="tooltip">
-    <div class="tt-date" id="tt-date"></div>
-    <div class="tt-val" id="tt-val"></div>
-    <div class="tt-breakdown" id="tt-breakdown"></div>
-  </div>
+  <div id="tooltip"><div class="tt-date" id="tt-date"></div><div class="tt-val" id="tt-val"></div><div class="tt-breakdown" id="tt-breakdown"></div></div>
 </div>
-
 <div class="legend">
-  <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual / projected)</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA · OH · MI · IL · AL</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2: CO · MN</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#e879f9"></div><span class="legend-label">Phase 3A: NJ · GA</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div><span class="legend-label">Phase 3B: WI · MO</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.27)"></div><span class="legend-label">7-day moving avg (actual)</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2: CO·MN</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e879f9"></div><span class="legend-label">Phase 3A: NJ·GA</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div><span class="legend-label">Phase 3B: WI·MO</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.27)"></div><span class="legend-label">7-day avg</span></div>
 </div>
-<div class="footnote">Projections are cumulative and additive — each phase builds on top of existing revenue. Calibrated from observed per-state lift. Actual results will vary.</div>
-
-<div class="totals-wrap">
-  <div class="totals-header">
-    <span class="totals-header-label">Monthly totals</span>
-    <span style="font-size:9px;color:#484f58">actual Jan–Apr · projected May–Dec</span>
+<div class="footnote">Projections are cumulative — each phase builds on top of existing revenue. Calibrated from observed per-state lift.</div>
+<div class="map-section">
+  <div class="map-header">
+    <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681;">State Coverage Map</span>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:9px;color:#484f58;">hover for details · click inactive state to toggle</span>
+      <button id="tz-toggle" onclick="showTZ=!showTZ;this.className=showTZ?'view-btn active':'view-btn';drawMap();" class="view-btn" style="padding:3px 10px;font-size:9px;">🕐 Time Zones</button>
+    </div>
   </div>
+  <div class="map-body">
+    <div id="tz-bar" style="display:flex;gap:0;margin-bottom:12px;border-radius:8px;overflow:hidden;font-family:monospace;"></div>
+    <svg id="us-map"></svg>
+    <div id="map-legend"></div>
+  </div>
+</div>
+<div id="map-tt"></div>
+<div class="totals-wrap">
+  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58">actual Jan–Apr · projected May–Dec</span></div>
   <div class="monthly-grid" id="monthly-grid"></div>
   <div class="annual-row" id="annual-row"></div>
 </div>
-
 <script>
-const STATE_DATA = {
-  IN:  { group:"existing", pop:6.9,  dailyContrib:70,  locked:true  },
-  TX:  { group:"existing", pop:31.0, dailyContrib:480, locked:true  },
-  NC:  { group:"existing", pop:10.8, dailyContrib:200, locked:true  },
-  TN:  { group:"existing", pop:7.2,  dailyContrib:130, locked:true  },
-  AZ:  { group:"existing", pop:7.6,  dailyContrib:110, locked:true  },
-  OR:  { group:"existing", pop:4.3,  dailyContrib:60,  locked:true  },
-  WA:  { group:"existing", pop:7.9,  dailyContrib:110, locked:true  },
-  PA:  { group:"phase1",   pop:13.0, dailyContrib:290, locked:false },
-  OH:  { group:"phase1",   pop:11.9, dailyContrib:265, locked:false },
-  MI:  { group:"phase1",   pop:10.1, dailyContrib:210, locked:false },
-  IL:  { group:"phase1",   pop:12.8, dailyContrib:285, locked:false },
-  AL:  { group:"phase1",   pop:5.1,  dailyContrib:100, locked:false },
-  CO:  { group:"phase2",   pop:6.0,  dailyContrib:110, locked:false },
-  MN:  { group:"phase2",   pop:5.8,  dailyContrib:115, locked:false },
-  NJ:  { group:"phase3a",  pop:9.3,  dailyContrib:190, locked:false },
-  GA:  { group:"phase3a",  pop:11.0, dailyContrib:170, locked:false },
-  WI:  { group:"phase3b",  pop:5.9,  dailyContrib:100, locked:false },
-  MO:  { group:"phase3b",  pop:6.2,  dailyContrib:105, locked:false },
+const STATE_DATA={IN:{group:"existing",pop:6.9,dailyContrib:70,locked:true},TX:{group:"existing",pop:31,dailyContrib:480,locked:true},NC:{group:"existing",pop:10.8,dailyContrib:200,locked:true},TN:{group:"existing",pop:7.2,dailyContrib:130,locked:true},AZ:{group:"existing",pop:7.6,dailyContrib:110,locked:true},OR:{group:"existing",pop:4.3,dailyContrib:60,locked:true},WA:{group:"existing",pop:7.9,dailyContrib:110,locked:true},PA:{group:"phase1",pop:13,dailyContrib:290,locked:false},OH:{group:"phase1",pop:11.9,dailyContrib:265,locked:false},MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},MN:{group:"phase2",pop:5.8,dailyContrib:115,locked:false},NJ:{group:"phase3a",pop:9.3,dailyContrib:190,locked:false},GA:{group:"phase3a",pop:11,dailyContrib:170,locked:false},WI:{group:"phase3b",pop:5.9,dailyContrib:100,locked:false},MO:{group:"phase3b",pop:6.2,dailyContrib:105,locked:false}};
+const PHASE_META={existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},phase2:{label:"Phase 2",color:"#f59e0b",states:["CO","MN"]},phase3a:{label:"Phase 3A",color:"#e879f9",states:["NJ","GA"]},phase3b:{label:"Phase 3B",color:"#f87171",states:["WI","MO"]}};
+const GRP_COLORS={existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b",phase3a:"#e879f9",phase3b:"#f87171"};
+
+const TZ={
+  ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",
+  PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",
+  TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",
+  MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",
+  MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",
+  WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"
 };
-
-const PHASE_META = {
-  existing: { label:"Existing",  color:"#4ade80", states:["IN","TX","NC","TN","AZ","OR","WA"] },
-  phase1:   { label:"Phase 1",   color:"#60a5fa", states:["PA","OH","MI","IL","AL"] },
-  phase2:   { label:"Phase 2",   color:"#f59e0b", states:["CO","MN"] },
-  phase3a:  { label:"Phase 3A",  color:"#e879f9", states:["NJ","GA"] },
-  phase3b:  { label:"Phase 3B",  color:"#f87171", states:["WI","MO"] },
+const TZ_META={
+  PT: {label:"Pacific",  abbr:"PST", ianatZ:"America/Los_Angeles", color:"#f87171"},
+  MT: {label:"Mountain", abbr:"MT",  ianatZ:"America/Denver",      color:"#f59e0b"},
+  CST:{label:"Central",  abbr:"CST", ianatZ:"America/Chicago",     color:"#34d399"},
+  ET: {label:"Eastern",  abbr:"EST", ianatZ:"America/New_York",    color:"#818cf8"},
 };
+let showTZ=false;
+const GRP_LABELS={existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL",phase2:"Phase 2 — CO·MN",phase3a:"Phase 3A — NJ·GA",phase3b:"Phase 3B — WI·MO"};
+const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
+const SMALL=new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
+const ALL_MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+let activeStates=Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
+let hoveredIdx=null,chartData=[],usTopoData=null;
 
-const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
-let activeStates = Object.keys(STATE_DATA).filter(s => STATE_DATA[s].locked);
-let currentView = "phases";
-let hoveredIdx = null;
-let chartData = [];
-
-function seededRand(seed) {
-  const x = Math.sin(seed + 1) * 43758.5453;
-  return x - Math.floor(x);
-}
-
-function generateData() {
-  const data = [];
-  const existingBase = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st) => s + STATE_DATA[st].dailyContrib, 0);
-  const phase1Active = activeStates.filter(s => STATE_DATA[s]?.group === "phase1");
-  const phase2Active = activeStates.filter(s => STATE_DATA[s]?.group === "phase2");
-  const phase3aActive = activeStates.filter(s => STATE_DATA[s]?.group === "phase3a");
-  const phase3bActive = activeStates.filter(s => STATE_DATA[s]?.group === "phase3b");
-  const phase1Contrib = phase1Active.reduce((s,st) => s + STATE_DATA[st].dailyContrib, 0);
-  const phase2Contrib = phase2Active.reduce((s,st) => s + STATE_DATA[st].dailyContrib, 0);
-  const phase3Contrib = [...phase3aActive,...phase3bActive].reduce((s,st) => s + STATE_DATA[st].dailyContrib, 0);
-
-  let dayIdx = 0;
-  const actualMonths = [
-    {name:"Jan",days:28,scale:0.42},{name:"Feb-early",days:7,scale:0.43},
-    {name:"Feb-mid",days:21,scale:0.55},{name:"Mar-early",days:13,scale:0.80},
-    {name:"Mar-late",days:18,scale:1.05},{name:"Apr-europe",days:10,scale:1.25},
-    {name:"Apr-ret",days:11,scale:0.90},
-  ];
-  const mmap = {"Jan":"Jan","Feb-early":"Feb","Feb-mid":"Feb","Mar-early":"Mar","Mar-late":"Mar","Apr-europe":"Apr","Apr-ret":"Apr"};
-
-  actualMonths.forEach(({name,days,scale}) => {
-    for(let d=0;d<days;d++){
-      const noise=(seededRand(dayIdx)-0.5)*0.45;
-      const val=Math.max(120,existingBase*scale*(1+noise));
-      data.push({month:mmap[name],value:Math.round(val),type:"actual",existingVal:Math.round(val),p1Val:0,p2Val:0,p3Val:0,dayIdx});
-      dayIdx++;
-    }
+function sRand(s){const x=Math.sin(s+1)*43758.5453;return x-Math.floor(x);}
+function generateData(){
+  const data=[];
+  const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p2=activeStates.filter(s=>STATE_DATA[s]?.group==="phase2").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p3=[...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3a"),...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3b")].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  let di=0;
+  [["Jan",28,.42],["Feb",7,.43],["Feb",21,.55],["Mar",13,.80],["Mar",18,1.05],["Apr",10,1.25],["Apr",11,.90]].forEach(([mo,days,sc])=>{
+    for(let d=0;d<days;d++){const n=(sRand(di)-.5)*.45;const v=Math.max(120,base*sc*(1+n));data.push({month:mo,value:Math.round(v),type:"actual",eV:Math.round(v),p1V:0,p2V:0,p3V:0});di++;}
   });
-
-  const projMonths = [
-    {name:"Apr",days:9,p1r:0,p2r:0,p3r:0,scale:0.90},
-    {name:"May",days:31,p1r:(d)=>d<14?0:(d-14)/17,p2r:0,p3r:0,scale:0.92},
-    {name:"Jun",days:30,p1r:1,p2r:0,p3r:0,scale:0.94},
-    {name:"Jul",days:31,p1r:1,p2r:0,p3r:0,scale:0.96},
-    {name:"Aug",days:31,p1r:1,p2r:(d)=>d<7?0:(d-7)/24,p3r:0,scale:0.95},
-    {name:"Sep",days:30,p1r:1,p2r:1,p3r:0,scale:0.97},
-    {name:"Oct",days:31,p1r:1,p2r:1,p3r:(d)=>d<7?0:(d-7)/24,scale:0.96},
-    {name:"Nov",days:30,p1r:1,p2r:1,p3r:1,scale:0.98},
-    {name:"Dec",days:31,p1r:1,p2r:1,p3r:1,scale:1.0},
-  ];
-
-  projMonths.forEach(({name,days,p1r,p2r,p3r,scale}) => {
+  const ramp=(spec,d)=>typeof spec==="number"?spec:(()=>{const[,a,b]=spec.match(/(\d+)_(\d+)/);return Math.min(1,Math.max(0,d<+a?0:(d-+a)/+b));})();
+  [["Apr",9,0,0,0,.90],["May",31,"14_17",0,0,.92],["Jun",30,1,0,0,.94],["Jul",31,1,0,0,.96],["Aug",31,1,"7_24",0,.95],["Sep",30,1,1,0,.97],["Oct",31,1,1,"7_24",.96],["Nov",30,1,1,1,.98],["Dec",31,1,1,1,1.0]].forEach(([mo,days,r1,r2,r3,sc])=>{
     for(let d=0;d<days;d++){
-      const r1=typeof p1r==="function"?Math.min(1,Math.max(0,p1r(d))):p1r;
-      const r2=typeof p2r==="function"?Math.min(1,Math.max(0,p2r(d))):p2r;
-      const r3=typeof p3r==="function"?Math.min(1,Math.max(0,p3r(d))):p3r;
-      const noise=(seededRand(dayIdx)-0.5)*0.35;
-      const eV=Math.round(existingBase*scale*(1+noise));
-      const p1V=Math.round(phase1Contrib*r1*scale*(1+noise*0.8));
-      const p2V=Math.round(phase2Contrib*r2*scale*(1+noise*0.8));
-      const p3V=Math.round(phase3Contrib*r3*scale*(1+noise*0.8));
-      data.push({month:name,value:Math.max(eV,eV+p1V+p2V+p3V),existingVal:eV,p1Val:p1V,p2Val:p2V,p3Val:p3V,type:"proj",dayIdx});
-      dayIdx++;
+      const n=(sRand(di)-.5)*.35;
+      const eV=Math.round(base*sc*(1+n));const p1V=Math.round(p1*ramp(r1,d)*sc*(1+n*.8));const p2V=Math.round(p2*ramp(r2,d)*sc*(1+n*.8));const p3V=Math.round(p3*ramp(r3,d)*sc*(1+n*.8));
+      data.push({month:mo,value:Math.max(eV,eV+p1V+p2V+p3V),eV,p1V,p2V,p3V,type:"proj"});di++;
     }
   });
   return data;
 }
-
-function fmtK(v) {
-  if(v >= 1000000) return "$" + (v/1000000).toFixed(2) + "M";
-  if(v >= 1000) return "$" + (v/1000).toFixed(1) + "k";
-  return "$" + Math.round(v);
+function fmtK(v){if(v>=1e6)return"$"+(v/1e6).toFixed(2)+"M";if(v>=1000)return"$"+(v/1000).toFixed(1)+"k";return"$"+Math.round(v);}
+function updateStats(){
+  const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
+  document.getElementById("stat-states").textContent=activeStates.length;
+  document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
+  const ca=Math.round(chartData.slice(60,110).reduce((s,d)=>s+d.value,0)/50);
+  document.getElementById("stat-current").textContent="$"+ca.toLocaleString();
+  const ps=chartData.filter(d=>d.month==="Dec");const pa=ps.length?Math.round(ps.reduce((s,d)=>s+d.value,0)/ps.length):0;
+  document.getElementById("stat-proj").textContent=pa?"$"+pa.toLocaleString():"—";
+  const dd=ps[Math.floor(ps.length/2)]||{};
+  document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2",v:dd.p2V||0,c:"#f59e0b"},{l:"Phase 3",v:dd.p3V||0,c:"#e879f9"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
 }
-
-function renderMonthlyTotals() {
-  const monthTotals = {};
-  const monthTypes = {};
-  ALL_MONTHS.forEach(m => { monthTotals[m] = 0; monthTypes[m] = "actual"; });
-
-  chartData.forEach(d => {
-    if(ALL_MONTHS.includes(d.month)) {
-      monthTotals[d.month] += d.value;
-      if(d.type === "proj") monthTypes[d.month] = "proj";
-    }
-  });
-
-  const actualTotal = ALL_MONTHS.filter(m => monthTypes[m] === "actual").reduce((s,m) => s + monthTotals[m], 0);
-  const projTotal   = ALL_MONTHS.filter(m => monthTypes[m] === "proj").reduce((s,m) => s + monthTotals[m], 0);
-  const grandTotal  = actualTotal + projTotal;
-
-  document.getElementById("monthly-grid").innerHTML = ALL_MONTHS.map(m => {
-    const isActual = monthTypes[m] === "actual";
-    const color = isActual ? "#4ade80" : "#60a5fa";
-    const dimColor = isActual ? "#2a6644" : "#2a4a6e";
-    return `<div class="month-cell">
-      <div class="month-cell-name">${m}</div>
-      <div class="month-cell-val" style="color:${color}">${fmtK(monthTotals[m])}</div>
-      <div class="month-cell-type" style="color:${dimColor}">${isActual ? "actual" : "projected"}</div>
-    </div>`;
-  }).join("");
-
-  document.getElementById("annual-row").innerHTML = `
-    <span class="annual-label">2026 annual total</span>
-    <div class="annual-vals">
-      <div class="annual-item">
-        <span class="annual-item-label">actual YTD</span>
-        <span class="annual-item-val" style="color:#4ade80">$${Math.round(actualTotal).toLocaleString()}</span>
-      </div>
-      <div class="annual-item">
-        <span class="annual-item-label">projected remainder</span>
-        <span class="annual-item-val" style="color:#60a5fa">$${Math.round(projTotal).toLocaleString()}</span>
-      </div>
-      <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d">
-        <span class="annual-item-label">full year estimate</span>
-        <span class="annual-item-val" style="color:#e879f9">$${Math.round(grandTotal).toLocaleString()}</span>
-      </div>
-    </div>`;
+function renderMonthlyTotals(){
+  const mt={},mtp={};ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
+  chartData.forEach(d=>{if(ALL_MONTHS.includes(d.month)){mt[d.month]+=d.value;if(d.type==="proj")mtp[d.month]="proj";}});
+  const aT=ALL_MONTHS.filter(m=>mtp[m]==="actual").reduce((s,m)=>s+mt[m],0);
+  const pT=ALL_MONTHS.filter(m=>mtp[m]==="proj").reduce((s,m)=>s+mt[m],0);
+  document.getElementById("monthly-grid").innerHTML=ALL_MONTHS.map(m=>{const ia=mtp[m]==="actual";const c=ia?"#4ade80":"#60a5fa";const dc=ia?"#2a6644":"#2a4a6e";return`<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${c}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dc}">${ia?"actual":"projected"}</div></div>`;}).join("");
+  document.getElementById("annual-row").innerHTML=`<span class="annual-label">2026 annual total</span><div class="annual-vals"><div class="annual-item"><span class="annual-item-label">actual YTD</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(aT).toLocaleString()}</span></div><div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(pT).toLocaleString()}</span></div><div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(aT+pT).toLocaleString()}</span></div></div>`;
 }
-
-function updateStats() {
-  const totalPop = activeStates.reduce((s,st) => s + (STATE_DATA[st]?.pop||0), 0);
-  document.getElementById("stat-states").textContent = activeStates.length;
-  document.getElementById("stat-pop").textContent = totalPop.toFixed(1) + "M";
-  const currentAvg = Math.round(chartData.slice(60,110).reduce((s,d)=>s+d.value,0)/50);
-  document.getElementById("stat-current").textContent = "$" + currentAvg.toLocaleString();
-  const projSlice = chartData.filter(d => d.month === "Dec");
-  const projAvg = projSlice.length > 0 ? Math.round(projSlice.reduce((s,d)=>s+d.value,0)/projSlice.length) : 0;
-  document.getElementById("stat-proj").textContent = projAvg > 0 ? "$" + projAvg.toLocaleString() : "—";
-  const decDay = projSlice[Math.floor(projSlice.length/2)] || {};
-  const rows = [
-    {label:"Existing", val: decDay.existingVal||0, color:"#4ade80"},
-    {label:"Phase 1 (PA·OH·MI·IL·AL)", val: decDay.p1Val||0, color:"#60a5fa"},
-    {label:"Phase 2 (CO·MN)", val: decDay.p2Val||0, color:"#f59e0b"},
-    {label:"Phase 3 (NJ·GA·WI·MO)", val: (decDay.p3Val||0), color:"#e879f9"},
-  ].filter(r => r.val > 0);
-  document.getElementById("stat-proj-breakdown").innerHTML = rows.map(r =>
-    `<div style="display:flex;justify-content:space-between;gap:8px">
-      <span style="color:#6e7681">${r.label}</span>
-      <span style="color:${r.color};font-weight:600">$${r.val.toLocaleString()}</span>
-    </div>`).join("");
-}
-
-function renderPhases() {
-  const wrap = document.getElementById("phases-view");
-  wrap.innerHTML = "";
-  Object.entries(PHASE_META).forEach(([key, meta]) => {
-    const isLocked = key === "existing";
-    const allOn = meta.states.every(s => activeStates.includes(s));
-    const contrib = meta.states.reduce((s,st) => s + (STATE_DATA[st]?.dailyContrib||0), 0);
-    const card = document.createElement("div");
-    card.className = "phase-card" + (isLocked ? " locked" : "");
-    card.style.borderColor = allOn ? meta.color : "#30363d";
-    card.style.background = allOn ? meta.color + "11" : "#161b22";
-    card.innerHTML = `
-      <div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":""}</div>
-      <div class="phase-card-states">${meta.states.join(" · ")}</div>
-      <div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div>
-      <div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
-    if(!isLocked) card.onclick = () => togglePhase(key);
-    wrap.appendChild(card);
+function renderPhases(){
+  const wrap=document.getElementById("phases-view");wrap.innerHTML="";
+  Object.entries(PHASE_META).forEach(([key,meta])=>{
+    const isLocked=key==="existing";const allOn=meta.states.every(s=>activeStates.includes(s));const contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);
+    const card=document.createElement("div");card.className="phase-card"+(isLocked?" locked":"");
+    card.style.borderColor=allOn?meta.color:"#30363d";card.style.background=allOn?meta.color+"11":"#161b22";
+    card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
+    if(!isLocked)card.onclick=()=>togglePhase(key);wrap.appendChild(card);
   });
 }
-
-function renderStates() {
-  const wrap = document.getElementById("states-view");
-  wrap.innerHTML = "";
-  Object.entries(PHASE_META).forEach(([key, meta]) => {
-    const grp = document.createElement("div");
-    grp.className = "state-group";
-    grp.innerHTML = `<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;
-    const btns = document.createElement("div");
-    btns.className = "state-btns";
-    meta.states.forEach(st => {
-      const isOn = activeStates.includes(st);
-      const isLocked = STATE_DATA[st]?.locked;
-      const btn = document.createElement("button");
-      btn.className = "state-btn" + (isLocked?" locked":"");
-      btn.style.borderColor = isOn ? meta.color : "#30363d";
-      btn.style.background = isOn ? meta.color + "1a" : "transparent";
-      btn.style.color = isOn ? meta.color : "#484f58";
-      btn.innerHTML = `${st}<span style="font-size:9px;opacity:0.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;
-      if(!isLocked) btn.onclick = () => toggleState(st);
-      btns.appendChild(btn);
-    });
-    grp.appendChild(btns);
-    wrap.appendChild(grp);
+function renderStates(){
+  const wrap=document.getElementById("states-view");wrap.innerHTML="";
+  Object.entries(PHASE_META).forEach(([key,meta])=>{
+    const grp=document.createElement("div");grp.className="state-group";grp.innerHTML=`<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;
+    const btns=document.createElement("div");btns.className="state-btns";
+    meta.states.forEach(st=>{const isOn=activeStates.includes(st);const isLocked=STATE_DATA[st]?.locked;const btn=document.createElement("button");btn.className="state-btn"+(isLocked?" locked":"");btn.style.borderColor=isOn?meta.color:"#30363d";btn.style.background=isOn?meta.color+"1a":"transparent";btn.style.color=isOn?meta.color:"#484f58";btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;if(!isLocked)btn.onclick=()=>toggleState(st);btns.appendChild(btn);});
+    grp.appendChild(btns);wrap.appendChild(grp);
   });
 }
+function togglePhase(key){const states=PHASE_META[key].states;const allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();}
+function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();}
+function setView(v){document.getElementById("phases-view").style.display=v==="phases"?"flex":"none";document.getElementById("states-view").style.display=v==="states"?"block":"none";document.getElementById("btn-phases").className="view-btn"+(v==="phases"?" active":"");document.getElementById("btn-states").className="view-btn"+(v==="states"?" active":"");}
 
-function togglePhase(key) {
-  const states = PHASE_META[key].states;
-  const allOn = states.every(s => activeStates.includes(s));
-  if(allOn) activeStates = activeStates.filter(s => !states.includes(s));
-  else activeStates = [...new Set([...activeStates, ...states])];
-  refresh();
+const PAD={top:44,right:16,bottom:44,left:58};
+function draw(){
+  const canvas=document.getElementById("chart");const wrap=document.getElementById("chart-wrap");
+  const W=wrap.offsetWidth,H=300,dpr=window.devicePixelRatio||1;
+  canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";
+  const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+  const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom,maxY=Math.max(...chartData.map(d=>d.value))*1.18;
+  ctx.fillStyle="#0d1117";ctx.fillRect(0,0,W,H);
+  [0,.25,.5,.75,1].forEach(t=>{const v=Math.round(maxY*t),y=PAD.top+cH-t*cH;ctx.strokeStyle=t===0?"#30363d":"#161b22";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(W-PAD.right,y);ctx.stroke();ctx.fillStyle="#484f58";ctx.font="10px monospace";ctx.textAlign="right";ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`,PAD.left-6,y+3.5);});
+  [{s:"May",e:"Jul",c:"#60a5fa",l:"P1 ramp"},{s:"Aug",e:"Sep",c:"#f59e0b",l:"P2 ramp"},{s:"Oct",e:"Dec",c:"#e879f9",l:"P3 ramp"}].forEach(({s,e,c,l})=>{const si=chartData.findIndex(d=>d.month===s&&d.type==="proj"),ei=chartData.reduce((a,d,i)=>d.month===e?i:a,-1);if(si<0||ei<0)return;const x1=PAD.left+(si/chartData.length)*cW,x2=PAD.left+((ei+1)/chartData.length)*cW;ctx.fillStyle=c+"0d";ctx.fillRect(x1,PAD.top,x2-x1,cH);ctx.fillStyle=c+"66";ctx.font="9px monospace";ctx.textAlign="center";ctx.fillText(l,(x1+x2)/2,PAD.top+12);ctx.strokeStyle=c+"33";ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x1,PAD.top);ctx.lineTo(x1,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);});
+  const ti=chartData.findIndex(d=>d.month==="May"&&d.type==="proj");if(ti>0){const tx=PAD.left+(ti/chartData.length)*cW;ctx.strokeStyle="#ffffff30";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(tx,PAD.top);ctx.lineTo(tx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#ffffff55";ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText("NOW",tx,PAD.top-4);}
+  const bW=Math.max(1.2,(cW/chartData.length)-.4);
+  chartData.forEach((d,i)=>{const x=PAD.left+(i/chartData.length)*cW,al=i===hoveredIdx?"ff":"bb";if(d.type==="actual"){ctx.fillStyle="#4ade80"+al;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);}else{let sy=PAD.top+cH;[{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"},{v:d.p2V,c:"#f59e0b"},{v:d.p3V,c:"#e879f9"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});}});
+  ctx.strokeStyle="#ffffff44";ctx.lineWidth=1.5;ctx.beginPath();let started=false;chartData.forEach((d,i)=>{if(d.type!=="actual")return;const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);});ctx.stroke();
+  let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
 }
-
-function toggleState(st) {
-  if(STATE_DATA[st]?.locked) return;
-  if(activeStates.includes(st)) activeStates = activeStates.filter(s => s !== st);
-  else activeStates = [...activeStates, st];
-  refresh();
-}
-
-function setView(v) {
-  currentView = v;
-  document.getElementById("phases-view").style.display = v === "phases" ? "flex" : "none";
-  document.getElementById("states-view").style.display = v === "states" ? "block" : "none";
-  document.getElementById("btn-phases").className = "view-btn" + (v==="phases"?" active":"");
-  document.getElementById("btn-states").className = "view-btn" + (v==="states"?" active":"");
-}
-
-const PAD = {top:44,right:16,bottom:44,left:58};
-
-function draw() {
-  const canvas = document.getElementById("chart");
-  const wrap = document.getElementById("chart-wrap");
-  const W = wrap.offsetWidth;
-  const H = 300;
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  canvas.style.width = W + "px"; canvas.style.height = H + "px";
-  const ctx = canvas.getContext("2d");
-  ctx.scale(dpr, dpr);
-  const cW = W - PAD.left - PAD.right;
-  const cH = H - PAD.top - PAD.bottom;
-  const maxY = Math.max(...chartData.map(d=>d.value)) * 1.18;
-  ctx.fillStyle = "#0d1117"; ctx.fillRect(0,0,W,H);
-  [0,0.25,0.5,0.75,1].forEach(t => {
-    const v = Math.round(maxY * t);
-    const y = PAD.top + cH - t*cH;
-    ctx.strokeStyle = t===0 ? "#30363d" : "#161b22"; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
-    ctx.fillStyle = "#484f58"; ctx.font = "10px monospace"; ctx.textAlign = "right";
-    ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`, PAD.left-6, y+3.5);
-  });
-  [{startM:"May",endM:"Jul",color:"#60a5fa",label:"P1 ramp"},
-   {startM:"Aug",endM:"Sep",color:"#f59e0b",label:"P2 ramp"},
-   {startM:"Oct",endM:"Dec",color:"#e879f9",label:"P3 ramp"}].forEach(({startM,endM,color,label}) => {
-    const si = chartData.findIndex(d=>d.month===startM&&d.type==="proj");
-    const ei = chartData.reduce((last,d,i)=>d.month===endM?i:last,-1);
-    if(si<0||ei<0) return;
-    const x1=PAD.left+(si/chartData.length)*cW, x2=PAD.left+((ei+1)/chartData.length)*cW;
-    ctx.fillStyle=color+"0d"; ctx.fillRect(x1,PAD.top,x2-x1,cH);
-    ctx.fillStyle=color+"66"; ctx.font="9px monospace"; ctx.textAlign="center";
-    ctx.fillText(label,(x1+x2)/2,PAD.top+12);
-    ctx.strokeStyle=color+"33"; ctx.lineWidth=1; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(x1,PAD.top); ctx.lineTo(x1,PAD.top+cH); ctx.stroke();
-    ctx.setLineDash([]);
-  });
-  const todayIdx = chartData.findIndex(d=>d.month==="May"&&d.type==="proj");
-  if(todayIdx>0){
-    const tx=PAD.left+(todayIdx/chartData.length)*cW;
-    ctx.strokeStyle="#ffffff30"; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
-    ctx.beginPath(); ctx.moveTo(tx,PAD.top); ctx.lineTo(tx,PAD.top+cH); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.fillStyle="#ffffff55"; ctx.font="bold 9px monospace"; ctx.textAlign="center";
-    ctx.fillText("NOW",tx,PAD.top-4);
-  }
-  const bW = Math.max(1.2,(cW/chartData.length)-0.4);
-  chartData.forEach((d,i) => {
-    const x = PAD.left+(i/chartData.length)*cW;
-    const alpha = i===hoveredIdx ? "ff" : "bb";
-    if(d.type==="actual"){
-      const bh=(d.value/maxY)*cH;
-      ctx.fillStyle="#4ade80"+alpha; ctx.fillRect(x,PAD.top+cH-bh,bW,bh);
-    } else {
-      let stackY=PAD.top+cH;
-      [{val:d.existingVal,color:"#4ade80"},{val:d.p1Val,color:"#60a5fa"},
-       {val:d.p2Val,color:"#f59e0b"},{val:d.p3Val,color:"#e879f9"}].forEach(({val,color})=>{
-        if(!val||val<=0) return;
-        const sh=(val/maxY)*cH; stackY-=sh;
-        ctx.fillStyle=color+alpha; ctx.fillRect(x,stackY,bW,sh);
-      });
-    }
-  });
-  ctx.strokeStyle="#ffffff44"; ctx.lineWidth=1.5;
-  ctx.beginPath(); let started=false;
-  chartData.forEach((d,i)=>{
-    if(d.type!=="actual") return;
-    const slice=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");
-    const avg=slice.reduce((a,s)=>a+s.value,0)/slice.length;
-    const x=PAD.left+(i/chartData.length)*cW+bW/2, y=PAD.top+cH-(avg/maxY)*cH;
-    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  let lastM="";
-  chartData.forEach((d,i)=>{
-    if(d.month!==lastM){
-      lastM=d.month;
-      const x=PAD.left+(i/chartData.length)*cW;
-      ctx.fillStyle="#6e7681"; ctx.font="10px monospace"; ctx.textAlign="left";
-      ctx.fillText(d.month,x+2,PAD.top+cH+16);
-      ctx.strokeStyle="#21262d"; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(x,PAD.top+cH); ctx.lineTo(x,PAD.top+cH+4); ctx.stroke();
-    }
-  });
-}
-
-function showTooltip(e) {
-  const canvas = document.getElementById("chart");
-  const wrap = document.getElementById("chart-wrap");
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const cW = rect.width - PAD.left - PAD.right;
-  const idx = Math.round(((x-PAD.left)/cW)*chartData.length);
+function showTooltip(e){
+  const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
-  hoveredIdx=idx;
-  const d=chartData[idx];
-  const tt=document.getElementById("tooltip");
+  hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
   document.getElementById("tt-date").textContent=`${d.month} · ${d.type==="actual"?"Actual":"Projected"}`;
-  document.getElementById("tt-val").style.color=d.type==="actual"?"#4ade80":"#e6edf3";
-  document.getElementById("tt-val").textContent="$"+d.value.toLocaleString();
-  let bhtml="";
-  if(d.type==="proj"){
-    const rows=[
-      {label:"Existing states",val:d.existingVal,color:"#4ade80"},
-      {label:"Phase 1 (PA·OH·MI·IL·AL)",val:d.p1Val,color:"#60a5fa"},
-      {label:"Phase 2 (CO·MN)",val:d.p2Val,color:"#f59e0b"},
-      {label:"Phase 3 (NJ·GA·WI·MO)",val:d.p3Val,color:"#e879f9"},
-    ].filter(r=>r.val>0);
-    bhtml=rows.map(r=>`<div class="tt-row"><span class="tt-row-label">${r.label}</span><span style="color:${r.color};font-weight:600">$${r.val.toLocaleString()}</span></div>`).join("");
+  document.getElementById("tt-val").style.color=d.type==="actual"?"#4ade80":"#e6edf3";document.getElementById("tt-val").textContent="$"+d.value.toLocaleString();
+  let bhtml="";if(d.type==="proj"){bhtml=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2",v:d.p2V,c:"#f59e0b"},{l:"Phase 3",v:d.p3V,c:"#e879f9"}].filter(r=>r.v>0).map(r=>`<div class="tt-row"><span class="tt-row-label">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");}
+  document.getElementById("tt-breakdown").innerHTML=bhtml;document.getElementById("tt-breakdown").style.display=d.type==="proj"?"block":"none";
+  tt.style.left=Math.min(x+10,wrap.offsetWidth-190)+"px";tt.style.top="20px";tt.style.display="block";draw();
+}
+function hideTooltip(){hoveredIdx=null;document.getElementById("tooltip").style.display="none";draw();}
+
+function updateTZBar(){
+  const bar=document.getElementById("tz-bar");if(!bar)return;
+  const now=new Date();
+  // PT left → CT center → ET right
+  bar.innerHTML=["PT","MT","CST","ET"].map((k,idx,arr)=>{
+    const m=TZ_META[k];
+    const t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ}));
+    const h=t.getHours(),mn=t.getMinutes(),am=h<12?"AM":"PM",hh=h%12||12;
+    const ts=`${hh}:${mn.toString().padStart(2,"0")} ${am}`;
+    const isLast=idx===arr.length-1;
+    return`<div style="flex:1;padding:8px 10px;background:${m.color}15;border-right:${isLast?"none":"1px solid #0d1117"};text-align:center;"><div style="font-size:9px;color:${m.color};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;font-weight:700;">${m.abbr}</div><div style="font-size:14px;font-weight:700;color:#e6edf3;">${ts}</div><div style="font-size:8px;color:#484f58;margin-top:1px;">${m.label}</div></div>`;
+  }).join("");
+}
+function drawMap(){
+  if(!usTopoData)return; updateTZBar();
+  const svgEl=document.getElementById("us-map");if(!svgEl)return;
+  const tt=document.getElementById("map-tt");
+  const W=svgEl.parentElement.clientWidth-40,H=Math.round(W*.61);
+  const proj=d3.geoAlbersUsa().fitSize([W,H],topojson.feature(usTopoData,usTopoData.objects.states));
+  const path=d3.geoPath().projection(proj);
+  d3.select(svgEl).selectAll("*").remove();
+  d3.select(svgEl).attr("viewBox",`0 0 ${W} ${H}`).attr("width",W).attr("height",H);
+  const svg=d3.select(svgEl);
+  svg.append("rect").attr("width",W).attr("height",H).attr("fill","#080c12");
+  const features=topojson.feature(usTopoData,usTopoData.objects.states).features;
+  // TZ underlay layer
+  if(showTZ){
+    features.forEach(feat=>{
+      const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],tz=TZ[st],tm=tz?TZ_META[tz]:null;
+      if(!tm)return;
+      svg.append("path").attr("d",path(feat))
+        .attr("fill",tm.color+"25")
+        .attr("stroke",tm.color+"40")
+        .attr("stroke-width",.4)
+        .attr("pointer-events","none");
+    });
   }
-  document.getElementById("tt-breakdown").innerHTML=bhtml;
-  document.getElementById("tt-breakdown").style.display=d.type==="proj"?"block":"none";
-  const left=Math.min(x+10, wrap.offsetWidth-190);
-  tt.style.left=left+"px"; tt.style.top="20px"; tt.style.display="block";
-  draw();
+  features.forEach(feat=>{
+    const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],sd=STATE_DATA[st],grp=sd?sd.group:null,isOn=sd?activeStates.includes(st):false,isLocked=sd?sd.locked:false,color=grp?GRP_COLORS[grp]:null;
+    const g=svg.append("g").style("cursor",sd&&!isLocked?"pointer":"default");
+    g.append("path").attr("d",path(feat))
+      .attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520"))
+      .attr("stroke",isOn?color:(grp?color+"55":"#182535"))
+      .attr("stroke-width",isOn?1.5:.7).attr("stroke-linejoin","round");
+    if(grp){const c=path.centroid(feat);if(c&&!isNaN(c[0]))g.append("text").attr("x",c[0]).attr("y",c[1]+1).attr("text-anchor","middle").attr("dominant-baseline","middle").attr("font-family","monospace").attr("font-size",SMALL.has(st)?7:9).attr("font-weight","700").attr("fill",isOn?color:color+"55").attr("pointer-events","none").text(st);}
+    g.on("mouseenter",function(e){
+      g.select("path").attr("fill",isOn?color+"55":(grp?color+"25":"#1a2535")).attr("stroke-width",isOn?2.2:(grp?1.2:.8));
+      const lbl=grp?GRP_LABELS[grp]:"Not in projection";
+      const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLocked?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLocked?"":" — click to add"}</div>`:`<div style="color:#253040;font-size:12px;margin-bottom:4px;">Not tracked</div>`;
+      const stTZ=TZ[st],stTZM=stTZ?TZ_META[stTZ]:null;
+      const tzNow=stTZM?new Date().toLocaleTimeString("en-US",{timeZone:stTZM.ianatZ,hour:"numeric",minute:"2-digit"}):null;
+      tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${st||"?"} — ${lbl}</div>${status}`+
+        (stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600;">${tzNow}</span></div>`:"")
+        +(sd?`<div style="border-top:1px solid #21262d;padding-top:4px;"><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Daily lift</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div></div>`:"");
+      tt.style.display="block";
+    }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";})
+    .on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);})
+    .on("click",()=>{if(sd&&!isLocked)toggleState(st);});
+  });
+  svg.append("path").datum(topojson.mesh(usTopoData,usTopoData.objects.states,(a,b)=>a!==b)).attr("fill","none").attr("stroke","#080c12").attr("stroke-width",".5").attr("d",path).attr("pointer-events","none");
+  const leg=document.getElementById("map-legend");
+  if(leg)leg.innerHTML=Object.entries(GRP_LABELS).map(([k,v])=>{const c=GRP_COLORS[k];return`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:${c}22;border:1.5px solid ${c};flex-shrink:0;"></div><span style="font-size:9px;color:#6e7681;font-family:monospace">${v}</span></div>`;}).join("")+`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:#0d1520;border:1px solid #182535;flex-shrink:0;"></div><span style="font-size:9px;color:#253040;font-family:monospace">Not in projection</span></div>`
+    +(showTZ?`<div style="width:100%;margin-top:6px;border-top:1px solid #21262d;padding-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">`+["PT","MT","CST","ET"].map(k=>{const m=TZ_META[k];return`<div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:2px;background:${m.color}25;border:1px solid ${m.color}55;"></div><span style="font-size:9px;color:${m.color};font-family:monospace">${m.abbr} — ${m.label}</span></div>`;}).join("")+`</div>`:"");
 }
 
-function hideTooltip(){
-  hoveredIdx=null;
-  document.getElementById("tooltip").style.display="none";
-  draw();
-}
+function refresh(){chartData=generateData();updateStats();renderPhases();renderStates();draw();renderMonthlyTotals();drawMap();}
+document.getElementById("chart").addEventListener("mousemove",showTooltip);
+document.getElementById("chart").addEventListener("mouseleave",hideTooltip);
+window.addEventListener("resize",()=>{draw();drawMap();});
 
-function refresh(){
-  chartData=generateData();
-  updateStats();
-  renderPhases();
-  renderStates();
-  draw();
-  renderMonthlyTotals();
-}
-
-document.getElementById("chart").addEventListener("mousemove", showTooltip);
-document.getElementById("chart").addEventListener("mouseleave", hideTooltip);
-window.addEventListener("resize", () => draw());
-
-refresh();
-setView("phases");
+fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
+  .then(r=>r.json()).then(data=>{usTopoData=data;refresh();setView("phases");})
+  .catch(()=>{refresh();setView("phases");const s=document.getElementById("us-map");d3.select(s).attr("viewBox","0 0 400 80").attr("height",80);d3.select(s).append("text").attr("x","50%").attr("y","50%").attr("text-anchor","middle").attr("dominant-baseline","middle").attr("font-family","monospace").attr("font-size",12).attr("fill","#484f58").text("Map requires internet — open file in Chrome");});
 </script>
 </body>
 </html>
