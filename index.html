@@ -6,12 +6,14 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.monthly-grid{grid-template-columns:repeat(3,1fr)}.month-cell:nth-child(6n){border-right:1px solid #21262d}.month-cell:nth-child(3n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}.month-cell:nth-last-child(-n+3){border-bottom:none}}
+  *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}
+  .april-badge{display:inline-block;padding:2px 8px;border-radius:4px;background:#4ade8022;border:1px solid #4ade8055;color:#4ade80;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:8px;vertical-align:middle}
+  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.monthly-grid{grid-template-columns:repeat(3,1fr)}.month-cell:nth-child(6n){border-right:1px solid #21262d}.month-cell:nth-child(3n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}.month-cell:nth-last-child(-n+3){border-bottom:none}}
 </style>
 </head>
 <body>
-<h1>Roman Health — 2026 Revenue · Actual + Projected</h1>
-<div class="subtitle">Toggle phases · Chart updates in real time · Projections are cumulative and additive</div>
+<h1>Roman Health — 2026 Revenue · Actual + Projected <span class="april-badge">April actuals calibrated</span></h1>
+<div class="subtitle">Toggle phases · Chart updates in real time · Projections are cumulative and additive · April 2026: 2,784 encounters / $33,408 actual · $12/encounter · PA active, not yet seeing members</div>
 <div class="stats">
   <div class="stat-card"><div class="stat-label">Active States</div><div class="stat-val" id="stat-states" style="color:#4ade80">7</div></div>
   <div class="stat-card"><div class="stat-label">Population</div><div class="stat-val" id="stat-pop" style="color:#60a5fa">—</div></div>
@@ -36,7 +38,7 @@
   <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div><span class="legend-label">Phase 3B: WI·MO</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.27)"></div><span class="legend-label">7-day avg</span></div>
 </div>
-<div class="footnote">Projections are cumulative — each phase builds on top of existing revenue. Calibrated from observed per-state lift.</div>
+<div class="footnote">Projections are cumulative — each phase builds on top of existing revenue. Calibrated from April 2026 actuals: TX 860 · NC 573 · AZ 432 · OR 322 · IN 244 · TN 155 · WA 87 · AL 56 · OH 23 · IL 19 · MI 13 · PA 0 (pending)</div>
 <div class="map-section">
   <div class="map-header">
     <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681;">State Coverage Map</span>
@@ -57,62 +59,70 @@
   <div class="monthly-grid" id="monthly-grid"></div>
   <div class="annual-row" id="annual-row"></div>
 </div>
-<script>
-const STATE_DATA={IN:{group:"existing",pop:6.9,dailyContrib:70,locked:true},TX:{group:"existing",pop:31,dailyContrib:480,locked:true},NC:{group:"existing",pop:10.8,dailyContrib:200,locked:true},TN:{group:"existing",pop:7.2,dailyContrib:130,locked:true},AZ:{group:"existing",pop:7.6,dailyContrib:110,locked:true},OR:{group:"existing",pop:4.3,dailyContrib:60,locked:true},WA:{group:"existing",pop:7.9,dailyContrib:110,locked:true},PA:{group:"phase1",pop:13,dailyContrib:290,locked:false},OH:{group:"phase1",pop:11.9,dailyContrib:265,locked:false},MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},MN:{group:"phase2",pop:5.8,dailyContrib:115,locked:false},NJ:{group:"phase3a",pop:9.3,dailyContrib:190,locked:false},GA:{group:"phase3a",pop:11,dailyContrib:170,locked:false},WI:{group:"phase3b",pop:5.9,dailyContrib:100,locked:false},MO:{group:"phase3b",pop:6.2,dailyContrib:105,locked:false}};
-const ALL_STATES={
-  AK:{pop:0.7,estVolume:10},
-  AR:{pop:3.1,estVolume:50},
-  AZ:{pop:7.6,estVolume:120},
-  CA:{pop:39.0,estVolume:605},
-  CO:{pop:5.9,estVolume:90},
-  CT:{pop:3.6,estVolume:55},
-  DE:{pop:1.0,estVolume:15},
-  FL:{pop:22.6,estVolume:350},
-  HI:{pop:1.5,estVolume:25},
-  IA:{pop:3.2,estVolume:50},
-  ID:{pop:1.9,estVolume:30},
-  KS:{pop:2.9,estVolume:45},
-  KY:{pop:4.5,estVolume:70},
-  LA:{pop:4.6,estVolume:70},
-  MA:{pop:7.0,estVolume:110},
-  MD:{pop:6.2,estVolume:95},
-  ME:{pop:1.4,estVolume:20},
-  MS:{pop:3.0,estVolume:45},
-  MT:{pop:1.1,estVolume:15},
-  ND:{pop:0.8,estVolume:10},
-  NE:{pop:2.0,estVolume:30},
-  NH:{pop:1.4,estVolume:20},
-  NM:{pop:2.1,estVolume:35},
-  NV:{pop:3.2,estVolume:50},
-  NY:{pop:19.6,estVolume:305},
-  OK:{pop:4.0,estVolume:60},
-  RI:{pop:1.1,estVolume:15},
-  SC:{pop:5.3,estVolume:80},
-  SD:{pop:0.9,estVolume:15},
-  UT:{pop:3.4,estVolume:55},
-  VA:{pop:8.7,estVolume:135},
-  VT:{pop:0.6,estVolume:10},
-  WA:{pop:7.9,estVolume:120},
-  WV:{pop:1.8,estVolume:30},
-  WY:{pop:0.6,estVolume:10}
-};
-const PHASE_META={existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},phase2:{label:"Phase 2",color:"#f59e0b",states:["CO","MN"]},phase3a:{label:"Phase 3A",color:"#e879f9",states:["NJ","GA"]},phase3b:{label:"Phase 3B",color:"#f87171",states:["WI","MO"]}};
-const GRP_COLORS={existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b",phase3a:"#e879f9",phase3b:"#f87171"};
 
-const TZ={
-  ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",
-  PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",
-  TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",
-  MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",
-  MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",
-  WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"
+<!-- April breakdown panel -->
+<div style="margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden;">
+  <div style="padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;">
+    <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681;">April 2026 Actuals — State Breakdown</span>
+    <span style="font-size:9px;color:#4ade80;">2,784 encounters · $33,408 · $12/enc</span>
+  </div>
+  <div style="padding:14px 16px;">
+    <div id="april-bars" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
+</div>
+
+<script>
+// April 2026 actuals: encounters per state
+const APRIL_ENC={TX:860,NC:573,AZ:432,OR:322,IN:244,TN:155,WA:87,AL:56,OH:23,IL:19,MI:13,PA:0};
+const APRIL_TOTAL_ENC=2784;
+const ENC_RATE=12; // $/encounter
+
+// STATE_DATA: dailyContrib for EXISTING states calibrated from April 2026 actuals
+// Formula: (encounters / 30 days) * $12/encounter, rounded
+// TX:860→$344  NC:573→$229  AZ:432→$173  OR:322→$129  IN:244→$98  TN:155→$62  WA:87→$35
+// Phase 1+ states use fully-ramped projections (April data shows early ramp only)
+// PA: active but not yet seeing members — projection held at $290/day fully ramped
+const STATE_DATA={
+  IN:{group:"existing",pop:6.9,dailyContrib:98,aprEnc:244,locked:true},
+  TX:{group:"existing",pop:31,dailyContrib:344,aprEnc:860,locked:true},
+  NC:{group:"existing",pop:10.8,dailyContrib:229,aprEnc:573,locked:true},
+  TN:{group:"existing",pop:7.2,dailyContrib:62,aprEnc:155,locked:true},
+  AZ:{group:"existing",pop:7.6,dailyContrib:173,aprEnc:432,locked:true},
+  OR:{group:"existing",pop:4.3,dailyContrib:129,aprEnc:322,locked:true},
+  WA:{group:"existing",pop:7.9,dailyContrib:35,aprEnc:87,locked:true},
+  PA:{group:"phase1",pop:13,dailyContrib:290,aprEnc:0,locked:false,note:"Active · not yet seeing members"},
+  OH:{group:"phase1",pop:11.9,dailyContrib:265,aprEnc:23,locked:false},
+  MI:{group:"phase1",pop:10.1,dailyContrib:210,aprEnc:13,locked:false},
+  IL:{group:"phase1",pop:12.8,dailyContrib:285,aprEnc:19,locked:false},
+  AL:{group:"phase1",pop:5.1,dailyContrib:100,aprEnc:56,locked:false},
+  CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
+  MN:{group:"phase2",pop:5.8,dailyContrib:115,locked:false},
+  NJ:{group:"phase3a",pop:9.3,dailyContrib:190,locked:false},
+  GA:{group:"phase3a",pop:11,dailyContrib:170,locked:false},
+  WI:{group:"phase3b",pop:5.9,dailyContrib:100,locked:false},
+  MO:{group:"phase3b",pop:6.2,dailyContrib:105,locked:false}
 };
-const TZ_META={
-  PT: {label:"Pacific",  abbr:"PST", ianatZ:"America/Los_Angeles", color:"#f87171"},
-  MT: {label:"Mountain", abbr:"MT",  ianatZ:"America/Denver",      color:"#f59e0b"},
-  CST:{label:"Central",  abbr:"CST", ianatZ:"America/Chicago",     color:"#34d399"},
-  ET: {label:"Eastern",  abbr:"EST", ianatZ:"America/New_York",    color:"#818cf8"},
+const ALL_STATES={
+  AK:{pop:0.7,estVolume:10},AR:{pop:3.1,estVolume:50},AZ:{pop:7.6,estVolume:120},CA:{pop:39.0,estVolume:605},
+  CO:{pop:5.9,estVolume:90},CT:{pop:3.6,estVolume:55},DE:{pop:1.0,estVolume:15},FL:{pop:22.6,estVolume:350},
+  HI:{pop:1.5,estVolume:25},IA:{pop:3.2,estVolume:50},ID:{pop:1.9,estVolume:30},KS:{pop:2.9,estVolume:45},
+  KY:{pop:4.5,estVolume:70},LA:{pop:4.6,estVolume:70},MA:{pop:7.0,estVolume:110},MD:{pop:6.2,estVolume:95},
+  ME:{pop:1.4,estVolume:20},MS:{pop:3.0,estVolume:45},MT:{pop:1.1,estVolume:15},ND:{pop:0.8,estVolume:10},
+  NE:{pop:2.0,estVolume:30},NH:{pop:1.4,estVolume:20},NM:{pop:2.1,estVolume:35},NV:{pop:3.2,estVolume:50},
+  NY:{pop:19.6,estVolume:305},OK:{pop:4.0,estVolume:60},RI:{pop:1.1,estVolume:15},SC:{pop:5.3,estVolume:80},
+  SD:{pop:0.9,estVolume:15},UT:{pop:3.4,estVolume:55},VA:{pop:8.7,estVolume:135},VT:{pop:0.6,estVolume:10},
+  WA:{pop:7.9,estVolume:120},WV:{pop:1.8,estVolume:30},WY:{pop:0.6,estVolume:10}
 };
+const PHASE_META={
+  existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
+  phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
+  phase2:{label:"Phase 2",color:"#f59e0b",states:["CO","MN"]},
+  phase3a:{label:"Phase 3A",color:"#e879f9",states:["NJ","GA"]},
+  phase3b:{label:"Phase 3B",color:"#f87171",states:["WI","MO"]}
+};
+const GRP_COLORS={existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b",phase3a:"#e879f9",phase3b:"#f87171"};
+const TZ={ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
+const TZ_META={PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
 let showTZ=false;
 const GRP_LABELS={existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL",phase2:"Phase 2 — CO·MN",phase3a:"Phase 3A — NJ·GA",phase3b:"Phase 3B — WI·MO"};
 const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
@@ -121,27 +131,74 @@ const ALL_MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","N
 let activeStates=Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
 let hoveredIdx=null,chartData=[],usTopoData=null;
 
+// Phase 1 states that had partial April actual (early ramp): OH+MI+IL+AL
+// Their actual April daily avg: (23+13+19+56)/30 * $12 = $44.4/day
+const P1_APR_DAILY=Math.round((23+13+19+56)*ENC_RATE/30);
+
 function sRand(s){const x=Math.sin(s+1)*43758.5453;return x-Math.floor(x);}
 function generateData(){
   const data=[];
   const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  // base ≈ $1,070/day from April actuals; April total existing = $32,076 + phase1 partial $1,332 = $33,408
   const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
   const p2=activeStates.filter(s=>STATE_DATA[s]?.group==="phase2").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
   const p3=[...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3a"),...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3b")].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
   let di=0;
-  [["Jan",28,.42],["Feb",7,.43],["Feb",21,.55],["Mar",13,.80],["Mar",18,1.05],["Apr",10,1.25],["Apr",11,.90]].forEach(([mo,days,sc])=>{
-    for(let d=0;d<days;d++){const n=(sRand(di)-.5)*.45;const v=Math.max(120,base*sc*(1+n));data.push({month:mo,value:Math.round(v),type:"actual",eV:Math.round(v),p1V:0,p2V:0,p3V:0});di++;}
+  // Actual data: scale factors calibrated so April sums ≈ $33,408
+  // Jan–Mar growth reflects ramp from lower volume; Apr sc≈1.0 aligns with observed $1,070/day base
+  [["Jan",28,.42],["Feb",7,.43],["Feb",21,.55],["Mar",13,.80],["Mar",18,1.05],["Apr",10,1.02],["Apr",11,.98]].forEach(([mo,days,sc])=>{
+    for(let d=0;d<days;d++){
+      const n=(sRand(di)-.5)*.45;
+      const eV=Math.max(120,base*sc*(1+n));
+      // Add phase 1 partial actual (OH+MI+IL+AL ramping) to April actual bars
+      const p1Bonus=(mo==="Apr")?Math.round(P1_APR_DAILY*(1+(sRand(di+999)-.5)*.3)):0;
+      const v=Math.round(eV)+p1Bonus;
+      data.push({month:mo,value:v,type:"actual",eV:Math.round(eV),p1V:p1Bonus,p2V:0,p3V:0});
+      di++;
+    }
   });
   const ramp=(spec,d)=>typeof spec==="number"?spec:(()=>{const[,a,b]=spec.match(/(\d+)_(\d+)/);return Math.min(1,Math.max(0,d<+a?0:(d-+a)/+b));})();
-  [["Apr",9,0,0,0,.90],["May",31,"14_17",0,0,.92],["Jun",30,1,0,0,.94],["Jul",31,1,0,0,.96],["Aug",31,1,"7_24",0,.95],["Sep",30,1,1,0,.97],["Oct",31,1,1,"7_24",.96],["Nov",30,1,1,1,.98],["Dec",31,1,1,1,1.0]].forEach(([mo,days,r1,r2,r3,sc])=>{
+  [["Apr",9,0,0,0,.98],["May",31,"14_17",0,0,.92],["Jun",30,1,0,0,.94],["Jul",31,1,0,0,.96],["Aug",31,1,"7_24",0,.95],["Sep",30,1,1,0,.97],["Oct",31,1,1,"7_24",.96],["Nov",30,1,1,1,.98],["Dec",31,1,1,1,1.0]].forEach(([mo,days,r1,r2,r3,sc])=>{
     for(let d=0;d<days;d++){
       const n=(sRand(di)-.5)*.35;
-      const eV=Math.round(base*sc*(1+n));const p1V=Math.round(p1*ramp(r1,d)*sc*(1+n*.8));const p2V=Math.round(p2*ramp(r2,d)*sc*(1+n*.8));const p3V=Math.round(p3*ramp(r3,d)*sc*(1+n*.8));
-      data.push({month:mo,value:Math.max(eV,eV+p1V+p2V+p3V),eV,p1V,p2V,p3V,type:"proj"});di++;
+      const eV=Math.round(base*sc*(1+n));
+      const p1V=Math.round(p1*ramp(r1,d)*sc*(1+n*.8));
+      const p2V=Math.round(p2*ramp(r2,d)*sc*(1+n*.8));
+      const p3V=Math.round(p3*ramp(r3,d)*sc*(1+n*.8));
+      data.push({month:mo,value:Math.max(eV,eV+p1V+p2V+p3V),eV,p1V,p2V,p3V,type:"proj"});
+      di++;
     }
   });
   return data;
 }
+
+function renderAprilBreakdown(){
+  const container=document.getElementById("april-bars");if(!container)return;
+  const sorted=Object.entries(APRIL_ENC).sort((a,b)=>b[1]-a[1]);
+  const maxEnc=sorted[0][1];
+  container.innerHTML=sorted.map(([st,enc])=>{
+    const sd=STATE_DATA[st];const grp=sd?sd.group:"existing";const color=GRP_COLORS[grp]||"#4ade80";
+    const pct=(enc/APRIL_TOTAL_ENC*100).toFixed(1);
+    const isPending=st==="PA"&&enc===0;
+    const barW=enc>0?(enc/maxEnc)*100:0;
+    const rev=(enc*ENC_RATE).toLocaleString();
+    return`<div style="display:flex;align-items:center;gap:8px;">
+      <div style="width:24px;font-size:11px;font-weight:700;color:${color};text-align:right;flex-shrink:0;">${st}</div>
+      <div style="flex:1;background:#161b22;border-radius:3px;height:18px;position:relative;overflow:hidden;border:1px solid #21262d;">
+        ${isPending
+          ?`<div style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#484f58;letter-spacing:1px;">ACTIVE · NOT YET SEEING MEMBERS</div>`
+          :`<div style="width:${barW}%;height:100%;background:${color};border-radius:2px;opacity:.8;"></div>`}
+      </div>
+      <div style="width:88px;font-size:11px;color:#6e7681;text-align:right;flex-shrink:0;">${enc>0?`${enc.toLocaleString()} enc`:"—"}</div>
+      <div style="width:64px;font-size:11px;color:${color};text-align:right;flex-shrink:0;font-weight:600;">${enc>0?`$${rev}`:""}</div>
+      <div style="width:36px;font-size:9px;color:#484f58;text-align:right;flex-shrink:0;">${enc>0?`${pct}%`:""}</div>
+    </div>`;
+  }).join("")+`<div style="margin-top:10px;padding-top:8px;border-top:1px solid #21262d;display:flex;justify-content:space-between;font-size:10px;">
+    <span style="color:#6e7681;">April 2026 total</span>
+    <span style="color:#4ade80;font-weight:700;">${APRIL_TOTAL_ENC.toLocaleString()} encounters · $${(APRIL_TOTAL_ENC*ENC_RATE).toLocaleString()}</span>
+  </div>`;
+}
+
 function fmtK(v){if(v>=1e6)return"$"+(v/1e6).toFixed(2)+"M";if(v>=1000)return"$"+(v/1000).toFixed(1)+"k";return"$"+Math.round(v);}
 function updateStats(){
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
@@ -157,6 +214,8 @@ function updateStats(){
 function renderMonthlyTotals(){
   const mt={},mtp={};ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
   chartData.forEach(d=>{if(ALL_MONTHS.includes(d.month)){mt[d.month]+=d.value;if(d.type==="proj")mtp[d.month]="proj";}});
+  // Pin April to actual known total
+  mt["Apr"]=APRIL_TOTAL_ENC*ENC_RATE;mtp["Apr"]="actual";
   const aT=ALL_MONTHS.filter(m=>mtp[m]==="actual").reduce((s,m)=>s+mt[m],0);
   const pT=ALL_MONTHS.filter(m=>mtp[m]==="proj").reduce((s,m)=>s+mt[m],0);
   document.getElementById("monthly-grid").innerHTML=ALL_MONTHS.map(m=>{const ia=mtp[m]==="actual";const c=ia?"#4ade80":"#60a5fa";const dc=ia?"#2a6644":"#2a4a6e";return`<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${c}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dc}">${ia?"actual":"projected"}</div></div>`;}).join("");
@@ -177,7 +236,15 @@ function renderStates(){
   Object.entries(PHASE_META).forEach(([key,meta])=>{
     const grp=document.createElement("div");grp.className="state-group";grp.innerHTML=`<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;
     const btns=document.createElement("div");btns.className="state-btns";
-    meta.states.forEach(st=>{const isOn=activeStates.includes(st);const isLocked=STATE_DATA[st]?.locked;const btn=document.createElement("button");btn.className="state-btn"+(isLocked?" locked":"");btn.style.borderColor=isOn?meta.color:"#30363d";btn.style.background=isOn?meta.color+"1a":"transparent";btn.style.color=isOn?meta.color:"#484f58";btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;if(!isLocked)btn.onclick=()=>toggleState(st);btns.appendChild(btn);});
+    meta.states.forEach(st=>{
+      const isOn=activeStates.includes(st);const isLocked=STATE_DATA[st]?.locked;
+      const btn=document.createElement("button");btn.className="state-btn"+(isLocked?" locked":"");
+      btn.style.borderColor=isOn?meta.color:"#30363d";btn.style.background=isOn?meta.color+"1a":"transparent";btn.style.color=isOn?meta.color:"#484f58";
+      const aprLabel=STATE_DATA[st]?.aprEnc!=null?` <span style="font-size:8px;opacity:.5">Apr:${STATE_DATA[st].aprEnc}</span>`:"";
+      const noteLabel=STATE_DATA[st]?.note?` <span style="font-size:8px;color:#f59e0b">⚠</span>`:"";
+      btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>${aprLabel}${noteLabel}`;
+      if(!isLocked)btn.onclick=()=>toggleState(st);btns.appendChild(btn);
+    });
     grp.appendChild(btns);wrap.appendChild(grp);
   });
 }
@@ -216,10 +283,8 @@ function hideTooltip(){hoveredIdx=null;document.getElementById("tooltip").style.
 function updateTZBar(){
   const bar=document.getElementById("tz-bar");if(!bar)return;
   const now=new Date();
-  // PT left → CT center → ET right
   bar.innerHTML=["PT","MT","CST","ET"].map((k,idx,arr)=>{
-    const m=TZ_META[k];
-    const t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ}));
+    const m=TZ_META[k];const t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ}));
     const h=t.getHours(),mn=t.getMinutes(),am=h<12?"AM":"PM",hh=h%12||12;
     const ts=`${hh}:${mn.toString().padStart(2,"0")} ${am}`;
     const isLast=idx===arr.length-1;
@@ -227,7 +292,7 @@ function updateTZBar(){
   }).join("");
 }
 function drawMap(){
-  if(!usTopoData)return; updateTZBar();
+  if(!usTopoData)return;updateTZBar();
   const svgEl=document.getElementById("us-map");if(!svgEl)return;
   const tt=document.getElementById("map-tt");
   const W=svgEl.parentElement.clientWidth-40,H=Math.round(W*.61);
@@ -238,25 +303,11 @@ function drawMap(){
   const svg=d3.select(svgEl);
   svg.append("rect").attr("width",W).attr("height",H).attr("fill","#080c12");
   const features=topojson.feature(usTopoData,usTopoData.objects.states).features;
-  // TZ underlay layer
-  if(showTZ){
-    features.forEach(feat=>{
-      const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],tz=TZ[st],tm=tz?TZ_META[tz]:null;
-      if(!tm)return;
-      svg.append("path").attr("d",path(feat))
-        .attr("fill",tm.color+"25")
-        .attr("stroke",tm.color+"40")
-        .attr("stroke-width",.4)
-        .attr("pointer-events","none");
-    });
-  }
+  if(showTZ){features.forEach(feat=>{const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],tz=TZ[st],tm=tz?TZ_META[tz]:null;if(!tm)return;svg.append("path").attr("d",path(feat)).attr("fill",tm.color+"25").attr("stroke",tm.color+"40").attr("stroke-width",.4).attr("pointer-events","none");});}
   features.forEach(feat=>{
     const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],sd=STATE_DATA[st],grp=sd?sd.group:null,isOn=sd?activeStates.includes(st):false,isLocked=sd?sd.locked:false,color=grp?GRP_COLORS[grp]:null;
     const g=svg.append("g").style("cursor","pointer");
-    g.append("path").attr("d",path(feat))
-      .attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520"))
-      .attr("stroke",isOn?color:(grp?color+"55":"#182535"))
-      .attr("stroke-width",isOn?1.5:.7).attr("stroke-linejoin","round");
+    g.append("path").attr("d",path(feat)).attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7).attr("stroke-linejoin","round");
     if(grp){const c=path.centroid(feat);if(c&&!isNaN(c[0]))g.append("text").attr("x",c[0]).attr("y",c[1]+1).attr("text-anchor","middle").attr("dominant-baseline","middle").attr("font-family","monospace").attr("font-size",SMALL.has(st)?7:9).attr("font-weight","700").attr("fill",isOn?color:color+"55").attr("pointer-events","none").text(st);}
     g.on("mouseenter",function(e){
       g.select("path").attr("fill",isOn?color+"55":(grp?color+"25":"#1a2535")).attr("stroke-width",isOn?2.2:(grp?1.2:.8));
@@ -265,26 +316,19 @@ function drawMap(){
       const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLocked?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLocked?"":" — click to add"}</div>`:`<div style="color:#484f58;font-size:11px;margin-bottom:4px;">Not in plan — assess for license</div>`;
       const stTZ=TZ[st],stTZM=stTZ?TZ_META[stTZ]:null;
       const tzNow=stTZM?new Date().toLocaleTimeString("en-US",{timeZone:stTZM.ianatZ,hour:"numeric",minute:"2-digit"}):null;
-      const detailRows = sd
-        ? `<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Est. daily volume</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`
-        : untrk
-        ? `<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${untrk.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Est. daily volume</span><span style="color:#60a5fa;font-weight:700">~$${untrk.estVolume}/day</span></div>`
-        : "";
-      tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${st||"?"} — ${lbl}</div>${status}`+
-        (stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600;">${tzNow}</span></div>`:"")
-        +(detailRows?`<div style="border-top:1px solid #21262d;padding-top:4px;">${detailRows}</div>`:"");
+      const aprEncVal=APRIL_ENC[st];
+      const aprRow=aprEncVal!=null?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Apr actual enc</span><span style="color:#4ade80;font-weight:700">${aprEncVal>0?aprEncVal.toLocaleString():aprEncVal===0&&sd?.note?`0 (${sd.note})`:"0"}</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Apr actual rev</span><span style="color:#4ade80;font-weight:700">${aprEncVal>0?`$${(aprEncVal*ENC_RATE).toLocaleString()}`:"—"}</span></div>`:"";
+      const detailRows=sd?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div>${aprRow}<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Proj daily (ramped)</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:untrk?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${untrk.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Est. daily volume</span><span style="color:#60a5fa;font-weight:700">~$${untrk.estVolume}/day</span></div>`:"";
+      tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${st||"?"} — ${lbl}</div>${status}`+(stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600;">${tzNow}</span></div>`:"")+( detailRows?`<div style="border-top:1px solid #21262d;padding-top:4px;">${detailRows}</div>`:"");
       tt.style.display="block";
-    }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";})
-    .on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);})
-    .on("click",()=>{if(sd&&!isLocked)toggleState(st);});
+    }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";}).on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);}).on("click",()=>{if(sd&&!isLocked)toggleState(st);});
   });
   svg.append("path").datum(topojson.mesh(usTopoData,usTopoData.objects.states,(a,b)=>a!==b)).attr("fill","none").attr("stroke","#080c12").attr("stroke-width",".5").attr("d",path).attr("pointer-events","none");
   const leg=document.getElementById("map-legend");
-  if(leg)leg.innerHTML=Object.entries(GRP_LABELS).map(([k,v])=>{const c=GRP_COLORS[k];return`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:${c}22;border:1.5px solid ${c};flex-shrink:0;"></div><span style="font-size:9px;color:#6e7681;font-family:monospace">${v}</span></div>`;}).join("")+`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:#0d1520;border:1px solid #182535;flex-shrink:0;"></div><span style="font-size:9px;color:#253040;font-family:monospace">Other states (hover to assess)</span></div>`
-    +(showTZ?`<div style="width:100%;margin-top:6px;border-top:1px solid #21262d;padding-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">`+["PT","MT","CST","ET"].map(k=>{const m=TZ_META[k];return`<div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:2px;background:${m.color}25;border:1px solid ${m.color}55;"></div><span style="font-size:9px;color:${m.color};font-family:monospace">${m.abbr} — ${m.label}</span></div>`;}).join("")+`</div>`:"");
+  if(leg)leg.innerHTML=Object.entries(GRP_LABELS).map(([k,v])=>{const c=GRP_COLORS[k];return`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:${c}22;border:1.5px solid ${c};flex-shrink:0;"></div><span style="font-size:9px;color:#6e7681;font-family:monospace">${v}</span></div>`;}).join("")+`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:#0d1520;border:1px solid #182535;flex-shrink:0;"></div><span style="font-size:9px;color:#253040;font-family:monospace">Other states (hover to assess)</span></div>`+(showTZ?`<div style="width:100%;margin-top:6px;border-top:1px solid #21262d;padding-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">`+["PT","MT","CST","ET"].map(k=>{const m=TZ_META[k];return`<div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:2px;background:${m.color}25;border:1px solid ${m.color}55;"></div><span style="font-size:9px;color:${m.color};font-family:monospace">${m.abbr} — ${m.label}</span></div>`;}).join("")+`</div>`:"");
 }
 
-function refresh(){chartData=generateData();updateStats();renderPhases();renderStates();draw();renderMonthlyTotals();drawMap();}
+function refresh(){chartData=generateData();updateStats();renderPhases();renderStates();draw();renderMonthlyTotals();drawMap();renderAprilBreakdown();}
 document.getElementById("chart").addEventListener("mousemove",showTooltip);
 document.getElementById("chart").addEventListener("mouseleave",hideTooltip);
 window.addEventListener("resize",()=>{draw();drawMap();});
