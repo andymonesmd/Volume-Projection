@@ -6,14 +6,37 @@
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}.panel{margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden}.panel-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.panel-body{padding:14px 16px}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:8px;vertical-align:middle}.badge-green{background:#4ade8022;border:1px solid #4ade8055;color:#4ade80}.badge-blue{background:#60a5fa22;border:1px solid #60a5fa55;color:#60a5fa}
+  *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}.panel{margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden}.panel-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.panel-body{padding:14px 16px}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:8px;vertical-align:middle}.badge-green{background:#4ade8022;border:1px solid #4ade8055;color:#4ade80}.badge-blue{background:#60a5fa22;border:1px solid #60a5fa55;color:#60a5fa}.badge-yellow{background:#f59e0b22;border:1px solid #f59e0b55;color:#f59e0b}.badge-red{background:#f8717122;border:1px solid #f8717155;color:#f87171}
+  /* Live data status bar */
+  #live-status{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#161b22;border:1px solid #21262d;border-radius:6px;margin-bottom:12px;font-size:10px;flex-wrap:wrap;gap:6px}
+  #live-dot{width:7px;height:7px;border-radius:50%;background:#484f58;flex-shrink:0;transition:background .3s}
+  #live-dot.live{background:#4ade80;animation:pulse 2s infinite}
+  #live-dot.err{background:#f87171}
+  #live-dot.loading{background:#f59e0b;animation:pulse .8s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .live-sep{color:#30363d}
+  #live-months{color:#4ade80}
+  #live-fallback{color:#f59e0b}
+  #live-ts{color:#484f58}
   @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.monthly-grid{grid-template-columns:repeat(3,1fr)}.month-cell:nth-child(6n){border-right:1px solid #21262d}.month-cell:nth-child(3n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}.month-cell:nth-last-child(-n+3){border-bottom:none}}
 </style>
 </head>
 <body>
 
-<h1>Roman Health — 2026 Revenue · Actual + Projected <span class="badge badge-green">May 4 actuals loaded</span></h1>
-<div class="subtitle">Real daily data: Apr 1–30 ($32,895 · $1,097/day) · May 1–4 ($8,597 · $2,149/day · +96%) · Phase 1 live Apr 26 — 230 enc/5 days ($552/day · 48% of target) — ramp modeled exponentially from actuals</div>
+<h1>Roman Health — 2026 Revenue · Actual + Projected <span class="badge badge-green" id="h-badge">Loading…</span></h1>
+<div class="subtitle" id="subtitle">Fetching live sheet data…</div>
+
+<!-- LIVE DATA STATUS BAR -->
+<div id="live-status">
+  <span id="live-dot" class="loading"></span>
+  <span id="live-label" style="color:#6e7681">Connecting to sheet…</span>
+  <span class="live-sep">·</span>
+  <span id="live-months"></span>
+  <span id="live-fallback"></span>
+  <span style="flex:1"></span>
+  <span id="live-ts"></span>
+  <button onclick="manualRefresh()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">↻ Refresh</button>
+</div>
 
 <div class="stats">
   <div class="stat-card"><div class="stat-label">Active States</div><div class="stat-val" id="stat-states" style="color:#4ade80">7</div></div>
@@ -42,7 +65,7 @@
   <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div><span class="legend-label">Phase 3B: WI·MO</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.27)"></div><span class="legend-label">7-day moving avg</span></div>
 </div>
-<div class="footnote">Real daily revenue: Apr 1–30 and May 1–4. Jan–Mar generated from calibrated scale factors. Phase 1 live Apr 26 — surge visible. Projections May 5+ use Phase 1 fully ramped. Apr state breakdown: TX 860 · NC 573 · AZ 432 · OR 322 · IN 244 · TN 155 · WA 87 · AL 56 · OH 23 · IL 19 · MI 13 · PA 0.</div>
+<div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · projections recalibrate daily from live sheet</div>
 
 <div class="map-section">
   <div class="map-header">
@@ -61,54 +84,352 @@
 <div id="map-tt"></div>
 
 <div class="totals-wrap">
-  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58">actual Jan–Apr · partial May (1–4 actual + 5–31 proj) · projected Jun–Dec</span></div>
+  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58" id="totals-note">loading…</span></div>
   <div class="monthly-grid" id="monthly-grid"></div>
   <div class="annual-row" id="annual-row"></div>
 </div>
 
-
-
 <script>
-// ── Real daily revenue ───────────────────────────────────────────────────────
-// April 1–30 actual daily revenue (from spreadsheet dollar row)
-const APR_DAILY=[396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
-// May 1–4 actual (May 4 = today, may be partial)
-const MAY_ACTUAL_DAILY=[2093,2364,2796,1390];
-const APR_TOTAL=32895;
-const MAY_ACTUAL_TOTAL=8597;
-const MAY_ACTUAL_DAYS=MAY_ACTUAL_DAILY.length; // 4
+// ── Live sheet config (shared with dashboard) ─────────────────────────────────
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVT-Xukwe3rxiPAnaMGK8ywEVf0Tfnm9U6cTQo9Ts6DX3DOoGQNcgvHj2pnCAO0_N3/exec";
+const RATES = { rh:12, td1:23, td2:28, mdl1:25, mdl2:28 };
 
-// April encounter breakdown by state (for detail panel)
-const APRIL_ENC={TX:860,NC:573,AZ:432,OR:322,IN:244,TN:155,WA:87,AL:56,OH:23,IL:19,MI:13,PA:0};
-const APRIL_ENC_TOTAL=2784;
-const ENC_RATE=12;
+// ── Fallback hardcoded data (used if sheet unavailable) ───────────────────────
+const FALLBACK_APR_DAILY = [396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
+const FALLBACK_MAY_DAILY  = [2093,2364,2796,1390];
+const FALLBACK_APR_TOTAL  = 32895;
 
-// Phase 1 went live April 26 (index 25 in APR_DAILY, chart index 112)
-const P1_LIVE_APR_IDX=25;
+// ── Live data storage ─────────────────────────────────────────────────────────
+// Keyed by month name: { daily:[], total:0, days:0, rhEnc:0, year:0 }
+let LIVE_MONTHLY = {};
+let liveDataLoaded = false;
 
-// May 1–5 Phase 1 state encounter actuals (cumulative 5 days)
-// Total 230 enc × $12 = $2,760 / 5 days = $552/day (48% of $1,150 target at day 9 of ramp)
-const MAY_PHASE1_ENC={AL:27,MI:47,OH:67,IL:43,PA:46};
-const MAY_PHASE1_DAYS=5;
-// Exponential ramp constant calibrated to actuals:
-//   target * (1 - exp(-k*9)) = $552  →  1150*(1-exp(-k*9))=552  →  k≈0.073
-const P1_K=0.073;
+// Working arrays (patched from live or fallback)
+let APR_DAILY   = [...FALLBACK_APR_DAILY];
+let MAY_ACTUAL_DAILY = [...FALLBACK_MAY_DAILY];
+let APR_TOTAL   = FALLBACK_APR_TOTAL;
+let MAY_ACTUAL_DAYS = FALLBACK_MAY_DAILY.length;
 
-// ── State data ───────────────────────────────────────────────────────────────
-// Existing state dailyContrib calibrated from April actuals: enc/30*$12
-const STATE_DATA={
-  IN:{group:"existing",pop:6.9,dailyContrib:98,aprEnc:244,locked:true},
-  TX:{group:"existing",pop:31,dailyContrib:344,aprEnc:860,locked:true},
-  NC:{group:"existing",pop:10.8,dailyContrib:229,aprEnc:573,locked:true},
-  TN:{group:"existing",pop:7.2,dailyContrib:62,aprEnc:155,locked:true},
-  AZ:{group:"existing",pop:7.6,dailyContrib:173,aprEnc:432,locked:true},
-  OR:{group:"existing",pop:4.3,dailyContrib:129,aprEnc:322,locked:true},
-  WA:{group:"existing",pop:7.9,dailyContrib:35,aprEnc:87,locked:true},
-  PA:{group:"phase1",pop:13,dailyContrib:290,aprEnc:0,locked:false,note:"Live Apr 26 · Apr: 0 enc"},
-  OH:{group:"phase1",pop:11.9,dailyContrib:265,aprEnc:23,locked:false},
-  MI:{group:"phase1",pop:10.1,dailyContrib:210,aprEnc:13,locked:false},
-  IL:{group:"phase1",pop:12.8,dailyContrib:285,aprEnc:19,locked:false},
-  AL:{group:"phase1",pop:5.1,dailyContrib:100,aprEnc:56,locked:false},
+// Phase 1 ramp constant (exponential, calibrated from actuals)
+// target * (1 - exp(-k * day)) = actual  → k ≈ 0.073
+let P1_K = 0.073;
+const P1_LIVE_APR_IDX = 25; // April 26 (0-indexed)
+
+// ── CSV parsing (copied from dashboard) ──────────────────────────────────────
+function parseCSVRow(r) {
+  const cols = []; let cur = '', inQ = false;
+  for (const ch of r) {
+    if (ch === '"') { inQ = !inQ; continue; }
+    if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  cols.push(cur.trim()); return cols;
+}
+function parseDateCol(h) {
+  let m;
+  m = h.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/); if (m) return { month:+m[1], day:+m[2], year:+m[3] };
+  m = h.match(/([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/); if (m) { const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[1].toLowerCase()]; if(mo) return{month:mo,day:+m[2],year:+m[3]}; }
+  m = h.match(/^(\d{1,2})-([A-Za-z]{3})$/i); if (m) { const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[2].toLowerCase()]; if(mo) return{month:mo,day:+m[1],year:2026}; }
+  m = h.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/); if (m) return{month:+m[1],day:+m[2],year:m[3]?+m[3]:2026};
+  return null;
+}
+function monthYearFromTabName(n) {
+  const moMap={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+  const m=n.trim().match(/^([A-Za-z]{3})[\s-]*(\d{2,4})$/i);
+  if(m){const mo=moMap[m[1].toLowerCase()];if(mo){let yr=+m[2];if(yr<100)yr+=yr<50?2000:1900;return{month:mo,year:yr};}}
+  return null;
+}
+function yearFromTabName(n) {
+  let m; m=n.trim().match(/(\d{4})/); if(m)return+m[1];
+  m=n.trim().match(/(\d{2})\s*$/); if(m){const y=+m[1];return y<50?2000+y:1900+y;} return null;
+}
+function parseSheetCSV(text, tabName) {
+  const rows = text.trim().split('\n').map(parseCSVRow); if(rows.length<2) return null;
+  const headers = rows[0], nameDate = tabName ? monthYearFromTabName(tabName) : null, allDC = [];
+  headers.forEach((h,i)=>{ if(i===0)return; const d=parseDateCol(h.trim()); if(!d) return; if(nameDate){if(d.month===nameDate.month)allDC.push({i,...d});}else allDC.push({i,...d}); });
+  const dateCols = allDC.length>0 ? allDC : (()=>{ const all=[]; headers.forEach((h,i)=>{ if(i===0)return; const d=parseDateCol(h.trim()); if(d)all.push({i,...d}); }); return all; })();
+  if(!dateCols.length) return null;
+  dateCols.sort((a,b)=>a.day-b.day);
+  const n=dateCols.length, labels=dateCols.map(d=>d.month+'/'+d.day);
+  const rh=new Array(n).fill(0), td1=new Array(n).fill(0), td2=new Array(n).fill(0), mdl1=new Array(n).fill(0), mdl2=new Array(n).fill(0), rev=new Array(n).fill(0);
+  let tdc=0, mc=0;
+  for (const row of rows.slice(1)) {
+    const nm=(row[0]||'').trim().toUpperCase().replace(/\s+/g,''); if(!nm) continue;
+    dateCols.forEach((col,j)=>{ const raw=(row[col.i]||'').toString().replace(/#[A-Z!]+/g,'').replace(/[$, ]/g,''); const v=parseFloat(raw)||0; if(nm==='RO'||nm==='RO+')rh[j]+=v; else if(nm==='TOT'||nm==='TOTAL')rev[j]+=v; });
+    const isTD=nm.startsWith('TD'), isMDL=nm==='MD'||nm==='MDL'||nm==='ML'||nm.startsWith('MLV')||nm.startsWith('MDL');
+    if(isTD){tdc++;dateCols.forEach((col,j)=>{ const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0; if(tdc===1)td1[j]+=v; else td2[j]+=v; });}
+    if(isMDL){mc++;dateCols.forEach((col,j)=>{ const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0; if(mc===1)mdl1[j]+=v; else mdl2[j]+=v; });}
+  }
+  const td=td1.map((v,i)=>v+td2[i]), mdl=mdl1.map((v,i)=>v+mdl2[i]);
+  let lastIdx=-1; for(let j=0;j<n;j++) if(rh[j]>0||td[j]>0||mdl[j]>0||rev[j]>0) lastIdx=j;
+  if(lastIdx<0) return null; const t=lastIdx+1;
+  const sm=nameDate?nameDate.month:dateCols[0].month, sy=nameDate?nameDate.year:dateCols[0].year;
+  return {
+    labels:labels.slice(0,t), rh:rh.slice(0,t), td:td.slice(0,t),
+    td1:td1.slice(0,t), td2:td2.slice(0,t), mdl:mdl.slice(0,t),
+    mdl1:mdl1.slice(0,t), mdl2:mdl2.slice(0,t), rev:rev.slice(0,t),
+    rhRev:rh.slice(0,t).map(v=>Math.round(v*RATES.rh)),
+    tdRev:td1.slice(0,t).map((v,i)=>Math.round(v*RATES.td1+td2[i]*RATES.td2)),
+    mdlRev:mdl1.slice(0,t).map((v,i)=>Math.round(v*RATES.mdl1+mdl2[i]*RATES.mdl2)),
+    month:sm, year:sy
+  };
+}
+
+// ── Live data loader ──────────────────────────────────────────────────────────
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// localStorage keys — same as the dashboard so both files share the cache
+const LS_KEY  = 'tmd_c';
+const LS_TIME = 'tmd_t';
+
+function saveCache(text) {
+  try { localStorage.setItem(LS_KEY, text); localStorage.setItem(LS_TIME, Date.now().toString()); } catch(e) {}
+}
+function readCache() {
+  try {
+    const text = localStorage.getItem(LS_KEY);
+    const ts   = localStorage.getItem(LS_TIME);
+    if (!text || !ts) return null;
+    return { text, ageMin: Math.round((Date.now() - +ts) / 60000) };
+  } catch(e) { return null; }
+}
+
+function parseRawText(text) {
+  const newMonthly = {};
+  let json;
+  try { json = JSON.parse(text); } catch(e) { return newMonthly; }
+  for (const [tabName, csv] of Object.entries(json)) {
+    const parsed = parseSheetCSV(csv, tabName);
+    if (!parsed) continue;
+    const yr = parsed.year || yearFromTabName(tabName) || 2026;
+    const monthKey = MONTH_NAMES[parsed.month - 1];
+    if (!monthKey) continue;
+    const daily = parsed.rhRev.map((v, i) => v + (parsed.tdRev[i] || 0) + (parsed.mdlRev[i] || 0));
+    newMonthly[monthKey] = {
+      daily,
+      total: daily.reduce((a, b) => a + b, 0),
+      days: daily.length,
+      rhEncTotal: parsed.rh.reduce((a, b) => a + b, 0),
+      rhDailyArr: parsed.rh,
+      year: yr,
+      month: parsed.month
+    };
+  }
+  return newMonthly;
+}
+
+async function loadLiveData(bgRefresh = false) {
+  if (!bgRefresh) {
+    // Step 1 — try localStorage cache first (renders instantly, even offline)
+    const cached = readCache();
+    if (cached) {
+      try {
+        const parsed = parseRawText(cached.text);
+        if (Object.keys(parsed).length) {
+          LIVE_MONTHLY = parsed;
+          liveDataLoaded = true;
+          setLiveStatus('live', 'Cached · ' + cached.ageMin + 'm ago — fetching fresh…');
+          applyLiveData();
+          refresh(); // show cached data right away, update again when fetch resolves
+        }
+      } catch(e) {}
+    } else {
+      setLiveStatus('loading', 'Connecting to sheet…');
+    }
+  }
+
+  // Step 2 — try live fetch
+  try {
+    const r = await fetch(APPS_SCRIPT_URL + '?_=' + Date.now(), { cache: 'no-store', redirect: 'follow' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const text = await r.text();
+    if (!text || text.trim().length < 10) throw new Error('Empty response');
+
+    const newMonthly = parseRawText(text);
+    if (!Object.keys(newMonthly).length) throw new Error('No sheets parsed');
+
+    saveCache(text); // write cache so dashboard also benefits
+    LIVE_MONTHLY = newMonthly;
+    liveDataLoaded = true;
+    return true;
+  } catch (e) {
+    console.warn('loadLiveData fetch failed:', e.message);
+    if (liveDataLoaded) {
+      // Already have cached data — just note that live refresh failed
+      const cached = readCache();
+      setLiveStatus('live', 'Cached · ' + (cached ? cached.ageMin + 'm ago' : '?') + ' · live refresh failed');
+    } else {
+      setLiveStatus('err', 'Sheet unavailable — ' + e.message + ' · using hardcoded fallback');
+    }
+    return liveDataLoaded; // true if cache was loaded, false if completely offline
+  }
+}
+
+// ── Apply live data → patch working arrays + recalibrate STATE_DATA ───────────
+function applyLiveData() {
+  const fallbackMonths = [];
+  const liveMonths = [];
+
+  // April
+  if (LIVE_MONTHLY['Apr'] && LIVE_MONTHLY['Apr'].days >= 28) {
+    APR_DAILY = [...LIVE_MONTHLY['Apr'].daily];
+    APR_TOTAL = LIVE_MONTHLY['Apr'].total;
+    liveMonths.push('Apr (' + LIVE_MONTHLY['Apr'].days + 'd)');
+  } else {
+    APR_DAILY = [...FALLBACK_APR_DAILY];
+    APR_TOTAL = FALLBACK_APR_TOTAL;
+    fallbackMonths.push('Apr');
+  }
+
+  // May (and any later months that are fully or partially actual)
+  const currentMonthIdx = new Date().getMonth(); // 0-indexed
+  MAY_ACTUAL_DAILY = [];
+
+  MONTH_NAMES.forEach((mo, idx) => {
+    if (idx < 4) return; // Skip Jan-Apr, handled above
+    const lm = LIVE_MONTHLY[mo];
+    if (lm && lm.days >= 1 && idx <= currentMonthIdx) {
+      // This is actual data for a month at or before now
+      if (mo === 'May') {
+        MAY_ACTUAL_DAILY = [...lm.daily];
+        liveMonths.push(mo + ' (' + lm.days + 'd)');
+      }
+      // Future months: handled similarly if needed
+    } else if (idx <= currentMonthIdx) {
+      if (mo === 'May') fallbackMonths.push(mo);
+    }
+  });
+
+  // Fallback: if May live data wasn't found
+  if (MAY_ACTUAL_DAILY.length === 0) {
+    MAY_ACTUAL_DAILY = [...FALLBACK_MAY_DAILY];
+    if (!fallbackMonths.includes('May')) fallbackMonths.push('May');
+  }
+
+  MAY_ACTUAL_DAYS = MAY_ACTUAL_DAILY.length;
+
+  // ── Recalibrate existing-state daily contribution from actual pre-Phase1 days ──
+  // Use April 1–25 (before Phase 1 live) as the clean existing-state baseline
+  const preP1Days = APR_DAILY.slice(0, P1_LIVE_APR_IDX);
+  if (preP1Days.length >= 10) {
+    const preAvg = preP1Days.reduce((a, b) => a + b, 0) / preP1Days.length;
+    const originalBase = 1070; // original sum of existing state dailyContrib
+    const scale = preAvg / originalBase;
+    // Apply scale to all existing states proportionally
+    Object.keys(STATE_DATA).forEach(st => {
+      if (STATE_DATA[st].group === 'existing') {
+        STATE_DATA[st].dailyContrib = Math.round(
+          ORIGINAL_EXISTING_CONTRIB[st] * scale
+        );
+      }
+    });
+  }
+
+  // ── Recalibrate P1_K from actual Phase 1 ramp data ───────────────────────────
+  // Phase 1 live April 26. We have some actual days of Phase 1 data.
+  // Use Apr 26-30 + available May days to fit the exponential
+  const p1ActualDays = [];
+  // Apr 26-30: days 0-4 of Phase 1
+  for (let i = P1_LIVE_APR_IDX; i < APR_DAILY.length; i++) {
+    const existEst = preP1Days.length
+      ? preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length
+      : 1070;
+    const p1Rev = Math.max(0, APR_DAILY[i] - existEst);
+    p1ActualDays.push({ day: i - P1_LIVE_APR_IDX, rev: p1Rev });
+  }
+  // May days
+  MAY_ACTUAL_DAILY.forEach((rev, i) => {
+    const existEst = preP1Days.length
+      ? preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length
+      : 1070;
+    const p1Rev = Math.max(0, rev - existEst);
+    p1ActualDays.push({ day: APR_DAILY.length - P1_LIVE_APR_IDX + i, rev: p1Rev });
+  });
+
+  // Compute P1 full target from STATE_DATA
+  const p1FullTarget = Object.keys(STATE_DATA)
+    .filter(s => STATE_DATA[s].group === 'phase1' && activeStates.includes(s))
+    .reduce((sum, s) => sum + STATE_DATA[s].dailyContrib, 0);
+
+  if (p1ActualDays.length >= 3 && p1FullTarget > 0) {
+    // Fit k using last few actual P1 days via least-squares approximation
+    // rev ≈ target * (1 - exp(-k * day))  →  solve for k
+    const validPts = p1ActualDays.filter(d => d.day > 1 && d.rev > 0);
+    if (validPts.length >= 2) {
+      const kEstimates = validPts.map(({ day, rev }) => {
+        const frac = Math.min(0.99, rev / p1FullTarget);
+        return frac > 0 ? -Math.log(1 - frac) / day : P1_K;
+      });
+      const kMean = kEstimates.reduce((a, b) => a + b, 0) / kEstimates.length;
+      if (kMean > 0.01 && kMean < 0.5) P1_K = kMean;
+    }
+  }
+
+  // ── Update status UI ──────────────────────────────────────────────────────────
+  const ts = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const liveEl = document.getElementById('live-months');
+  const fbEl = document.getElementById('live-fallback');
+  const tsEl = document.getElementById('live-ts');
+  if (liveEl) liveEl.textContent = liveMonths.length ? 'Live: ' + liveMonths.join(' · ') : '';
+  if (fbEl) fbEl.textContent = fallbackMonths.length ? '· Fallback: ' + fallbackMonths.join(', ') : '';
+  if (tsEl) tsEl.textContent = 'Updated ' + ts;
+
+  // ── Update header badge ───────────────────────────────────────────────────────
+  const badge = document.getElementById('h-badge');
+  const lastLiveMo = liveMonths[liveMonths.length - 1];
+  if (badge && lastLiveMo) {
+    badge.textContent = lastLiveMo + ' actuals loaded';
+    badge.className = 'badge badge-green';
+  }
+
+  // ── Update subtitle ───────────────────────────────────────────────────────────
+  const sub = document.getElementById('subtitle');
+  if (sub) {
+    const aprAvg = APR_TOTAL > 0 ? Math.round(APR_TOTAL / APR_DAILY.length) : 0;
+    const mayTotal = MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);
+    const mayAvg = MAY_ACTUAL_DAILY.length ? Math.round(mayTotal / MAY_ACTUAL_DAILY.length) : 0;
+    const pctVsApr = aprAvg > 0 ? Math.round((mayAvg - aprAvg) / aprAvg * 100) : 0;
+    sub.textContent = [
+      'Apr 1–' + APR_DAILY.length + ' ($' + APR_TOTAL.toLocaleString() + ' · $' + aprAvg.toLocaleString() + '/day)',
+      MAY_ACTUAL_DAILY.length
+        ? 'May 1–' + MAY_ACTUAL_DAYS + ' ($' + mayTotal.toLocaleString() + ' · $' + mayAvg.toLocaleString() + '/day · ' + (pctVsApr >= 0 ? '+' : '') + pctVsApr + '% vs Apr)'
+        : '',
+      'Phase 1 live Apr 26 — ramp modeled exponentially from actuals (k=' + P1_K.toFixed(3) + ')'
+    ].filter(Boolean).join(' · ');
+  }
+
+  // ── Update totals note ────────────────────────────────────────────────────────
+  const tn = document.getElementById('totals-note');
+  const lastActualMo = [...liveMonths].pop() || 'Apr';
+  if (tn) tn.textContent = 'actual Jan–' + lastActualMo.split(' ')[0] + ' · partial current month · projected remainder';
+
+  setLiveStatus(liveDataLoaded ? 'live' : 'err',
+    liveDataLoaded
+      ? 'Live · ' + (liveMonths.length ? liveMonths.join(', ') : 'connected')
+      : 'Using fallback data');
+}
+
+function setLiveStatus(state, msg) {
+  const dot = document.getElementById('live-dot');
+  const lbl = document.getElementById('live-label');
+  if (dot) { dot.className = ''; dot.classList.add(state === 'live' ? 'live' : state === 'err' ? 'err' : 'loading'); }
+  if (lbl) lbl.textContent = msg;
+}
+
+// ── State / phase data ────────────────────────────────────────────────────────
+const STATE_DATA = {
+  IN:{group:"existing",pop:6.9,dailyContrib:98,locked:true},
+  TX:{group:"existing",pop:31,dailyContrib:344,locked:true},
+  NC:{group:"existing",pop:10.8,dailyContrib:229,locked:true},
+  TN:{group:"existing",pop:7.2,dailyContrib:62,locked:true},
+  AZ:{group:"existing",pop:7.6,dailyContrib:173,locked:true},
+  OR:{group:"existing",pop:4.3,dailyContrib:129,locked:true},
+  WA:{group:"existing",pop:7.9,dailyContrib:35,locked:true},
+  PA:{group:"phase1",pop:13,dailyContrib:290,locked:false,note:"Live Apr 26"},
+  OH:{group:"phase1",pop:11.9,dailyContrib:265,locked:false},
+  MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},
+  IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},
+  AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},
   CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
   MN:{group:"phase2",pop:5.8,dailyContrib:115,locked:false},
   NJ:{group:"phase3a",pop:9.3,dailyContrib:190,locked:false},
@@ -116,76 +437,91 @@ const STATE_DATA={
   WI:{group:"phase3b",pop:5.9,dailyContrib:100,locked:false},
   MO:{group:"phase3b",pop:6.2,dailyContrib:105,locked:false}
 };
-const ALL_STATES={
+
+// Store originals for recalibration
+const ORIGINAL_EXISTING_CONTRIB = Object.fromEntries(
+  Object.entries(STATE_DATA).filter(([,v])=>v.group==='existing').map(([k,v])=>[k,v.dailyContrib])
+);
+
+const ALL_STATES = {
   AK:{pop:0.7,estVolume:10},AR:{pop:3.1,estVolume:50},CA:{pop:39.0,estVolume:605},CT:{pop:3.6,estVolume:55},DE:{pop:1.0,estVolume:15},FL:{pop:22.6,estVolume:350},HI:{pop:1.5,estVolume:25},IA:{pop:3.2,estVolume:50},ID:{pop:1.9,estVolume:30},KS:{pop:2.9,estVolume:45},KY:{pop:4.5,estVolume:70},LA:{pop:4.6,estVolume:70},MA:{pop:7.0,estVolume:110},MD:{pop:6.2,estVolume:95},ME:{pop:1.4,estVolume:20},MS:{pop:3.0,estVolume:45},MT:{pop:1.1,estVolume:15},ND:{pop:0.8,estVolume:10},NE:{pop:2.0,estVolume:30},NH:{pop:1.4,estVolume:20},NM:{pop:2.1,estVolume:35},NV:{pop:3.2,estVolume:50},NY:{pop:19.6,estVolume:305},OK:{pop:4.0,estVolume:60},RI:{pop:1.1,estVolume:15},SC:{pop:5.3,estVolume:80},SD:{pop:0.9,estVolume:15},UT:{pop:3.4,estVolume:55},VA:{pop:8.7,estVolume:135},VT:{pop:0.6,estVolume:10},WV:{pop:1.8,estVolume:30},WY:{pop:0.6,estVolume:10}
 };
-const PHASE_META={
+const PHASE_META = {
   existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
   phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
   phase2:{label:"Phase 2",color:"#f59e0b",states:["CO","MN"]},
   phase3a:{label:"Phase 3A",color:"#e879f9",states:["NJ","GA"]},
   phase3b:{label:"Phase 3B",color:"#f87171",states:["WI","MO"]}
 };
-const GRP_COLORS={existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b",phase3a:"#e879f9",phase3b:"#f87171"};
-const TZ={ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
-const TZ_META={PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
-let showTZ=false;
-const GRP_LABELS={existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL",phase2:"Phase 2 — CO·MN",phase3a:"Phase 3A — NJ·GA",phase3b:"Phase 3B — WI·MO"};
-const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
-const SMALL=new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
-const ALL_MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b",phase3a:"#e879f9",phase3b:"#f87171"};
+const TZ = {ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
+const TZ_META = {PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
+let showTZ = false;
+const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL",phase2:"Phase 2 — CO·MN",phase3a:"Phase 3A — NJ·GA",phase3b:"Phase 3B — WI·MO"};
+const FIPS = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
+const SMALL = new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
+const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-let activeStates=Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
-let hoveredIdx=null,chartData=[],usTopoData=null;
+let activeStates = Object.keys(STATE_DATA).filter(s => STATE_DATA[s].locked);
+let hoveredIdx = null, chartData = [], usTopoData = null;
 
 function sRand(s){const x=Math.sin(s+1)*43758.5453;return x-Math.floor(x);}
 function rampFn(spec,d){if(typeof spec==="number")return spec;const[a,b]=spec.split("_").map(Number);return Math.min(1,Math.max(0,d<a?0:(d-a)/b));}
 function fmtK(v){if(v>=1e6)return"$"+(v/1e6).toFixed(2)+"M";if(v>=1000)return"$"+(v/1000).toFixed(1)+"k";return"$"+Math.round(v);}
 
-function generateData(){
-  const data=[];
-  // Existing state base: calibrated from April actuals
-  const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0); // ~$1,070/day
-  const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  const p2=activeStates.filter(s=>STATE_DATA[s]?.group==="phase2").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  const p3=[...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3a"),...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3b")].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  let di=0;
+// ── Data generation ───────────────────────────────────────────────────────────
+function generateData() {
+  const data = [];
+  // Base from existing states — may be recalibrated by applyLiveData
+  const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  const p1 = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  const p2 = activeStates.filter(s=>STATE_DATA[s]?.group==="phase2").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  const p3 = [...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3a"),...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3b")].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  let di = 0;
 
-  // Jan–Mar: seeded random with scale factors calibrated to reach April actuals
+  // ── Jan–Mar: seeded random calibrated to trend toward actual Apr baseline ──
   [["Jan",28,.42],["Feb",7,.43],["Feb",21,.55],["Mar",13,.80],["Mar",18,1.0]].forEach(([mo,days,sc])=>{
     for(let d=0;d<days;d++){
       const n=(sRand(di)-.5)*.45;
-      const v=Math.max(120,base*sc*(1+n));
+      const v=Math.max(120, base*sc*(1+n));
       data.push({month:mo,value:Math.round(v),type:"actual",eV:Math.round(v),p1V:0,p2V:0,p3V:0});
       di++;
     }
   });
 
-  // April: real daily revenue data
-  // Apr 26+ (idx>=25): Phase 1 states live — split out their contribution
-  APR_DAILY.forEach((v,idx)=>{
-    let p1V=0,eV=v;
-    if(idx>=P1_LIVE_APR_IDX){
-      const existEst=Math.round(base*.95); // existing states at ~$1,017/day
-      p1V=Math.max(0,v-existEst);
-      eV=v-p1V;
+  // ── April: real daily revenue (live from sheet or fallback) ──────────────────
+  const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
+    ? APR_DAILY.slice(0, P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0) / APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
+    : base;
+
+  APR_DAILY.forEach((v, idx) => {
+    let p1V = 0, eV = v;
+    if (idx >= P1_LIVE_APR_IDX) {
+      p1V = Math.max(0, v - existEstPreP1);
+      eV  = Math.max(0, v - p1V);
     }
     data.push({month:"Apr",value:v,type:"actual",eV,p1V,p2V:0,p3V:0});
     di++;
   });
 
-  // May 1–4: real daily data (Phase 1 fully live)
-  MAY_ACTUAL_DAILY.forEach(v=>{
-    const eV=Math.round(base);
-    const p1V=Math.max(0,v-eV);
+  // ── May: real days (live) + projected remainder ───────────────────────────────
+  // Determine how many days of May are actual vs projected
+  const now = new Date();
+  const daysInMay = 31;
+  const mayDayOfMonth = now.getMonth() === 4 ? now.getDate() : (now.getMonth() > 4 ? 31 : 0);
+
+  MAY_ACTUAL_DAILY.forEach(v => {
+    const eV = Math.round(existEstPreP1);
+    const p1V = Math.max(0, v - eV);
     data.push({month:"May",value:v,type:"actual",eV,p1V,p2V:0,p3V:0});
     di++;
   });
 
-  // May 5–31: projected — Phase 1 ramping exponentially from actual trajectory
-  // May 5 = day 9 since launch (Apr 26=day 0), actual confirmed at $552/day (48% of target)
-  let p1Day=9;
-  for(let d=0;d<27;d++){
+  // Project remaining May days
+  // Phase 1 day count: April had 5 live days (Apr 26-30), plus actual May days so far
+  let p1Day = 5 + MAY_ACTUAL_DAYS;
+  const mayProjDays = daysInMay - MAY_ACTUAL_DAYS;
+  for(let d=0; d<mayProjDays; d++){
     const n=(sRand(di+500)-.5)*.30;
     const sc=.96;
     const p1Frac=1-Math.exp(-P1_K*(p1Day+d));
@@ -194,13 +530,13 @@ function generateData(){
     data.push({month:"May",value:Math.max(eV,eV+p1V),eV,p1V,p2V:0,p3V:0,type:"proj"});
     di++;
   }
-  p1Day+=27; // day 36 = June 1
+  p1Day += mayProjDays; // now at June 1
 
-  // Jun–Dec: Phase 1 continues exponential ramp (≈99% by July 1); Phase 2/3 on schedule
+  // ── Jun–Dec: Phase 1 continues exponential ramp; Phase 2/3 on schedule ────────
   [["Jun",30,0,0,.94],["Jul",31,0,0,.96],["Aug",31,"7_24",0,.95],["Sep",30,1,0,.97],["Oct",31,1,"7_24",.96],["Nov",30,1,1,.98],["Dec",31,1,1,1.0]].forEach(([mo,days,r2,r3,sc])=>{
     for(let d=0;d<days;d++){
       const n=(sRand(di)-.5)*.35;
-      const p1Frac=Math.min(1,1-Math.exp(-P1_K*(p1Day+d)));
+      const p1Frac=Math.min(1, 1-Math.exp(-P1_K*(p1Day+d)));
       const eV=Math.round(base*sc*(1+n));
       const p1V=Math.round(p1*p1Frac*sc*(1+n*.8));
       const p2V=Math.round(p2*rampFn(r2,d)*sc*(1+n*.8));
@@ -210,100 +546,15 @@ function generateData(){
     }
     p1Day+=days;
   });
+
   return data;
 }
 
-function renderAprilBreakdown(){
-  const c=document.getElementById("april-bars");if(!c)return;
-  const sorted=Object.entries(APRIL_ENC).sort((a,b)=>b[1]-a[1]);
-  const maxEnc=sorted[0][1];
-  c.innerHTML=sorted.map(([st,enc])=>{
-    const sd=STATE_DATA[st],grp=sd?sd.group:"existing",color=GRP_COLORS[grp]||"#4ade80";
-    const pct=(enc/APRIL_ENC_TOTAL*100).toFixed(1),barW=enc>0?(enc/maxEnc)*100:0;
-    const isPending=enc===0;
-    return`<div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:24px;font-size:11px;font-weight:700;color:${color};text-align:right;flex-shrink:0;">${st}</div>
-      <div style="flex:1;background:#161b22;border-radius:3px;height:18px;position:relative;overflow:hidden;border:1px solid #21262d;">
-        ${isPending?`<div style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#484f58;letter-spacing:1px;">ACTIVE · WENT LIVE APR 26</div>`
-          :`<div style="width:${barW}%;height:100%;background:${color};border-radius:2px;opacity:.8;"></div>`}
-      </div>
-      <div style="width:88px;font-size:11px;color:#6e7681;text-align:right;flex-shrink:0;">${enc>0?`${enc.toLocaleString()} enc`:"—"}</div>
-      <div style="width:64px;font-size:11px;color:${color};text-align:right;flex-shrink:0;font-weight:600;">${enc>0?`$${(enc*ENC_RATE).toLocaleString()}`:""}</div>
-      <div style="width:36px;font-size:9px;color:#484f58;text-align:right;flex-shrink:0;">${enc>0?`${pct}%`:""}</div>
-    </div>`;
-  }).join("")+`<div style="margin-top:10px;padding-top:8px;border-top:1px solid #21262d;display:flex;justify-content:space-between;font-size:10px;">
-    <span style="color:#6e7681;">April total · $1,097/day avg · Phase 1 joined Apr 26</span>
-    <span style="color:#4ade80;font-weight:700;">${APRIL_ENC_TOTAL.toLocaleString()} enc · $${APR_TOTAL.toLocaleString()}</span>
-  </div>`;
-}
-
-function renderMayBreakdown(){
-  const c=document.getElementById("may-bars");if(!c)return;
-  const days=[
-    {label:"May 1 — Thu",rev:2093},
-    {label:"May 2 — Fri",rev:2364},
-    {label:"May 3 — Sat",rev:2796},
-    {label:"May 4 — Mon",rev:1390,note:"today"},
-  ];
-  const maxRev=Math.max(...days.map(d=>d.rev));
-  const aprAvg=Math.round(APR_TOTAL/30);
-  const mayAvg=Math.round(MAY_ACTUAL_TOTAL/MAY_ACTUAL_DAYS);
-  const pctChange=Math.round((mayAvg-aprAvg)/aprAvg*100);
-
-  // Daily total bars
-  const dailyBars=days.map(({label,rev,note})=>{
-    const barW=(rev/maxRev)*100,pct=(rev/MAY_ACTUAL_TOTAL*100).toFixed(1);
-    return`<div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:100px;font-size:10px;color:#60a5fa;flex-shrink:0;">${label}${note?` <span style="font-size:8px;color:#f59e0b">(${note})</span>`:""}</div>
-      <div style="flex:1;background:#161b22;border-radius:3px;height:18px;overflow:hidden;border:1px solid #21262d;">
-        <div style="width:${barW}%;height:100%;background:#60a5fa;border-radius:2px;opacity:.8;"></div>
-      </div>
-      <div style="width:60px;font-size:11px;color:#60a5fa;text-align:right;flex-shrink:0;font-weight:600;">$${rev.toLocaleString()}</div>
-      <div style="width:30px;font-size:9px;color:#484f58;text-align:right;flex-shrink:0;">${pct}%</div>
-    </div>`;
-  }).join("");
-
-  // Phase 1 state breakdown (May 1–5 cumulative)
-  const p1Sorted=Object.entries(MAY_PHASE1_ENC).sort((a,b)=>b[1]-a[1]);
-  const p1MaxEnc=p1Sorted[0][1];
-  const p1Total=Object.values(MAY_PHASE1_ENC).reduce((s,v)=>s+v,0);
-  const p1DailyAvg=Math.round(p1Total*ENC_RATE/MAY_PHASE1_DAYS);
-  const p1StateRows=p1Sorted.map(([st,enc])=>{
-    const sd=STATE_DATA[st],target=sd?.dailyContrib||0;
-    const actual=Math.round(enc*ENC_RATE/MAY_PHASE1_DAYS);
-    const pctOfTarget=Math.round(actual/target*100);
-    const barW=(enc/p1MaxEnc)*100;
-    return`<div style="display:flex;align-items:center;gap:8px;">
-      <div style="width:24px;font-size:11px;font-weight:700;color:#60a5fa;text-align:right;flex-shrink:0;">${st}</div>
-      <div style="flex:1;background:#161b22;border-radius:3px;height:14px;overflow:hidden;border:1px solid #21262d;">
-        <div style="width:${barW}%;height:100%;background:#60a5fa;opacity:.7;border-radius:2px;"></div>
-      </div>
-      <div style="width:52px;font-size:10px;color:#6e7681;text-align:right;flex-shrink:0;">${enc} enc</div>
-      <div style="width:56px;font-size:10px;color:#60a5fa;text-align:right;flex-shrink:0;font-weight:600;">$${actual}/day</div>
-      <div style="width:62px;font-size:9px;text-align:right;flex-shrink:0;color:${pctOfTarget<50?"#f59e0b":pctOfTarget<75?"#fbbf24":"#4ade80"}">${pctOfTarget}% of tgt</div>
-    </div>`;
-  }).join("");
-
-  c.innerHTML=dailyBars+
-    `<div style="margin-top:10px;padding-top:8px;border-top:1px solid #21262d;font-size:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;">
-      <span style="color:#6e7681;">May 1–4 avg $${mayAvg.toLocaleString()}/day vs Apr avg $${aprAvg.toLocaleString()}/day</span>
-      <span style="color:#4ade80;font-weight:700;">+${pctChange}% total lift</span>
-    </div>
-    <div style="margin-top:12px;padding-top:10px;border-top:1px solid #30363d;">
-      <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Phase 1 state breakdown — May 1–5 (5 days) · $${p1DailyAvg}/day avg · 48% of $1,150 target</div>
-      <div style="display:flex;flex-direction:column;gap:5px;">${p1StateRows}</div>
-      <div style="margin-top:8px;padding-top:6px;border-top:1px solid #21262d;display:flex;justify-content:space-between;font-size:10px;">
-        <span style="color:#6e7681;">Phase 1 total (5 days) · ramp day 5–9 since launch · projected full by ~Jul</span>
-        <span style="color:#60a5fa;font-weight:700;">${p1Total} enc · $${(p1Total*ENC_RATE).toLocaleString()}</span>
-      </div>
-    </div>`;
-}
-
+// ── Stats ─────────────────────────────────────────────────────────────────────
 function updateStats(){
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
   document.getElementById("stat-states").textContent=activeStates.length;
   document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
-  // Recent avg: last 7 actual data points (Apr 28-30 + May 1-4)
   const actualData=chartData.filter(d=>d.type==="actual");
   const recent=actualData.slice(-7);
   const ca=recent.length?Math.round(recent.reduce((s,d)=>s+d.value,0)/recent.length):0;
@@ -315,19 +566,28 @@ function updateStats(){
   document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2",v:dd.p2V||0,c:"#f59e0b"},{l:"Phase 3",v:dd.p3V||0,c:"#e879f9"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
 }
 
+// ── Monthly totals ────────────────────────────────────────────────────────────
 function renderMonthlyTotals(){
-  const mt={},mtp={};ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
+  const mt={},mtp={};
+  ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
   chartData.forEach(d=>{
     if(!ALL_MONTHS.includes(d.month))return;
     mt[d.month]+=d.value;
-    if(d.month==="May") mtp[d.month]="partial";
-    else if(d.type==="proj") mtp[d.month]="proj";
+    if(d.type==="proj") mtp[d.month]="proj";
   });
-  mt["Apr"]=APR_TOTAL;mtp["Apr"]="actual";
+  // Current month is partial if it has both actual and projected
+  const now=new Date(), curMo=ALL_MONTHS[now.getMonth()];
+  const hasBoth=chartData.some(d=>d.month===curMo&&d.type==="actual") && chartData.some(d=>d.month===curMo&&d.type==="proj");
+  if(hasBoth) mtp[curMo]="partial";
 
-  // Actual YTD = Jan+Feb+Mar (seeded) + Apr (real) + May 1-4 (real)
+  // Override April with real total from sheet if available
+  if(LIVE_MONTHLY['Apr']?.total > 0) mt['Apr'] = LIVE_MONTHLY['Apr'].total;
+  else mt['Apr'] = APR_TOTAL;
+  mtp['Apr'] = 'actual';
+
   const janMarSum=chartData.filter(d=>["Jan","Feb","Mar"].includes(d.month)).reduce((s,d)=>s+d.value,0);
-  const actualYTD=janMarSum+APR_TOTAL+MAY_ACTUAL_TOTAL;
+  const mayActualTotal=MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);
+  const actualYTD=janMarSum+APR_TOTAL+mayActualTotal;
   const projRemainder=chartData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value,0);
 
   document.getElementById("monthly-grid").innerHTML=ALL_MONTHS.map(m=>{
@@ -338,9 +598,10 @@ function renderMonthlyTotals(){
     return`<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${color}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dimColor}">${label}</div></div>`;
   }).join("");
 
-  document.getElementById("annual-row").innerHTML=`<span class="annual-label">2026 annual total</span><div class="annual-vals"><div class="annual-item"><span class="annual-item-label">actual YTD (thru May 4)</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTD).toLocaleString()}</span></div><div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projRemainder).toLocaleString()}</span></div><div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(actualYTD+projRemainder).toLocaleString()}</span></div></div>`;
+  document.getElementById("annual-row").innerHTML=`<span class="annual-label">2026 annual total</span><div class="annual-vals"><div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTD).toLocaleString()}</span></div><div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projRemainder).toLocaleString()}</span></div><div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(actualYTD+projRemainder).toLocaleString()}</span></div></div>`;
 }
 
+// ── Phases / states UI ────────────────────────────────────────────────────────
 function renderPhases(){
   const wrap=document.getElementById("phases-view");wrap.innerHTML="";
   Object.entries(PHASE_META).forEach(([key,meta])=>{
@@ -351,7 +612,6 @@ function renderPhases(){
     if(!isLocked)card.onclick=()=>togglePhase(key);wrap.appendChild(card);
   });
 }
-
 function renderStates(){
   const wrap=document.getElementById("states-view");wrap.innerHTML="";
   Object.entries(PHASE_META).forEach(([key,meta])=>{
@@ -361,18 +621,17 @@ function renderStates(){
       const isOn=activeStates.includes(st);const isLocked=STATE_DATA[st]?.locked;
       const btn=document.createElement("button");btn.className="state-btn"+(isLocked?" locked":"");
       btn.style.borderColor=isOn?meta.color:"#30363d";btn.style.background=isOn?meta.color+"1a":"transparent";btn.style.color=isOn?meta.color:"#484f58";
-      const aprLabel=STATE_DATA[st]?.aprEnc!=null?` <span style="font-size:8px;opacity:.5">Apr:${STATE_DATA[st].aprEnc}</span>`:"";
-      btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>${aprLabel}`;
+      btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;
       if(!isLocked)btn.onclick=()=>toggleState(st);btns.appendChild(btn);
     });
     grp.appendChild(btns);wrap.appendChild(grp);
   });
 }
-
 function togglePhase(key){const states=PHASE_META[key].states;const allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();}
 function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();}
 function setView(v){document.getElementById("phases-view").style.display=v==="phases"?"flex":"none";document.getElementById("states-view").style.display=v==="states"?"block":"none";document.getElementById("btn-phases").className="view-btn"+(v==="phases"?" active":"");document.getElementById("btn-states").className="view-btn"+(v==="states"?" active":"");}
 
+// ── Chart drawing ─────────────────────────────────────────────────────────────
 const PAD={top:44,right:16,bottom:44,left:58};
 function draw(){
   const canvas=document.getElementById("chart");const wrap=document.getElementById("chart-wrap");
@@ -381,55 +640,34 @@ function draw(){
   const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom,maxY=Math.max(...chartData.map(d=>d.value))*1.18;
   ctx.fillStyle="#0d1117";ctx.fillRect(0,0,W,H);
-
-  // Grid
   [0,.25,.5,.75,1].forEach(t=>{const v=Math.round(maxY*t),y=PAD.top+cH-t*cH;ctx.strokeStyle=t===0?"#30363d":"#161b22";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(W-PAD.right,y);ctx.stroke();ctx.fillStyle="#484f58";ctx.font="10px monospace";ctx.textAlign="right";ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`,PAD.left-6,y+3.5);});
-
-  // Phase ramp shading (Phase 2 and 3 only — Phase 1 already live)
   [{s:"Aug",e:"Sep",c:"#f59e0b",l:"P2 ramp"},{s:"Oct",e:"Dec",c:"#e879f9",l:"P3 ramp"}].forEach(({s,e,c,l})=>{
     const si=chartData.findIndex(d=>d.month===s&&d.type==="proj"),ei=chartData.reduce((a,d,i)=>d.month===e?i:a,-1);
     if(si<0||ei<0)return;const x1=PAD.left+(si/chartData.length)*cW,x2=PAD.left+((ei+1)/chartData.length)*cW;
     ctx.fillStyle=c+"0d";ctx.fillRect(x1,PAD.top,x2-x1,cH);ctx.fillStyle=c+"66";ctx.font="9px monospace";ctx.textAlign="center";ctx.fillText(l,(x1+x2)/2,PAD.top+12);ctx.strokeStyle=c+"33";ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x1,PAD.top);ctx.lineTo(x1,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
   });
-
-  // Phase 1 go-live marker (April 26 = chart index 112)
-  const goLiveIdx=28+28+31+25; // Jan(28)+Feb(28)+Mar(31)+Apr1-25(25)
+  const goLiveIdx = 28+28+31+25;
   const glx=PAD.left+(goLiveIdx/chartData.length)*cW;
-  ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";
-  ctx.fillText("▲ P1 live",glx,PAD.top+14);
-
-  // NOW marker (May 5 = first projected day in May)
-  const ti=chartData.findIndex(d=>d.month==="May"&&d.type==="proj");
+  ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1 live",glx,PAD.top+14);
+  // NOW marker — first projected day
+  const ti=chartData.findIndex(d=>d.type==="proj");
   if(ti>0){const tx=PAD.left+(ti/chartData.length)*cW;ctx.strokeStyle="#ffffff30";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(tx,PAD.top);ctx.lineTo(tx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#ffffff55";ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText("NOW",tx,PAD.top-4);}
-
-  // Bars
   const bW=Math.max(1.2,(cW/chartData.length)-.4);
   chartData.forEach((d,i)=>{
     const x=PAD.left+(i/chartData.length)*cW,al=i===hoveredIdx?"ff":"bb";
     if(d.type==="actual"){
-      // For actual bars: always draw as single green bar, but if p1V exists show stacked
-      if(d.p1V>0){
-        let sy=PAD.top+cH;
-        [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});
-      } else {
-        ctx.fillStyle="#4ade80"+al;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);
-      }
+      if(d.p1V>0){let sy=PAD.top+cH;[{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});}
+      else{ctx.fillStyle="#4ade80"+al;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);}
     } else {
       let sy=PAD.top+cH;
       [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"},{v:d.p2V,c:"#f59e0b"},{v:d.p3V,c:"#e879f9"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});
     }
   });
-
-  // 7-day moving avg on actual
   ctx.strokeStyle="#ffffff44";ctx.lineWidth=1.5;ctx.beginPath();let started=false;
   chartData.forEach((d,i)=>{if(d.type!=="actual")return;const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);});ctx.stroke();
-
-  // Month labels
   let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
 }
-
 function showTooltip(e){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
@@ -443,6 +681,7 @@ function showTooltip(e){
 }
 function hideTooltip(){hoveredIdx=null;document.getElementById("tooltip").style.display="none";draw();}
 
+// ── Map ───────────────────────────────────────────────────────────────────────
 function updateTZBar(){
   const bar=document.getElementById("tz-bar");if(!bar)return;
   const now=new Date();
@@ -452,7 +691,6 @@ function updateTZBar(){
     return`<div style="flex:1;padding:8px 10px;background:${m.color}15;border-right:${idx===arr.length-1?"none":"1px solid #0d1117"};text-align:center;"><div style="font-size:9px;color:${m.color};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;font-weight:700;">${m.abbr}</div><div style="font-size:14px;font-weight:700;color:#e6edf3;">${hh}:${mn.toString().padStart(2,"0")} ${am}</div><div style="font-size:8px;color:#484f58;margin-top:1px;">${m.label}</div></div>`;
   }).join("");
 }
-
 function drawMap(){
   if(!usTopoData)return;updateTZBar();
   const svgEl=document.getElementById("us-map");if(!svgEl)return;
@@ -478,9 +716,7 @@ function drawMap(){
       const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLocked?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLocked?"":" — click to add"}</div>`:`<div style="color:#484f58;font-size:11px;margin-bottom:4px;">Not in plan — assess for license</div>`;
       const stTZ=TZ[st],stTZM=stTZ?TZ_META[stTZ]:null;
       const tzNow=stTZM?new Date().toLocaleTimeString("en-US",{timeZone:stTZM.ianatZ,hour:"numeric",minute:"2-digit"}):null;
-      const aprEncVal=APRIL_ENC[st];
-      const aprRow=aprEncVal!=null?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Apr actual enc</span><span style="color:#4ade80;font-weight:700">${aprEncVal>0?aprEncVal.toLocaleString():sd?.note?`0 (${sd.note})`:"0"}</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Apr actual rev</span><span style="color:#4ade80;font-weight:700">${aprEncVal>0?`$${(aprEncVal*ENC_RATE).toLocaleString()}`:"—"}</span></div>`:"";
-      const detailRows=sd?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div>${aprRow}<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Proj daily (ramped)</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:untrk?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${untrk.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Est. daily volume</span><span style="color:#60a5fa;font-weight:700">~$${untrk.estVolume}/day</span></div>`:"";
+      const detailRows=sd?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Proj daily (ramped)</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:untrk?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${untrk.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Est. daily volume</span><span style="color:#60a5fa;font-weight:700">~$${untrk.estVolume}/day</span></div>`:"";
       tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${st||"?"} — ${lbl}</div>${status}`+(stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600;">${tzNow}</span></div>`:"")+( detailRows?`<div style="border-top:1px solid #21262d;padding-top:4px;">${detailRows}</div>`:"");
       tt.style.display="block";
     }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";}).on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);}).on("click",()=>{if(sd&&!isLocked)toggleState(st);});
@@ -490,14 +726,54 @@ function drawMap(){
   if(leg)leg.innerHTML=Object.entries(GRP_LABELS).map(([k,v])=>{const c=GRP_COLORS[k];return`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:${c}22;border:1.5px solid ${c};flex-shrink:0;"></div><span style="font-size:9px;color:#6e7681;font-family:monospace">${v}</span></div>`;}).join("")+`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:#0d1520;border:1px solid #182535;flex-shrink:0;"></div><span style="font-size:9px;color:#253040;font-family:monospace">Other states (hover to assess)</span></div>`+(showTZ?`<div style="width:100%;margin-top:6px;border-top:1px solid #21262d;padding-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">`+["PT","MT","CST","ET"].map(k=>{const m=TZ_META[k];return`<div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:2px;background:${m.color}25;border:1px solid ${m.color}55;"></div><span style="font-size:9px;color:${m.color};font-family:monospace">${m.abbr} — ${m.label}</span></div>`;}).join("")+`</div>`:"");
 }
 
-function refresh(){chartData=generateData();updateStats();renderPhases();renderStates();draw();renderMonthlyTotals();drawMap();renderAprilBreakdown();renderMayBreakdown();}
-document.getElementById("chart").addEventListener("mousemove",showTooltip);
-document.getElementById("chart").addEventListener("mouseleave",hideTooltip);
-window.addEventListener("resize",()=>{draw();drawMap();});
+// ── Refresh all UI ────────────────────────────────────────────────────────────
+function refresh(){
+  chartData = generateData();
+  updateStats();
+  renderPhases();
+  renderStates();
+  draw();
+  renderMonthlyTotals();
+  drawMap();
+}
 
+// ── Manual refresh button ─────────────────────────────────────────────────────
+async function manualRefresh() {
+  const ok = await loadLiveData(false);
+  if (ok) applyLiveData();
+  refresh();
+}
+
+// ── Event listeners ───────────────────────────────────────────────────────────
+document.getElementById("chart").addEventListener("mousemove", showTooltip);
+document.getElementById("chart").addEventListener("mouseleave", hideTooltip);
+window.addEventListener("resize", () => { draw(); drawMap(); });
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+// Load the map independently so it doesn't block rendering
 fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
-  .then(r=>r.json()).then(data=>{usTopoData=data;refresh();setView("phases");})
-  .catch(()=>{refresh();setView("phases");const s=document.getElementById("us-map");d3.select(s).attr("viewBox","0 0 400 60").attr("height",60);d3.select(s).append("text").attr("x","50%").attr("y","50%").attr("text-anchor","middle").attr("dominant-baseline","middle").attr("font-family","monospace").attr("font-size",11).attr("fill","#484f58").text("Map requires internet connection");});
+  .then(r => r.json()).catch(() => null)
+  .then(topoData => {
+    usTopoData = topoData;
+    // If cache already rendered once, just update the map
+    if (liveDataLoaded) { drawMap(); } else { refresh(); setView("phases"); }
+  });
+
+// Kick off live fetch — renders from cache first if available, then again on fresh data
+loadLiveData(false).then(ok => {
+  if (ok) { applyLiveData(); refresh(); setView("phases"); }
+  else if (!liveDataLoaded) {
+    const sub = document.getElementById('subtitle');
+    if (sub) sub.textContent = 'Apr 1–30 ($32,895 · $1,097/day) · May 1–4 ($8,597 · $2,149/day) · Phase 1 live Apr 26 — hardcoded fallback';
+    refresh(); setView("phases");
+  }
+});
+
+// Background refresh every 5 minutes
+setInterval(async () => {
+  const ok = await loadLiveData(true);
+  if (ok) { applyLiveData(); refresh(); }
+}, 5 * 60 * 1000);
 </script>
 </body>
 </html>
