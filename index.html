@@ -67,6 +67,12 @@
 </div>
 <div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · projections recalibrate daily from live sheet</div>
 
+<!-- ── STATE TREND WIDGETS ──────────────────────────────────────────── -->
+<div style="margin-top:22px;margin-bottom:22px">
+  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#484f58;font-weight:600;margin-bottom:10px">State trends · actual + projected</div>
+  <div id="hm-spark-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div>
+</div>
+
 <div class="map-section">
   <div class="map-header">
     <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681;">State Coverage Map</span>
@@ -627,8 +633,8 @@ function renderStates(){
     grp.appendChild(btns);wrap.appendChild(grp);
   });
 }
-function togglePhase(key){const states=PHASE_META[key].states;const allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();}
-function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();}
+function togglePhase(key){const states=PHASE_META[key].states;const allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();renderSparks();}
+function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();renderSparks();}
 function setView(v){document.getElementById("phases-view").style.display=v==="phases"?"flex":"none";document.getElementById("states-view").style.display=v==="states"?"block":"none";document.getElementById("btn-phases").className="view-btn"+(v==="phases"?" active":"");document.getElementById("btn-states").className="view-btn"+(v==="states"?" active":"");}
 
 // ── Chart drawing ─────────────────────────────────────────────────────────────
@@ -774,6 +780,333 @@ setInterval(async () => {
   const ok = await loadLiveData(true);
   if (ok) { applyLiveData(); refresh(); }
 }, 5 * 60 * 1000);
+
+// ── STATE MONTHLY HEATMAP ─────────────────────────────────────────────────────
+
+// Monthly state encounter data — populated from sheet tab or fallback
+// Structure: STATE_MONTHLY['TX'] = [{v, actual}, ...] indexed 0=Jan … 11=Dec
+let STATE_MONTHLY = {};
+
+// Hardcoded fallback — used only if sheet is completely unavailable
+// Update these when real data drifts significantly from projections
+const FALLBACK_STATE_ENC = {
+  // Jan  Feb  Mar  Apr   May  Jun  Jul  Aug  Sep  Oct  Nov  Dec
+  TX: [620, 660, 740, 860,   0,   0,   0,   0,   0,   0,   0,   0],
+  NC: [390, 430, 510, 573,   0,   0,   0,   0,   0,   0,   0,   0],
+  AZ: [290, 320, 380, 432,   0,   0,   0,   0,   0,   0,   0,   0],
+  OR: [210, 240, 285, 322,   0,   0,   0,   0,   0,   0,   0,   0],
+  IN: [155, 180, 215, 244,   0,   0,   0,   0,   0,   0,   0,   0],
+  TN: [ 95, 110, 135, 155,   0,   0,   0,   0,   0,   0,   0,   0],
+  WA: [ 50,  60,  74,  87,   0,   0,   0,   0,   0,   0,   0,   0],
+  // P1 states — went live Apr 26, so Jan-Mar = 0
+  PA: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  OH: [  0,   0,   0,  23,   0,   0,   0,   0,   0,   0,   0,   0],
+  MI: [  0,   0,   0,  13,   0,   0,   0,   0,   0,   0,   0,   0],
+  IL: [  0,   0,   0,  19,   0,   0,   0,   0,   0,   0,   0,   0],
+  AL: [  0,   0,   0,  56,   0,   0,   0,   0,   0,   0,   0,   0],
+  // P2 / P3 — not yet live
+  CO: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  MN: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  NJ: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  GA: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  WI: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  MO: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+};
+// Which fallback months are real vs estimated
+const FALLBACK_ACTUAL_THRU = 3; // 0=Jan … 3=Apr — months 0-3 are real in fallback
+
+function buildStateMonthlySeed() {
+  // Start every state as all-projected; sheet data overwrites actuals.
+  // Projections are model-generated so the heatmap is never blank.
+  const result = {};
+  const curMonth = new Date().getMonth(); // 0-indexed
+
+  Object.keys(STATE_DATA).forEach((st, si) => {
+    const fallback = FALLBACK_STATE_ENC[st] || Array(12).fill(0);
+    const isP1 = STATE_DATA[st].group === 'phase1';
+    const isP2 = STATE_DATA[st].group === 'phase2';
+    const isP3a = STATE_DATA[st].group === 'phase3a';
+    const isP3b = STATE_DATA[st].group === 'phase3b';
+
+    // Anchor: use Apr fallback value (best known actual) for projection scaling
+    const aprAnchor = fallback[3] || STATE_DATA[st].dailyContrib / RATES.rh * 30;
+
+    result[st] = Array.from({length:12}, (_, mi) => {
+      const noise = 0.82 + sRand(si * 100 + mi) * 0.36;
+
+      // P1: ramping from Apr 26 launch
+      if (isP1) {
+        if (mi < 3) return { v: 0, actual: false };
+        if (mi === 3) return { v: fallback[3] || 0, actual: false };
+        const daysSinceLive = (mi - 3) * 30 + 5;
+        const frac = Math.min(1, 1 - Math.exp(-P1_K * daysSinceLive));
+        const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
+        return { v: Math.round(target * frac * noise), actual: false };
+      }
+
+      // P2: ramp starts Aug
+      if (isP2) {
+        if (mi < 7) return { v: 0, actual: false };
+        const frac = Math.min(1, (mi - 7) / 4);
+        const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
+        return { v: Math.round(target * frac * noise), actual: false };
+      }
+
+      // P3: ramp starts Oct
+      if (isP3a || isP3b) {
+        if (mi < 9) return { v: 0, actual: false };
+        const frac = Math.min(1, (mi - 9) / 3);
+        const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
+        return { v: Math.round(target * frac * noise), actual: false };
+      }
+
+      // Existing states — gentle growth trend
+      const trend = mi < 3 ? (0.72 + mi * 0.10) : (1.0 + (mi - 3) * 0.035);
+      return { v: Math.round(aprAnchor * trend * noise), actual: false };
+    });
+  });
+  return result;
+}
+
+function parseStateMonthlyCsv(csv) {
+  // Accepts any tab with col-0 = state abbr, remaining cols = month names
+  // Month headers can be: Jan, January, jan, JAN, Jan-26, Jan 2026, etc.
+  const rows = csv.trim().split('\n').map(parseCSVRow);
+  if (rows.length < 2) return null;
+  const headers = rows[0].map(h => h.trim());
+  const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const moIdx = {}; // colIndex -> monthIndex 0-11
+  headers.forEach((h, ci) => {
+    if (ci === 0) return;
+    const norm = h.toLowerCase().replace(/[^a-z]/g,'').slice(0, 3);
+    const mi = MO_NAMES.indexOf(norm);
+    if (mi >= 0) moIdx[ci] = mi;
+  });
+  if (!Object.keys(moIdx).length) return null;
+
+  const result = {};
+  rows.slice(1).forEach(row => {
+    const st = (row[0] || '').trim().toUpperCase().replace(/\s+/g, '');
+    if (!st || !STATE_DATA[st]) return;
+    if (!result[st]) result[st] = Array.from({length:12}, () => null);
+    Object.entries(moIdx).forEach(([ci, mi]) => {
+      const raw = (row[+ci] || '').toString().replace(/[$,\s]/g, '');
+      const v = parseInt(raw);
+      // A cell is actual if it has a non-negative number
+      if (!isNaN(v) && v >= 0) result[st][mi] = { v, actual: true };
+    });
+  });
+  return Object.keys(result).length ? result : null;
+}
+
+function applyStateMonthlyFromSheet(json) {
+  // Scan every tab — accept any whose name contains 'state' or 'tally'
+  let found = false;
+  for (const [tabName, csv] of Object.entries(json)) {
+    const n = tabName.toLowerCase();
+    if (!n.includes('state') && !n.includes('tally')) continue;
+    const parsed = parseStateMonthlyCsv(csv);
+    if (!parsed) continue;
+    found = true;
+
+    // Overwrite seeded cells with real actuals
+    Object.entries(parsed).forEach(([st, months]) => {
+      if (!STATE_MONTHLY[st]) return;
+      months.forEach((cell, mi) => {
+        if (cell && cell.actual) STATE_MONTHLY[st][mi] = cell;
+      });
+    });
+    // Don't break — process all matching tabs (future-proofing)
+  }
+
+  if (!found) {
+    // No state tab found — fall back to hardcoded FALLBACK_STATE_ENC for actuals
+    Object.entries(FALLBACK_STATE_ENC).forEach(([st, arr]) => {
+      if (!STATE_MONTHLY[st]) return;
+      arr.forEach((v, mi) => {
+        if (mi <= FALLBACK_ACTUAL_THRU && v >= 0) {
+          STATE_MONTHLY[st][mi] = { v, actual: true };
+        }
+      });
+    });
+  }
+  return found;
+}
+
+let hmMode = 'enc'; // kept for tooltip reference only
+
+function getHmVal(st, mi) {
+  const cell = STATE_MONTHLY[st]?.[mi] || { v: 0, actual: false };
+  if (hmMode === 'enc') return { n: cell.v, label: cell.v ? cell.v.toLocaleString() : '—', actual: cell.actual };
+  if (hmMode === 'rev') { const r = cell.v * RATES.rh; return { n: r, label: r ? '$' + r.toLocaleString() : '—', actual: cell.actual }; }
+  if (hmMode === 'pct') {
+    if (mi === 0) return { n: 0, label: '—', actual: cell.actual };
+    const prev = STATE_MONTHLY[st]?.[mi-1]?.v || 0;
+    if (!prev) return { n: 0, label: cell.v > 0 ? 'new' : '—', actual: cell.actual };
+    const pct = Math.round((cell.v - prev) / prev * 100);
+    return { n: pct, label: (pct >= 0 ? '+' : '') + pct + '%', actual: cell.actual };
+  }
+}
+
+function renderSparks() {
+  const grid = document.getElementById('hm-spark-grid');
+  if (!grid || !Object.keys(STATE_MONTHLY).length) return;
+  const states = Object.keys(STATE_DATA).filter(st => activeStates.includes(st));
+  if (!states.length) { grid.innerHTML = ''; return; }
+
+  let html = '';
+  states.forEach(st => {
+    const sc = GRP_COLORS[STATE_DATA[st].group] || '#4ade80';
+    const cells = STATE_MONTHLY[st] || Array(12).fill({v:0, actual:false});
+    const vals = cells.map(c => c?.v || 0);
+
+    // Most recent actual month
+    let latestActual = { v: 0, mi: -1 };
+    cells.forEach((c, mi) => { if (c?.actual && (c.v > 0 || mi > latestActual.mi)) latestActual = { v: c.v, mi }; });
+    // Count of actual months
+    const actualCount = cells.filter(c => c?.actual).length;
+    const prevVal = latestActual.mi > 0 ? (cells[latestActual.mi - 1]?.v || 0) : 0;
+    const momPct = (prevVal && latestActual.mi > 0) ? Math.round((latestActual.v - prevVal) / prevVal * 100) : null;
+
+    // Best month
+    const peakMi = vals.reduce((best, v, i) => v > vals[best] ? i : best, 0);
+    const peakVal = vals[peakMi];
+
+    // Total actual encounters
+    const totalActual = cells.reduce((s, c) => s + (c?.actual ? c.v : 0), 0);
+
+    const mx = Math.max(...vals, 1);
+    const W = 160, H = 52;
+
+    const pts = cells.map((c, i) => ({
+      x: parseFloat(((i / 11) * (W - 8) + 4).toFixed(1)),
+      y: parseFloat((H - 4 - ((c?.v||0) / mx) * (H - 10)).toFixed(1)),
+      actual: c?.actual || false,
+      v: c?.v || 0
+    }));
+
+    // Last actual index for seam point
+    let lastActIdx = -1;
+    pts.forEach((p, i) => { if (p.actual) lastActIdx = i; });
+
+    const actPts   = pts.filter(p => p.actual).map(p => `${p.x},${p.y}`).join(' ');
+    const projPts  = lastActIdx >= 0 ? pts.slice(lastActIdx).map(p => `${p.x},${p.y}`).join(' ') : pts.map(p => `${p.x},${p.y}`).join(' ');
+    const areaAct  = lastActIdx >= 0
+      ? `${pts[0].x},${H} ` + pts.slice(0, lastActIdx+1).map(p=>`${p.x},${p.y}`).join(' ') + ` ${pts[lastActIdx].x},${H}`
+      : '';
+
+    // Month labels every 2 months
+    const moLabels = ALL_MONTHS.map((mo, i) => {
+      if (i % 2 !== 0) return '';
+      const x = ((i / 11) * (W - 8) + 4).toFixed(1);
+      const isAct = cells[i]?.actual;
+      return `<text x="${x}" y="${H+11}" text-anchor="middle" font-size="8" fill="${isAct ? '#64748b' : '#2d3a50'}" font-family="monospace">${mo}</text>`;
+    }).join('');
+
+    // Dot on last actual
+    const dotEl = lastActIdx >= 0
+      ? `<circle cx="${pts[lastActIdx].x}" cy="${pts[lastActIdx].y}" r="3.5" fill="${sc}" stroke="#161b22" stroke-width="1.5"/>`
+      : '';
+
+    const latestLabel = latestActual.mi >= 0
+      ? ALL_MONTHS[latestActual.mi] + ' actual'
+      : 'no actuals yet';
+
+    html += `<div style="background:#161b22;border:1px solid #242d3f;border-radius:10px;padding:14px 16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:#94a3b8;margin-bottom:3px">
+            <span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${sc};margin-right:6px;vertical-align:1px"></span>${st}
+            <span style="font-size:9px;color:#484f58;margin-left:4px;font-weight:400">${PHASE_META[STATE_DATA[st].group]?.label || ''}</span>
+          </div>
+          <div style="font-size:24px;font-weight:800;color:#e2e8f0;letter-spacing:-.02em;line-height:1">${latestActual.v > 0 ? latestActual.v.toLocaleString() : '—'}</div>
+          <div style="font-size:10px;color:#64748b;margin-top:2px">${latestLabel}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;padding-left:8px">
+          ${momPct !== null
+            ? `<div style="font-size:15px;font-weight:700;color:${momPct>=0?'#2dd4a0':'#f87171'}">${momPct>=0?'+':''}${momPct}%</div><div style="font-size:9px;color:#484f58">vs ${ALL_MONTHS[latestActual.mi-1]}</div>`
+            : '<div style="font-size:10px;color:#484f58">—</div>'}
+          <div style="margin-top:6px;font-size:10px;color:#484f58">${actualCount} mo actual</div>
+          <div style="font-size:10px;color:#484f58">total ${totalActual.toLocaleString()}</div>
+        </div>
+      </div>
+      <svg width="${W}" height="${H + 14}" style="display:block;overflow:visible;margin-top:2px">
+        ${areaAct ? `<polygon points="${areaAct}" fill="${sc}" opacity=".07"/>` : ''}
+        ${projPts.split(' ').length > 2 ? `<polyline points="${projPts}" fill="none" stroke="${sc}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".32"/>` : ''}
+        ${actPts.split(' ').length > 2 ? `<polyline points="${actPts}" fill="none" stroke="${sc}" stroke-width="2.2"/>` : ''}
+        ${dotEl}
+        ${moLabels}
+      </svg>
+    </div>`;
+  });
+  grid.innerHTML = html;
+}
+
+function showHmTT(e, st, mo, mi) {
+  const cell = STATE_MONTHLY[st]?.[mi] || { v:0, actual:false };
+  const rev = cell.v * RATES.rh;
+  const prev = mi > 0 ? (STATE_MONTHLY[st]?.[mi-1]?.v || 0) : null;
+  const pct = prev ? Math.round((cell.v - prev) / prev * 100) : null;
+  const tt = document.getElementById('hm-tt');
+  tt.innerHTML = `<div style="font-size:9px;color:#6e7681;margin-bottom:3px">${st} · ${mo} ${cell.actual ? '<span style="color:#4ade80">● actual</span>' : '<span style="color:#484f58">○ projected</span>'}</div>
+    <div style="font-size:13px;font-weight:700;color:#e2e8f0">${cell.v.toLocaleString()} enc</div>
+    <div style="font-size:11px;color:#94a3b8">$${rev.toLocaleString()}</div>
+    ${pct !== null ? `<div style="font-size:10px;color:${pct>=0?'#2dd4a0':'#f87171'};margin-top:2px">${pct>=0?'+':''}${pct}% vs ${ALL_MONTHS[mi-1]}</div>` : ''}`;
+  tt.style.display = 'block';
+  tt.style.left = (e.clientX + 14) + 'px';
+  tt.style.top  = (e.clientY - 8)  + 'px';
+}
+function hideHmTT() { document.getElementById('hm-tt').style.display = 'none'; }
+document.addEventListener('mousemove', e => {
+  const tt = document.getElementById('hm-tt');
+  if (tt.style.display !== 'none') { tt.style.left=(e.clientX+14)+'px'; tt.style.top=(e.clientY-8)+'px'; }
+});
+
+function recalibrateFromMonthlyActuals() {
+  Object.keys(STATE_DATA).forEach(st => {
+    if (STATE_DATA[st].group !== 'existing') return;
+    const actuals = (STATE_MONTHLY[st] || []).filter(c => c?.actual && c.v > 0);
+    if (actuals.length < 1) return;
+    const avgMonthly = actuals.reduce((s, c) => s + c.v, 0) / actuals.length;
+    STATE_DATA[st].dailyContrib = Math.round(avgMonthly / 30 * RATES.rh);
+    ORIGINAL_EXISTING_CONTRIB[st] = STATE_DATA[st].dailyContrib;
+  });
+}
+
+function initSparks() {
+  STATE_MONTHLY = buildStateMonthlySeed();
+  try {
+    const cached = localStorage.getItem('tmd_c');
+    if (cached) {
+      const json = JSON.parse(cached);
+      const found = applyStateMonthlyFromSheet(json);
+      if (found) recalibrateFromMonthlyActuals();
+    }
+  } catch(e) {}
+  renderSparks();
+}
 </script>
+
+<!-- ── SPARK INIT ──────────────────────────────────────────────────── -->
+<div id="hm-tt" style="display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:130px;box-shadow:0 4px 20px rgba(0,0,0,.7)"></div>
+
+<script>
+initSparks();
+const _origRefresh = refresh;
+window.refresh = function() {
+  _origRefresh();
+  STATE_MONTHLY = buildStateMonthlySeed();
+  try {
+    const cached = localStorage.getItem('tmd_c');
+    if (cached) {
+      const json = JSON.parse(cached);
+      const found = applyStateMonthlyFromSheet(json);
+      if (found) recalibrateFromMonthlyActuals();
+    }
+  } catch(e) {}
+  renderSparks();
+};
+</script>
+
 </body>
 </html>
