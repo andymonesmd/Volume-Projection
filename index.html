@@ -564,63 +564,131 @@ function generateData() {
   return data;
 }
 
+// ── Full-year data (Jan–Dec) — used for stats, monthly grid, annual totals ─────
+let fullYearData = [];
+
+function generateFullYearData() {
+  const now       = new Date();
+  const curMoIdx  = now.getMonth();
+  const curDay    = now.getDate();
+  const curYear   = now.getFullYear();
+  const DAYS_IN_MO = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+  const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  const p1   = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  const p23  = activeStates.filter(s=>['phase2','phase3a','phase3b'].includes(STATE_DATA[s]?.group))
+                            .reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+
+  const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length >= 5
+    ? APR_DAILY.slice(0, P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0) / APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
+    : base;
+
+  const p1LaunchDate  = new Date(2026, 3, 26);
+  const p23LaunchDate = new Date(curYear, curMoIdx + 2, curDay);
+
+  function p1Frac(date)  { const d=(date-p1LaunchDate)/86400000;  return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d)); }
+  function p23Frac(date) { const d=(date-p23LaunchDate)/86400000; return d<=0?0:Math.min(1,1-Math.exp(-0.055*d)); }
+
+  function actualArr(moName, moIdx12) {
+    if (LIVE_MONTHLY[moName]?.daily?.length > 0) return LIVE_MONTHLY[moName].daily;
+    if (moIdx12 === 3) return APR_DAILY;
+    if (moIdx12 === 4) return MAY_ACTUAL_DAILY;
+    return [];
+  }
+
+  const data = [];
+  let di = 1000; // offset seeds so they differ from chartData
+
+  for (let moIdx12 = 0; moIdx12 <= 11; moIdx12++) {
+    const mo  = ALL_MONTHS[moIdx12];
+    const dim = DAYS_IN_MO[moIdx12];
+    const arr = actualArr(mo, moIdx12);
+    const isPast = moIdx12 < curMoIdx;
+    const isCur  = moIdx12 === curMoIdx;
+
+    for (let d = 0; d < dim; d++) {
+      const date        = new Date(curYear, moIdx12, d + 1);
+      const isActualDay = isPast || (isCur && d < curDay - 1);
+
+      if (isActualDay) {
+        const v = arr[d] !== undefined ? arr[d] : (() => {
+          const sc = 0.55 + moIdx12 * 0.06;
+          const n  = (sRand(di) - .5) * .40;
+          return Math.round(Math.max(80, base * sc * (1 + n)));
+        })();
+        const p1f  = p1Frac(date);
+        const rawP1 = moIdx12 === 3 && d >= P1_LIVE_APR_IDX
+          ? Math.max(0, v - existEstPreP1)
+          : Math.round(p1 * p1f);
+        const eV = Math.max(0, v - rawP1);
+        data.push({month:mo, value:v, type:"actual", eV, p1V:rawP1, p2V:0, p3V:0});
+      } else {
+        const n    = (sRand(di + 600) - .5) * .28;
+        const sc   = .97;
+        const p1f  = p1Frac(date);
+        const p23f = p23Frac(date);
+        const eV   = Math.round(base  * sc * (1 + n));
+        const p1V  = Math.round(p1    * p1f  * sc * (1 + n * .8));
+        const p23V = Math.round(p23   * p23f * sc * (1 + n * .8));
+        data.push({month:mo, value:Math.max(eV, eV+p1V+p23V), eV, p1V, p2V:p23V, p3V:0, type:"proj"});
+      }
+      di++;
+    }
+  }
+  return data;
+}
+
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function updateStats(){
   const now = new Date();
-  const lastProjMo = ALL_MONTHS[(now.getMonth() + 3) % 12];
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
   document.getElementById("stat-states").textContent=activeStates.length;
   document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
-  const actualData=chartData.filter(d=>d.type==="actual");
-  const recent=actualData.slice(-7);
+  // Recent avg from 7-month chart window (last 7 actual days)
+  const recent=chartData.filter(d=>d.type==="actual").slice(-7);
   const ca=recent.length?Math.round(recent.reduce((s,d)=>s+d.value,0)/recent.length):0;
   document.getElementById("stat-current").textContent="$"+ca.toLocaleString();
-  // Stat card label — update to show +3mo window
+  // Projected avg/day from December of full year
   const projLabel = document.querySelector('.stat-card:last-child .stat-label');
-  if (projLabel) projLabel.innerHTML = `Projected Avg/Day <span style="font-size:9px;color:#484f58">(${lastProjMo}, fully ramped)</span>`;
-  const ps=chartData.filter(d=>d.month===lastProjMo&&d.type==="proj");
-  const pa=ps.length?Math.round(ps.reduce((s,d)=>s+d.value,0)/ps.length):0;
+  if (projLabel) projLabel.innerHTML = `Projected Avg/Day <span style="font-size:9px;color:#484f58">(Dec, fully ramped)</span>`;
+  const decDays = fullYearData.filter(d=>d.month==="Dec"&&d.type==="proj");
+  const pa = decDays.length ? Math.round(decDays.reduce((s,d)=>s+d.value,0)/decDays.length) : 0;
   document.getElementById("stat-proj").textContent=pa?"$"+pa.toLocaleString():"—";
-  const dd=ps[Math.floor(ps.length/2)]||{};
+  const dd=decDays[Math.floor(decDays.length/2)]||{};
   document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2+3",v:dd.p2V||0,c:"#f59e0b"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
 }
 
-// ── Monthly totals ────────────────────────────────────────────────────────────
+// ── Monthly totals — full Jan–Dec 2026 ────────────────────────────────────────
 function renderMonthlyTotals(){
-  const now = new Date();
-  const curMo = ALL_MONTHS[now.getMonth()];
-  const lastProjMo = ALL_MONTHS[(now.getMonth() + 3) % 12];
+  const now    = new Date();
+  const curMo  = ALL_MONTHS[now.getMonth()];
 
-  // Only render months that appear in chartData
-  const presentMonths = [...new Set(chartData.map(d => d.month))];
   const mt = {}, mtp = {};
-  presentMonths.forEach(m => { mt[m] = 0; mtp[m] = "actual"; });
+  ALL_MONTHS.forEach(m => { mt[m] = 0; mtp[m] = "actual"; });
 
-  chartData.forEach(d => {
-    if (!mt.hasOwnProperty(d.month)) return;
+  fullYearData.forEach(d => {
     mt[d.month] += d.value;
     if (d.type === "proj") mtp[d.month] = "proj";
   });
 
-  const hasBoth = m => chartData.some(d=>d.month===m&&d.type==="actual") && chartData.some(d=>d.month===m&&d.type==="proj");
-  presentMonths.forEach(m => { if (hasBoth(m)) mtp[m] = "partial"; });
+  // Current month is partial
+  const hasBoth = m => fullYearData.some(d=>d.month===m&&d.type==="actual") &&
+                       fullYearData.some(d=>d.month===m&&d.type==="proj");
+  ALL_MONTHS.forEach(m => { if (hasBoth(m)) mtp[m] = "partial"; });
 
-  // Override Apr with real sheet total
-  if (mt['Apr'] !== undefined) {
-    if (LIVE_MONTHLY['Apr']?.total > 0) mt['Apr'] = LIVE_MONTHLY['Apr'].total;
-    else mt['Apr'] = APR_TOTAL;
-    mtp['Apr'] = 'actual';
-  }
+  // Override Apr with real sheet total if available
+  if (LIVE_MONTHLY['Apr']?.total > 0) mt['Apr'] = LIVE_MONTHLY['Apr'].total;
+  else mt['Apr'] = APR_TOTAL;
+  mtp['Apr'] = 'actual';
 
-  const actualYTD = chartData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value, 0);
-  // Use real Apr total if available
-  const aprAdj = (LIVE_MONTHLY['Apr']?.total || APR_TOTAL) - chartData.filter(d=>d.month==="Apr"&&d.type==="actual").reduce((s,d)=>s+d.value,0);
-  const actualYTDAdj = actualYTD + Math.max(0, aprAdj);
-  const projTotal = chartData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value, 0);
+  const actualYTD   = fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value, 0)
+                    + Math.max(0, (LIVE_MONTHLY['Apr']?.total || APR_TOTAL)
+                    - fullYearData.filter(d=>d.month==="Apr"&&d.type==="actual").reduce((s,d)=>s+d.value, 0));
+  const projTotal   = fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value, 0);
+  const fullYearEst = actualYTD + projTotal;
 
-  // Grid — 6 cols max, wrap naturally
-  document.getElementById("monthly-grid").innerHTML = presentMonths.map(m => {
-    const tp = mtp[m];
+  document.getElementById("monthly-grid").innerHTML = ALL_MONTHS.map(m => {
+    const tp       = mtp[m];
     const color    = tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa";
     const dimColor = tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e";
     const label    = tp==="actual"?"actual":tp==="partial"?"partial":"projected";
@@ -628,16 +696,15 @@ function renderMonthlyTotals(){
   }).join("");
 
   document.getElementById("annual-row").innerHTML =
-    `<span class="annual-label">Jan – ${lastProjMo} window</span>
+    `<span class="annual-label">2026 Full Year</span>
      <div class="annual-vals">
-       <div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTDAdj).toLocaleString()}</span></div>
-       <div class="annual-item"><span class="annual-item-label">+3 mo projected</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projTotal).toLocaleString()}</span></div>
-       <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">combined</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(actualYTDAdj+projTotal).toLocaleString()}</span></div>
+       <div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTD).toLocaleString()}</span></div>
+       <div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projTotal).toLocaleString()}</span></div>
+       <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(fullYearEst).toLocaleString()}</span></div>
      </div>`;
 
-  // Update totals-note
   const tn = document.getElementById('totals-note');
-  if (tn) tn.textContent = `actual Jan–${curMo} · projected +3 months · P2+3 launch ~2 mo`;
+  if (tn) tn.textContent = `actual Jan–${curMo} · projected ${curMo}–Dec · P2+3 launch ~2 months out`;
 }
 
 // ── Phases / states UI ────────────────────────────────────────────────────────
@@ -775,7 +842,8 @@ function drawMap(){
 
 // ── Refresh all UI ────────────────────────────────────────────────────────────
 function refresh(){
-  chartData = generateData();
+  chartData    = generateData();        // 7-month window — drives the chart only
+  fullYearData = generateFullYearData(); // Jan–Dec — drives stats + monthly totals
   updateStats();
   renderPhases();
   renderStates();
@@ -1135,7 +1203,7 @@ function initSparks() {
 initSparks();
 const _origRefresh = refresh;
 window.refresh = function() {
-  _origRefresh();
+  _origRefresh();  // already generates both chartData and fullYearData
   STATE_MONTHLY = buildStateMonthlySeed();
   try {
     const cached = localStorage.getItem('tmd_c');
