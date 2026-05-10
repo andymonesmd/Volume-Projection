@@ -60,10 +60,8 @@
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2: CO·MN</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#e879f9"></div><span class="legend-label">Phase 3A: NJ·GA</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div><span class="legend-label">Phase 3B: WI·MO</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.27)"></div><span class="legend-label">7-day moving avg</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2+3: CO·MN·NJ·GA·WI·MO (~2 mo)</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
 </div>
 <div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · projections recalibrate daily from live sheet</div>
 
@@ -476,88 +474,100 @@ function rampFn(spec,d){if(typeof spec==="number")return spec;const[a,b]=spec.sp
 function fmtK(v){if(v>=1e6)return"$"+(v/1e6).toFixed(2)+"M";if(v>=1000)return"$"+(v/1000).toFixed(1)+"k";return"$"+Math.round(v);}
 
 // ── Data generation ───────────────────────────────────────────────────────────
+// Window: 3 calendar months before today through 3 months after today
+// Phase 2+3 launch exactly 2 calendar months from today
 function generateData() {
-  const data = [];
-  // Base from existing states — may be recalibrated by applyLiveData
+  const now       = new Date();
+  const curMoIdx  = now.getMonth();  // 0=Jan
+  const curDay    = now.getDate();
+  const curYear   = now.getFullYear();
+  const DAYS_IN_MO = [31,28,31,30,31,30,31,31,30,31,30,31];
+
   const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p1 = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p2 = activeStates.filter(s=>STATE_DATA[s]?.group==="phase2").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p3 = [...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3a"),...activeStates.filter(s=>STATE_DATA[s]?.group==="phase3b")].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  let di = 0;
+  const p1   = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
+  const p23  = activeStates.filter(s=>['phase2','phase3a','phase3b'].includes(STATE_DATA[s]?.group))
+                            .reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
 
-  // ── Jan–Mar: seeded random calibrated to trend toward actual Apr baseline ──
-  [["Jan",28,.42],["Feb",7,.43],["Feb",21,.55],["Mar",13,.80],["Mar",18,1.0]].forEach(([mo,days,sc])=>{
-    for(let d=0;d<days;d++){
-      const n=(sRand(di)-.5)*.45;
-      const v=Math.max(120, base*sc*(1+n));
-      data.push({month:mo,value:Math.round(v),type:"actual",eV:Math.round(v),p1V:0,p2V:0,p3V:0});
-      di++;
-    }
-  });
-
-  // ── April: real daily revenue (live from sheet or fallback) ──────────────────
-  const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
+  const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length >= 5
     ? APR_DAILY.slice(0, P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0) / APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
     : base;
 
-  APR_DAILY.forEach((v, idx) => {
-    let p1V = 0, eV = v;
-    if (idx >= P1_LIVE_APR_IDX) {
-      p1V = Math.max(0, v - existEstPreP1);
-      eV  = Math.max(0, v - p1V);
-    }
-    data.push({month:"Apr",value:v,type:"actual",eV,p1V,p2V:0,p3V:0});
-    di++;
-  });
+  // Phase 1 live Apr 26 2026 — exponential ramp from that date
+  const p1LaunchDate  = new Date(2026, 3, 26);
+  const p23LaunchDate = new Date(curYear, curMoIdx + 2, curDay); // exactly 2 months from today
 
-  // ── May: real days (live) + projected remainder ───────────────────────────────
-  // Determine how many days of May are actual vs projected
-  const now = new Date();
-  const daysInMay = 31;
-  const mayDayOfMonth = now.getMonth() === 4 ? now.getDate() : (now.getMonth() > 4 ? 31 : 0);
-
-  MAY_ACTUAL_DAILY.forEach(v => {
-    const eV = Math.round(existEstPreP1);
-    const p1V = Math.max(0, v - eV);
-    data.push({month:"May",value:v,type:"actual",eV,p1V,p2V:0,p3V:0});
-    di++;
-  });
-
-  // Project remaining May days
-  // Phase 1 day count: April had 5 live days (Apr 26-30), plus actual May days so far
-  let p1Day = 5 + MAY_ACTUAL_DAYS;
-  const mayProjDays = daysInMay - MAY_ACTUAL_DAYS;
-  for(let d=0; d<mayProjDays; d++){
-    const n=(sRand(di+500)-.5)*.30;
-    const sc=.96;
-    const p1Frac=1-Math.exp(-P1_K*(p1Day+d));
-    const eV=Math.round(base*sc*(1+n));
-    const p1V=Math.round(p1*p1Frac*sc*(1+n*.8));
-    data.push({month:"May",value:Math.max(eV,eV+p1V),eV,p1V,p2V:0,p3V:0,type:"proj"});
-    di++;
+  function p1Frac(date)  {
+    const days = (date - p1LaunchDate)  / 86400000;
+    return days <= 0 ? 0 : Math.min(1, 1 - Math.exp(-P1_K  * days));
   }
-  p1Day += mayProjDays; // now at June 1
+  function p23Frac(date) {
+    const days = (date - p23LaunchDate) / 86400000;
+    return days <= 0 ? 0 : Math.min(1, 1 - Math.exp(-0.055 * days));
+  }
 
-  // ── Jun–Dec: Phase 1 continues exponential ramp; Phase 2/3 on schedule ────────
-  [["Jun",30,0,0,.94],["Jul",31,0,0,.96],["Aug",31,"7_24",0,.95],["Sep",30,1,0,.97],["Oct",31,1,"7_24",.96],["Nov",30,1,1,.98],["Dec",31,1,1,1.0]].forEach(([mo,days,r2,r3,sc])=>{
-    for(let d=0;d<days;d++){
-      const n=(sRand(di)-.5)*.35;
-      const p1Frac=Math.min(1, 1-Math.exp(-P1_K*(p1Day+d)));
-      const eV=Math.round(base*sc*(1+n));
-      const p1V=Math.round(p1*p1Frac*sc*(1+n*.8));
-      const p2V=Math.round(p2*rampFn(r2,d)*sc*(1+n*.8));
-      const p3V=Math.round(p3*rampFn(r3,d)*sc*(1+n*.8));
-      data.push({month:mo,value:Math.max(eV,eV+p1V+p2V+p3V),eV,p1V,p2V,p3V,type:"proj"});
+  // Best available actual daily array for a given month
+  function actualArr(moName, moIdx12) {
+    if (LIVE_MONTHLY[moName]?.daily?.length > 0) return LIVE_MONTHLY[moName].daily;
+    if (moIdx12 === 3) return APR_DAILY;       // April hardcoded fallback
+    if (moIdx12 === 4) return MAY_ACTUAL_DAILY; // May hardcoded fallback
+    return [];
+  }
+
+  const data = [];
+  let di = 0;
+
+  // Iterate: 3 months before current through 3 months after
+  for (let offset = -3; offset <= 3; offset++) {
+    const mi      = curMoIdx + offset;
+    const moIdx12 = ((mi % 12) + 12) % 12;
+    const yr      = mi < 0 ? curYear - 1 : (mi > 11 ? curYear + 1 : curYear);
+    const mo      = ALL_MONTHS[moIdx12];
+    const dim     = DAYS_IN_MO[moIdx12];
+    const arr     = actualArr(mo, moIdx12);
+    const isPast  = offset < 0;
+    const isCur   = offset === 0;
+    const isFut   = offset > 0;
+
+    for (let d = 0; d < dim; d++) {
+      const date       = new Date(yr, moIdx12, d + 1);
+      const isActualDay = isPast || (isCur && d < curDay - 1);
+
+      if (isActualDay) {
+        // Use sheet/fallback daily value if we have it, else seed
+        const v = arr[d] !== undefined ? arr[d] : (() => {
+          const sc = 0.60 + (offset + 3) * 0.13; // ramp up toward present
+          const n  = (sRand(di) - .5) * .40;
+          return Math.round(Math.max(80, base * sc * (1 + n)));
+        })();
+        const p1f  = p1Frac(date);
+        const rawP1 = moIdx12 === 3 && d >= P1_LIVE_APR_IDX
+          ? Math.max(0, v - existEstPreP1)
+          : Math.round(p1 * p1f);
+        const eV  = Math.max(0, v - rawP1);
+        data.push({month:mo, value:v, type:"actual", eV, p1V:rawP1, p2V:0, p3V:0});
+
+      } else {
+        // Projected day
+        const n    = (sRand(di + 400) - .5) * .28;
+        const sc   = .97;
+        const p1f  = p1Frac(date);
+        const p23f = p23Frac(date);
+        const eV   = Math.round(base  * sc * (1 + n));
+        const p1V  = Math.round(p1    * p1f  * sc * (1 + n * .8));
+        const p23V = Math.round(p23   * p23f * sc * (1 + n * .8));
+        data.push({month:mo, value:Math.max(eV, eV+p1V+p23V), eV, p1V, p2V:p23V, p3V:0, type:"proj"});
+      }
       di++;
     }
-    p1Day+=days;
-  });
+  }
 
   return data;
 }
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 function updateStats(){
+  const now = new Date();
+  const lastProjMo = ALL_MONTHS[(now.getMonth() + 3) % 12];
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
   document.getElementById("stat-states").textContent=activeStates.length;
   document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
@@ -565,46 +575,69 @@ function updateStats(){
   const recent=actualData.slice(-7);
   const ca=recent.length?Math.round(recent.reduce((s,d)=>s+d.value,0)/recent.length):0;
   document.getElementById("stat-current").textContent="$"+ca.toLocaleString();
-  const ps=chartData.filter(d=>d.month==="Dec");
+  // Stat card label — update to show +3mo window
+  const projLabel = document.querySelector('.stat-card:last-child .stat-label');
+  if (projLabel) projLabel.innerHTML = `Projected Avg/Day <span style="font-size:9px;color:#484f58">(${lastProjMo}, fully ramped)</span>`;
+  const ps=chartData.filter(d=>d.month===lastProjMo&&d.type==="proj");
   const pa=ps.length?Math.round(ps.reduce((s,d)=>s+d.value,0)/ps.length):0;
   document.getElementById("stat-proj").textContent=pa?"$"+pa.toLocaleString():"—";
   const dd=ps[Math.floor(ps.length/2)]||{};
-  document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2",v:dd.p2V||0,c:"#f59e0b"},{l:"Phase 3",v:dd.p3V||0,c:"#e879f9"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
+  document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2+3",v:dd.p2V||0,c:"#f59e0b"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
 }
 
 // ── Monthly totals ────────────────────────────────────────────────────────────
 function renderMonthlyTotals(){
-  const mt={},mtp={};
-  ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
-  chartData.forEach(d=>{
-    if(!ALL_MONTHS.includes(d.month))return;
-    mt[d.month]+=d.value;
-    if(d.type==="proj") mtp[d.month]="proj";
+  const now = new Date();
+  const curMo = ALL_MONTHS[now.getMonth()];
+  const lastProjMo = ALL_MONTHS[(now.getMonth() + 3) % 12];
+
+  // Only render months that appear in chartData
+  const presentMonths = [...new Set(chartData.map(d => d.month))];
+  const mt = {}, mtp = {};
+  presentMonths.forEach(m => { mt[m] = 0; mtp[m] = "actual"; });
+
+  chartData.forEach(d => {
+    if (!mt.hasOwnProperty(d.month)) return;
+    mt[d.month] += d.value;
+    if (d.type === "proj") mtp[d.month] = "proj";
   });
-  // Current month is partial if it has both actual and projected
-  const now=new Date(), curMo=ALL_MONTHS[now.getMonth()];
-  const hasBoth=chartData.some(d=>d.month===curMo&&d.type==="actual") && chartData.some(d=>d.month===curMo&&d.type==="proj");
-  if(hasBoth) mtp[curMo]="partial";
 
-  // Override April with real total from sheet if available
-  if(LIVE_MONTHLY['Apr']?.total > 0) mt['Apr'] = LIVE_MONTHLY['Apr'].total;
-  else mt['Apr'] = APR_TOTAL;
-  mtp['Apr'] = 'actual';
+  const hasBoth = m => chartData.some(d=>d.month===m&&d.type==="actual") && chartData.some(d=>d.month===m&&d.type==="proj");
+  presentMonths.forEach(m => { if (hasBoth(m)) mtp[m] = "partial"; });
 
-  const janMarSum=chartData.filter(d=>["Jan","Feb","Mar"].includes(d.month)).reduce((s,d)=>s+d.value,0);
-  const mayActualTotal=MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);
-  const actualYTD=janMarSum+APR_TOTAL+mayActualTotal;
-  const projRemainder=chartData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value,0);
+  // Override Apr with real sheet total
+  if (mt['Apr'] !== undefined) {
+    if (LIVE_MONTHLY['Apr']?.total > 0) mt['Apr'] = LIVE_MONTHLY['Apr'].total;
+    else mt['Apr'] = APR_TOTAL;
+    mtp['Apr'] = 'actual';
+  }
 
-  document.getElementById("monthly-grid").innerHTML=ALL_MONTHS.map(m=>{
-    const tp=mtp[m];
-    const color=tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa";
-    const dimColor=tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e";
-    const label=tp==="actual"?"actual":tp==="partial"?"partial":"projected";
-    return`<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${color}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dimColor}">${label}</div></div>`;
+  const actualYTD = chartData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value, 0);
+  // Use real Apr total if available
+  const aprAdj = (LIVE_MONTHLY['Apr']?.total || APR_TOTAL) - chartData.filter(d=>d.month==="Apr"&&d.type==="actual").reduce((s,d)=>s+d.value,0);
+  const actualYTDAdj = actualYTD + Math.max(0, aprAdj);
+  const projTotal = chartData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value, 0);
+
+  // Grid — 6 cols max, wrap naturally
+  document.getElementById("monthly-grid").innerHTML = presentMonths.map(m => {
+    const tp = mtp[m];
+    const color    = tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa";
+    const dimColor = tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e";
+    const label    = tp==="actual"?"actual":tp==="partial"?"partial":"projected";
+    return `<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${color}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dimColor}">${label}</div></div>`;
   }).join("");
 
-  document.getElementById("annual-row").innerHTML=`<span class="annual-label">2026 annual total</span><div class="annual-vals"><div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTD).toLocaleString()}</span></div><div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projRemainder).toLocaleString()}</span></div><div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(actualYTD+projRemainder).toLocaleString()}</span></div></div>`;
+  document.getElementById("annual-row").innerHTML =
+    `<span class="annual-label">Jan – ${lastProjMo} window</span>
+     <div class="annual-vals">
+       <div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTDAdj).toLocaleString()}</span></div>
+       <div class="annual-item"><span class="annual-item-label">+3 mo projected</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projTotal).toLocaleString()}</span></div>
+       <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">combined</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(actualYTDAdj+projTotal).toLocaleString()}</span></div>
+     </div>`;
+
+  // Update totals-note
+  const tn = document.getElementById('totals-note');
+  if (tn) tn.textContent = `actual Jan–${curMo} · projected +3 months · P2+3 launch ~2 mo`;
 }
 
 // ── Phases / states UI ────────────────────────────────────────────────────────
@@ -647,15 +680,23 @@ function draw(){
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom,maxY=Math.max(...chartData.map(d=>d.value))*1.18;
   ctx.fillStyle="#0d1117";ctx.fillRect(0,0,W,H);
   [0,.25,.5,.75,1].forEach(t=>{const v=Math.round(maxY*t),y=PAD.top+cH-t*cH;ctx.strokeStyle=t===0?"#30363d":"#161b22";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(W-PAD.right,y);ctx.stroke();ctx.fillStyle="#484f58";ctx.font="10px monospace";ctx.textAlign="right";ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`,PAD.left-6,y+3.5);});
-  [{s:"Aug",e:"Sep",c:"#f59e0b",l:"P2 ramp"},{s:"Oct",e:"Dec",c:"#e879f9",l:"P3 ramp"}].forEach(({s,e,c,l})=>{
-    const si=chartData.findIndex(d=>d.month===s&&d.type==="proj"),ei=chartData.reduce((a,d,i)=>d.month===e?i:a,-1);
-    if(si<0||ei<0)return;const x1=PAD.left+(si/chartData.length)*cW,x2=PAD.left+((ei+1)/chartData.length)*cW;
-    ctx.fillStyle=c+"0d";ctx.fillRect(x1,PAD.top,x2-x1,cH);ctx.fillStyle=c+"66";ctx.font="9px monospace";ctx.textAlign="center";ctx.fillText(l,(x1+x2)/2,PAD.top+12);ctx.strokeStyle=c+"33";ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(x1,PAD.top);ctx.lineTo(x1,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
-  });
-  const goLiveIdx = 28+28+31+25;
-  const glx=PAD.left+(goLiveIdx/chartData.length)*cW;
-  ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1 live",glx,PAD.top+14);
+  // P2+3 launch marker — first day with p2V > 0
+  const p23Idx = chartData.findIndex(d => d.p2V > 0);
+  if (p23Idx > 0) {
+    const lx = PAD.left + (p23Idx / chartData.length) * cW;
+    ctx.strokeStyle = '#f59e0b55'; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(lx, PAD.top+18); ctx.lineTo(lx, PAD.top+cH); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#f59e0b99'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('▲ P2+3', lx, PAD.top+14);
+  }
+  // P1 live marker — find first day with p1V > 0
+  const p1LiveIdx = chartData.findIndex(d => d.p1V > 0);
+  if (p1LiveIdx > 0) {
+    const glx = PAD.left + (p1LiveIdx / chartData.length) * cW;
+    ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1 live",glx,PAD.top+14);
+  }
   // NOW marker — first projected day
   const ti=chartData.findIndex(d=>d.type==="proj");
   if(ti>0){const tx=PAD.left+(ti/chartData.length)*cW;ctx.strokeStyle="#ffffff30";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(tx,PAD.top);ctx.lineTo(tx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#ffffff55";ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText("NOW",tx,PAD.top-4);}
@@ -670,7 +711,7 @@ function draw(){
       [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"},{v:d.p2V,c:"#f59e0b"},{v:d.p3V,c:"#e879f9"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});
     }
   });
-  ctx.strokeStyle="#ffffff44";ctx.lineWidth=1.5;ctx.beginPath();let started=false;
+  ctx.strokeStyle="#fb923c";ctx.lineWidth=2;ctx.beginPath();let started=false;
   chartData.forEach((d,i)=>{if(d.type!=="actual")return;const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);});ctx.stroke();
   let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
 }
@@ -680,7 +721,7 @@ function showTooltip(e){
   hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
   document.getElementById("tt-date").textContent=`${d.month} · ${d.type==="actual"?"Actual":"Projected"}`;
   document.getElementById("tt-val").style.color=d.type==="actual"?"#4ade80":"#e6edf3";document.getElementById("tt-val").textContent="$"+d.value.toLocaleString();
-  const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2",v:d.p2V,c:"#f59e0b"},{l:"Phase 3",v:d.p3V,c:"#e879f9"}].filter(r=>r.v>0);
+  const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2+3",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
   const bhtml=rows.length>1?rows.map(r=>`<div class="tt-row"><span class="tt-row-label">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join(""):"";
   document.getElementById("tt-breakdown").innerHTML=bhtml;document.getElementById("tt-breakdown").style.display=bhtml?"block":"none";
   tt.style.left=Math.min(x+10,wrap.offsetWidth-190)+"px";tt.style.top="20px";tt.style.display="block";draw();
