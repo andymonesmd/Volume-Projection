@@ -22,6 +22,7 @@
 </style>
 </head>
 <body>
+<div id="err-box" style="display:none;position:fixed;top:0;left:0;right:0;background:#7f1d1d;color:#fca5a5;font-family:monospace;font-size:11px;padding:10px 16px;z-index:99999;white-space:pre-wrap;border-bottom:2px solid #f87171"></div>
 
 <h1>Roman Health — 2026 Revenue · Actual + Projected <span class="badge badge-green" id="h-badge">Loading…</span></h1>
 <div class="subtitle" id="subtitle">Fetching live sheet data…</div>
@@ -36,6 +37,8 @@
   <span style="flex:1"></span>
   <span id="live-ts"></span>
   <button onclick="manualRefresh()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">↻ Refresh</button>
+  <button onclick="openDailyImportModal()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">⬆ Import Daily</button>
+  <button onclick="debugTabs()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">? Tabs</button>
 </div>
 
 <div class="stats">
@@ -67,8 +70,61 @@
 
 <!-- ── STATE TREND WIDGETS ──────────────────────────────────────────── -->
 <div style="margin-top:22px;margin-bottom:22px">
-  <div style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#484f58;font-weight:600;margin-bottom:10px">State trends · actual + projected</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+    <div>
+      <span style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#484f58;font-weight:600">State trends · actual + projected</span>
+      <span id="spark-data-note" style="font-size:9px;color:#484f58;margin-left:10px"></span>
+    </div>
+    <button onclick="openPasteModal()" style="padding:3px 12px;border-radius:5px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">⬆ Import May Data</button>
+  </div>
   <div id="hm-spark-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div>
+</div>
+
+<!-- Daily data import modal -->
+<div id="daily-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;width:min(560px,94vw);max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.08em">Import Daily Revenue Data</span>
+      <button onclick="closeDailyModal()" style="background:transparent;border:none;color:#6e7681;font-size:18px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">
+      Copy your monthly daily data tabs from Google Sheets and paste below.<br>
+      Select all cells in a month tab (Ctrl+A), copy, paste here. Repeat for each month.
+    </p>
+    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+      <span style="font-size:9px;color:#484f58;text-transform:uppercase;letter-spacing:.08em;align-self:center">Paste as:</span>
+      <button onclick="setDailyTab('Apr')" id="dtab-Apr" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer">Apr</button>
+      <button onclick="setDailyTab('May')" id="dtab-May" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">May</button>
+      <button onclick="setDailyTab('Jun')" id="dtab-Jun" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Jun</button>
+    </div>
+    <textarea id="daily-input" placeholder="Paste month tab here…" style="width:100%;height:180px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
+    <div id="daily-error"   style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
+    <div id="daily-preview" style="display:none;margin-top:8px;font-size:11px;color:#4ade80"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button onclick="closeDailyModal()" style="padding:6px 16px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Cancel</button>
+      <button onclick="importDailyData()" style="padding:6px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">Import</button>
+    </div>
+  </div>
+</div>
+<div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center">
+  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;width:min(560px,94vw);max-height:90vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.08em">Import State Monthly Data</span>
+      <button onclick="closePasteModal()" style="background:transparent;border:none;color:#6e7681;font-size:18px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">
+      Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets.<br>
+      Click the top-left corner cell to <strong style="color:#94a3b8">select all</strong> (or Ctrl+A), then <strong style="color:#94a3b8">copy</strong> (Ctrl+C), then paste below.<br>
+      <span style="color:#484f58">Hidden columns and Totals columns are automatically ignored.</span>
+    </p>
+    <textarea id="paste-input" placeholder="Paste sheet data here…&#10;&#10;Expected format:&#10;State  Jan  Feb  Mar  Apr  May&#10;TX     620  660  740  860  930&#10;NC     390  430  510  573  640&#10;…" style="width:100%;height:200px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
+    <div id="paste-error" style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
+    <div id="paste-preview" style="display:none;margin-top:8px;font-size:11px;color:#4ade80"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button onclick="closePasteModal()" style="padding:6px 16px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Cancel</button>
+      <button onclick="importPastedData()" style="padding:6px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">Import</button>
+    </div>
+  </div>
 </div>
 
 <div class="map-section">
@@ -97,6 +153,7 @@
 // ── Live sheet config (shared with dashboard) ─────────────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVT-Xukwe3rxiPAnaMGK8ywEVf0Tfnm9U6cTQo9Ts6DX3DOoGQNcgvHj2pnCAO0_N3/exec";
 const RATES = { rh:12, td1:23, td2:28, mdl1:25, mdl2:28 };
+const STATE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR58Y-q2wQtnGKkSraBWHu7xDfDTxIj6GqeWAYR3Qw_qsPBlK4T7flUPxw27BiHADcFxd1ME-e5g7ut/pub?gid=1484825929&single=true&output=csv";
 
 // ── Fallback hardcoded data (used if sheet unavailable) ───────────────────────
 const FALLBACK_APR_DAILY = [396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
@@ -107,6 +164,7 @@ const FALLBACK_APR_TOTAL  = 32895;
 // Keyed by month name: { daily:[], total:0, days:0, rhEnc:0, year:0 }
 let LIVE_MONTHLY = {};
 let liveDataLoaded = false;
+let STATE_CSV_MONTHLY_REV = {}; // populated from published state CSV sheet
 
 // Working arrays (patched from live or fallback)
 let APR_DAILY   = [...FALLBACK_APR_DAILY];
@@ -223,26 +281,7 @@ function parseRawText(text) {
 }
 
 async function loadLiveData(bgRefresh = false) {
-  if (!bgRefresh) {
-    // Step 1 — try localStorage cache first (renders instantly, even offline)
-    const cached = readCache();
-    if (cached) {
-      try {
-        const parsed = parseRawText(cached.text);
-        if (Object.keys(parsed).length) {
-          LIVE_MONTHLY = parsed;
-          liveDataLoaded = true;
-          setLiveStatus('live', 'Cached · ' + cached.ageMin + 'm ago — fetching fresh…');
-          applyLiveData();
-          refresh(); // show cached data right away, update again when fetch resolves
-        }
-      } catch(e) {}
-    } else {
-      setLiveStatus('loading', 'Connecting to sheet…');
-    }
-  }
-
-  // Step 2 — try live fetch
+  // Step 2 — live fetch (background, non-blocking)
   try {
     const r = await fetch(APPS_SCRIPT_URL + '?_=' + Date.now(), { cache: 'no-store', redirect: 'follow' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -252,20 +291,47 @@ async function loadLiveData(bgRefresh = false) {
     const newMonthly = parseRawText(text);
     if (!Object.keys(newMonthly).length) throw new Error('No sheets parsed');
 
-    saveCache(text); // write cache so dashboard also benefits
+    saveCache(text);
     LIVE_MONTHLY = newMonthly;
     liveDataLoaded = true;
+    const ts = new Date().toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+    setLiveStatus('live', 'Live · ' + ts);
+    document.getElementById('live-ts').textContent = 'Updated ' + ts;
     return true;
   } catch (e) {
-    console.warn('loadLiveData fetch failed:', e.message);
+    console.warn('Live fetch failed:', e.message);
     if (liveDataLoaded) {
-      // Already have cached data — just note that live refresh failed
       const cached = readCache();
-      setLiveStatus('live', 'Cached · ' + (cached ? cached.ageMin + 'm ago' : '?') + ' · live refresh failed');
+      const age = cached ? cached.ageMin + 'm ago' : '?';
+      setLiveStatus('live', 'Cached · ' + age);
     } else {
-      setLiveStatus('err', 'Sheet unavailable — ' + e.message + ' · using hardcoded fallback');
+      setLiveStatus('err', 'Sheet fetch blocked (file:// CORS) — use ⬆ Import or open Dashboard first');
     }
-    return liveDataLoaded; // true if cache was loaded, false if completely offline
+    return liveDataLoaded;
+  }
+}
+
+// ── Synchronous cache boot — runs immediately, before any async work ──────────
+function bootFromCache() {
+  try {
+    const text = localStorage.getItem(LS_KEY);
+    const ts   = localStorage.getItem(LS_TIME);
+    if (!text || !ts) return false;
+
+    const parsed = parseRawText(text);
+    if (!Object.keys(parsed).length) return false;
+
+    const ageMin = Math.round((Date.now() - +ts) / 60000);
+    LIVE_MONTHLY = parsed;
+    liveDataLoaded = true;
+    setLiveStatus('live', 'Cached · ' + ageMin + 'm ago');
+    document.getElementById('live-ts').textContent = 'Cached ' + ageMin + 'm ago';
+    document.getElementById('live-months').textContent = 'Months: ' + Object.keys(parsed).join(', ');
+    applyLiveData();
+    return true;
+  } catch (e) {
+    console.warn('Cache boot failed:', e);
+    return false;
   }
 }
 
@@ -465,6 +531,51 @@ const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI�
 const FIPS = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
 const SMALL = new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
 const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// ── Date guard: a month cannot be "actual" if it hasn't ended yet ─────────────
+function canBeActual(mi) {
+  return mi <= new Date().getMonth();
+}
+
+// Always apply the verified hardcoded data as the authoritative baseline.
+// CSV can only extend beyond FALLBACK_ACTUAL_THRU — it never overwrites verified months.
+function applyFallback() {
+  Object.entries(FALLBACK_STATE_ENC).forEach(([st, arr]) => {
+    if (!STATE_MONTHLY[st]) return;
+    arr.forEach((v, mi) => {
+      if (mi <= FALLBACK_ACTUAL_THRU) {
+        STATE_MONTHLY[st][mi] = { v, actual: v > 0 };  // 0s are actual-but-zero for unlaunched states
+      }
+    });
+  });
+}
+
+function applyStateCells(parsed) {
+  if (!parsed) return;
+  Object.entries(parsed).forEach(([st, months]) => {
+    if (!STATE_MONTHLY[st]) return;
+    months.forEach((cell, mi) => {
+      // Only let CSV write months AFTER the hardcoded fallback window
+      // AND only if the month has actually happened
+      if (cell?.actual && canBeActual(mi) && mi > FALLBACK_ACTUAL_THRU) {
+        STATE_MONTHLY[st][mi] = cell;
+      }
+    });
+  });
+}
+
+// Debug: show first 3 CSV lines + TX values in console and status bar
+function debugStateCsv(csv) {
+  const lines = csv.trim().split('\n').slice(0, 3);
+  console.log('[State CSV raw lines]');
+  lines.forEach((l, i) => console.log(`  row ${i}:`, l.substring(0, 120)));
+  const txVals = (STATE_MONTHLY['TX'] || []).map((c, mi) =>
+    `${ALL_MONTHS[mi]}:${c?.v ?? '?'}${c?.actual ? '✓' : ''}`
+  ).join(' ');
+  console.log('[TX STATE_MONTHLY]', txVals);
+  const el = document.getElementById('live-months');
+  if (el) { el.textContent = 'TX: ' + txVals; el.style.color = '#94a3b8'; }
+}
 
 let activeStates = Object.keys(STATE_DATA).filter(s => STATE_DATA[s].locked);
 let hoveredIdx = null, chartData = [], usTopoData = null;
@@ -676,15 +787,28 @@ function renderMonthlyTotals(){
                        fullYearData.some(d=>d.month===m&&d.type==="proj");
   ALL_MONTHS.forEach(m => { if (hasBoth(m)) mtp[m] = "partial"; });
 
-  // Override Apr with real sheet total if available
-  if (LIVE_MONTHLY['Apr']?.total > 0) mt['Apr'] = LIVE_MONTHLY['Apr'].total;
-  else mt['Apr'] = APR_TOTAL;
+  // Override with real values from state CSV where available
+  Object.entries(STATE_CSV_MONTHLY_REV).forEach(([mo, rev]) => {
+    if (rev > 0) {
+      mt[mo] = rev;
+      mtp[mo] = hasBoth(mo) ? "partial" : "actual";
+    }
+  });
+
+  // Also override Apr with daily sheet total if better
+  const aprSheetTotal = LIVE_MONTHLY['Apr']?.total || APR_TOTAL;
+  if (aprSheetTotal > (STATE_CSV_MONTHLY_REV['Apr'] || 0)) {
+    mt['Apr'] = aprSheetTotal;
+  }
   mtp['Apr'] = 'actual';
 
-  const actualYTD   = fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value, 0)
-                    + Math.max(0, (LIVE_MONTHLY['Apr']?.total || APR_TOTAL)
-                    - fullYearData.filter(d=>d.month==="Apr"&&d.type==="actual").reduce((s,d)=>s+d.value, 0));
-  const projTotal   = fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value, 0);
+  // YTD = sum of all actual months from state CSV (most reliable source)
+  const csvActualMonths = Object.keys(STATE_CSV_MONTHLY_REV).filter(m => STATE_CSV_MONTHLY_REV[m] > 0);
+  const actualYTD = csvActualMonths.length > 0
+    ? csvActualMonths.reduce((s, m) => s + (mt[m] || 0), 0)
+    : fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value, 0);
+
+  const projTotal = fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value, 0);
   const fullYearEst = actualYTD + projTotal;
 
   document.getElementById("monthly-grid").innerHTML = ALL_MONTHS.map(m => {
@@ -704,7 +828,9 @@ function renderMonthlyTotals(){
      </div>`;
 
   const tn = document.getElementById('totals-note');
-  if (tn) tn.textContent = `actual Jan–${curMo} · projected ${curMo}–Dec · P2+3 launch ~2 months out`;
+  if (tn) tn.textContent = csvActualMonths.length
+    ? `actual ${csvActualMonths.join(', ')} from state sheet · projected ${curMo}–Dec`
+    : `actual Jan–${curMo} · projected ${curMo}–Dec`;
 }
 
 // ── Phases / states UI ────────────────────────────────────────────────────────
@@ -854,10 +980,41 @@ function refresh(){
 
 // ── Manual refresh button ─────────────────────────────────────────────────────
 async function manualRefresh() {
-  const ok = await loadLiveData(false);
-  if (ok) applyLiveData();
+  setLiveStatus('loading', 'Refreshing…');
+  bootFromCache();
+  const [liveOk, stateOk] = await Promise.all([
+    loadLiveData(false),
+    loadStateMonthlyDirect()
+  ]);
+  if (liveOk) applyLiveData();
   refresh();
 }
+
+function debugTabs() {
+  try {
+    const raw = localStorage.getItem('tmd_c');
+    if (!raw) { alert('No cache found — open the Dashboard first.'); return; }
+    const json = JSON.parse(raw);
+    const tabs = Object.keys(json);
+    const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const lines = tabs.map(t => {
+      const csv = json[t];
+      const firstRow = csv.split('\n')[0];
+      const headers = firstRow.split(',').map(h => h.trim().toLowerCase().replace(/[^a-z]/g,'').slice(0,3));
+      const moCount = headers.filter(h => MO_NAMES.includes(h)).length;
+      const rowCount = csv.split('\n').length - 1;
+      return `"${t}" — ${rowCount} rows, ${moCount} month cols`;
+    });
+    alert('Tabs in cache:\n\n' + lines.join('\n') + '\n\nThe state tab needs state abbreviations (TX, NC…) in column A and month names in row 1.');
+  } catch(e) { alert('Error reading cache: ' + e.message); }
+}
+
+// ── Global error trap — shows any JS error on screen ─────────────────────────
+window.addEventListener('error', e => {
+  const box = document.getElementById('err-box');
+  if (box) { box.style.display = 'block'; box.textContent = '⚠ JS Error: ' + e.message + ' (line ' + e.lineno + ')'; }
+  console.error(e);
+});
 
 // ── Event listeners ───────────────────────────────────────────────────────────
 document.getElementById("chart").addEventListener("mousemove", showTooltip);
@@ -865,29 +1022,36 @@ document.getElementById("chart").addEventListener("mouseleave", hideTooltip);
 window.addEventListener("resize", () => { draw(); drawMap(); });
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-// Load the map independently so it doesn't block rendering
+try {
+  const cacheHit = bootFromCache();
+  refresh();
+  setView("phases");
+
+  if (!cacheHit) {
+    setLiveStatus('err', 'No cached data — use ⬆ Import Daily or ⬆ Import May Data buttons');
+    document.getElementById('h-badge').textContent = 'fallback data';
+    document.getElementById('h-badge').className   = 'badge badge-yellow';
+    document.getElementById('subtitle').textContent =
+      'Showing model estimates. To load real data: use the ⬆ Import Daily button (paste your monthly sheet tab) and ⬆ Import May Data (paste the state tally tab).';
+  }
+} catch(e) {
+  const box = document.getElementById('err-box');
+  if (box) { box.style.display = 'block'; box.textContent = '⚠ Init error: ' + e.message + '\n' + e.stack; }
+  console.error('Init failed:', e);
+}
+
+// Async background loads — never block the render
 fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
   .then(r => r.json()).catch(() => null)
-  .then(topoData => {
-    usTopoData = topoData;
-    // If cache already rendered once, just update the map
-    if (liveDataLoaded) { drawMap(); } else { refresh(); setView("phases"); }
-  });
+  .then(topoData => { usTopoData = topoData; drawMap(); });
 
-// Kick off live fetch — renders from cache first if available, then again on fresh data
-loadLiveData(false).then(ok => {
-  if (ok) { applyLiveData(); refresh(); setView("phases"); }
-  else if (!liveDataLoaded) {
-    const sub = document.getElementById('subtitle');
-    if (sub) sub.textContent = 'Apr 1–30 ($32,895 · $1,097/day) · May 1–4 ($8,597 · $2,149/day) · Phase 1 live Apr 26 — hardcoded fallback';
-    refresh(); setView("phases");
-  }
-});
+loadLiveData(false).then(ok => { if (ok) { applyLiveData(); refresh(); } });
+loadStateMonthlyDirect().then(ok => { if (ok) renderSparks(); });
 
-// Background refresh every 5 minutes
 setInterval(async () => {
-  const ok = await loadLiveData(true);
-  if (ok) { applyLiveData(); refresh(); }
+  const [liveOk, stateOk] = await Promise.all([loadLiveData(true), loadStateMonthlyDirect()]);
+  if (liveOk) { applyLiveData(); refresh(); }
+  else if (stateOk) { renderSparks(); }
 }, 5 * 60 * 1000);
 
 // ── STATE MONTHLY HEATMAP ─────────────────────────────────────────────────────
@@ -896,33 +1060,31 @@ setInterval(async () => {
 // Structure: STATE_MONTHLY['TX'] = [{v, actual}, ...] indexed 0=Jan … 11=Dec
 let STATE_MONTHLY = {};
 
-// Hardcoded fallback — used only if sheet is completely unavailable
-// Update these when real data drifts significantly from projections
+// Real state encounter data Jan–May 2026 from "state by state" tab
 const FALLBACK_STATE_ENC = {
-  // Jan  Feb  Mar  Apr   May  Jun  Jul  Aug  Sep  Oct  Nov  Dec
-  TX: [620, 660, 740, 860,   0,   0,   0,   0,   0,   0,   0,   0],
-  NC: [390, 430, 510, 573,   0,   0,   0,   0,   0,   0,   0,   0],
-  AZ: [290, 320, 380, 432,   0,   0,   0,   0,   0,   0,   0,   0],
-  OR: [210, 240, 285, 322,   0,   0,   0,   0,   0,   0,   0,   0],
-  IN: [155, 180, 215, 244,   0,   0,   0,   0,   0,   0,   0,   0],
-  TN: [ 95, 110, 135, 155,   0,   0,   0,   0,   0,   0,   0,   0],
-  WA: [ 50,  60,  74,  87,   0,   0,   0,   0,   0,   0,   0,   0],
-  // P1 states — went live Apr 26, so Jan-Mar = 0
-  PA: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-  OH: [  0,   0,   0,  23,   0,   0,   0,   0,   0,   0,   0,   0],
-  MI: [  0,   0,   0,  13,   0,   0,   0,   0,   0,   0,   0,   0],
-  IL: [  0,   0,   0,  19,   0,   0,   0,   0,   0,   0,   0,   0],
-  AL: [  0,   0,   0,  56,   0,   0,   0,   0,   0,   0,   0,   0],
-  // P2 / P3 — not yet live
-  CO: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-  MN: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-  NJ: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-  GA: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-  WI: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
-  MO: [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0],
+  //       Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
+  TX:  [    0,    1,  784,  818, 1080,    0,    0,    0,    0,    0,    0,    0],
+  NC:  [    0,  313,  591,  556,  600,    0,    0,    0,    0,    0,    0,    0],
+  AZ:  [  453,  437,  583,  416,  504,    0,    0,    0,    0,    0,    0,    0],
+  OR:  [  323,  311,  299,  312,  315,    0,    0,    0,    0,    0,    0,    0],
+  IN:  [    0,  197,  284,  241,  300,    0,    0,    0,    0,    0,    0,    0],
+  TN:  [    0,  105,  199,  147,  178,    0,    0,    0,    0,    0,    0,    0],
+  WA:  [    0,    0,   61,   86,  102,    0,    0,    0,    0,    0,    0,    0],
+  // Phase 1 — live Apr 26
+  OH:  [    0,    0,    0,   14,  378,    0,    0,    0,    0,    0,    0,    0],
+  IL:  [    0,    0,    0,    8,  279,    0,    0,    0,    0,    0,    0,    0],
+  MI:  [    0,    0,    0,    6,  246,    0,    0,    0,    0,    0,    0,    0],
+  PA:  [    0,    0,    0,    0,  261,    0,    0,    0,    0,    0,    0,    0],
+  AL:  [    0,    0,    0,   50,  180,    0,    0,    0,    0,    0,    0,    0],
+  // Phase 2+3 — not yet live
+  CO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  MN:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  NJ:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  GA:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  WI:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  MO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
 };
-// Which fallback months are real vs estimated
-const FALLBACK_ACTUAL_THRU = 3; // 0=Jan … 3=Apr — months 0-3 are real in fallback
+const FALLBACK_ACTUAL_THRU = 4; // months 0-4 (Jan–May) are real actuals
 
 function buildStateMonthlySeed() {
   // Start every state as all-projected; sheet data overwrites actuals.
@@ -978,68 +1140,141 @@ function buildStateMonthlySeed() {
 }
 
 function parseStateMonthlyCsv(csv) {
-  // Accepts any tab with col-0 = state abbr, remaining cols = month names
-  // Month headers can be: Jan, January, jan, JAN, Jan-26, Jan 2026, etc.
-  const rows = csv.trim().split('\n').map(parseCSVRow);
-  if (rows.length < 2) return null;
-  const headers = rows[0].map(h => h.trim());
-  const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-  const moIdx = {}; // colIndex -> monthIndex 0-11
-  headers.forEach((h, ci) => {
-    if (ci === 0) return;
-    const norm = h.toLowerCase().replace(/[^a-z]/g,'').slice(0, 3);
-    const mi = MO_NAMES.indexOf(norm);
-    if (mi >= 0) moIdx[ci] = mi;
-  });
-  if (!Object.keys(moIdx).length) return null;
+  if (!csv || !csv.trim()) return null;
 
+  // Split rows; handle both TSV and CSV
+  const rawLines = csv.trim().split('\n');
+  const isTsv = rawLines[0].includes('\t');
+  const lines = rawLines.map(line => {
+    const cols = isTsv ? line.split('\t') : line.split(',');
+    return cols.map(c => c.replace(/^"|"$/g, '').trim());
+  });
+
+  const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const SKIP_WORDS = ['total','sum','avg','ytd','grand','revenue','notes','comment'];
+
+  // ── Auto-detect: find the row that has month headers ─────────────────────
+  let headerRowIdx = -1, stateColIdx = -1;
+  const moIdx = {}; // colIndex → monthIndex 0-11
+
+  for (let ri = 0; ri < Math.min(lines.length, 5); ri++) {
+    const row = lines[ri];
+    const candidateMoIdx = {};
+    row.forEach((h, ci) => {
+      if (!h) return;
+      const lower = h.toLowerCase();
+      if (SKIP_WORDS.some(w => lower.includes(w))) return;
+      const norm = lower.replace(/[^a-z]/g, '').slice(0, 3);
+      if (MO_NAMES.includes(norm)) candidateMoIdx[ci] = MO_NAMES.indexOf(norm);
+    });
+    if (Object.keys(candidateMoIdx).length >= 2) {
+      headerRowIdx = ri;
+      Object.assign(moIdx, candidateMoIdx);
+      break;
+    }
+  }
+
+  if (headerRowIdx < 0) {
+    console.warn('[State CSV] No header row with month columns found');
+    return null;
+  }
+
+  // ── Find which column has state abbreviations ─────────────────────────────
+  // Look at first few data rows — state col has 2-letter uppercase values in STATE_DATA
+  const dataRows = lines.slice(headerRowIdx + 1).filter(r => r.some(c => c));
+  if (!dataRows.length) return null;
+
+  // State column is always the column immediately before the first month column
+  // (never try to "detect" it — this is a fixed structural rule)
+  const firstMonthCi = Math.min(...Object.keys(moIdx).map(Number));
+  stateColIdx = Math.max(0, firstMonthCi - 1);
+
+  console.log(`[State CSV] header row: ${headerRowIdx}, first month col: ${firstMonthCi}, state col: ${stateColIdx}, months:`, moIdx);
+
+  // ── Parse data rows ───────────────────────────────────────────────────────
   const result = {};
-  rows.slice(1).forEach(row => {
-    const st = (row[0] || '').trim().toUpperCase().replace(/\s+/g, '');
+  dataRows.forEach(cols => {
+    const st = (cols[stateColIdx] || '').toUpperCase().replace(/\s+/g, '');
     if (!st || !STATE_DATA[st]) return;
     if (!result[st]) result[st] = Array.from({length:12}, () => null);
     Object.entries(moIdx).forEach(([ci, mi]) => {
-      const raw = (row[+ci] || '').toString().replace(/[$,\s]/g, '');
-      const v = parseInt(raw);
-      // A cell is actual if it has a non-negative number
+      const cell = (cols[+ci] || '').replace(/[$,\s]/g, '');
+      if (!cell || cell === '-' || cell.toLowerCase() === 'n/a' || cell === '') return;
+      const v = parseInt(cell);
       if (!isNaN(v) && v >= 0) result[st][mi] = { v, actual: true };
     });
   });
+
+  console.log('[State CSV] parsed:', Object.keys(result).join(', '));
   return Object.keys(result).length ? result : null;
 }
 
 function applyStateMonthlyFromSheet(json) {
-  // Scan every tab — accept any whose name contains 'state' or 'tally'
-  let found = false;
-  for (const [tabName, csv] of Object.entries(json)) {
-    const n = tabName.toLowerCase();
-    if (!n.includes('state') && !n.includes('tally')) continue;
-    const parsed = parseStateMonthlyCsv(csv);
-    if (!parsed) continue;
-    found = true;
+  const STATE_ABBRS = new Set(Object.keys(STATE_DATA));
+  const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
-    // Overwrite seeded cells with real actuals
-    Object.entries(parsed).forEach(([st, months]) => {
-      if (!STATE_MONTHLY[st]) return;
-      months.forEach((cell, mi) => {
-        if (cell && cell.actual) STATE_MONTHLY[st][mi] = cell;
-      });
-    });
-    // Don't break — process all matching tabs (future-proofing)
+  // Priority name hints — tab is used immediately if its name contains any of these
+  const PRIORITY_HINTS = ['volume', 'state', 'tally', 'monthly enc', 'by state', 'encounters'];
+
+  function scoreStateTable(parsed) {
+    if (!parsed) return 0;
+    return Object.keys(parsed).filter(st => STATE_ABBRS.has(st) &&
+      parsed[st].some(c => c && c.actual && c.v > 0)).length;
   }
 
-  if (!found) {
-    // No state tab found — fall back to hardcoded FALLBACK_STATE_ENC for actuals
+  // First pass — check priority name hints
+  let bestParsed = null, bestScore = 0, bestTab = null;
+  for (const [tabName, csv] of Object.entries(json)) {
+    const n = tabName.toLowerCase();
+    const isPriority = PRIORITY_HINTS.some(h => n.includes(h));
+    if (!isPriority) continue;
+    const parsed = parseStateMonthlyCsv(csv);
+    const score  = scoreStateTable(parsed);
+    if (score > bestScore) { bestScore = score; bestParsed = parsed; bestTab = tabName; }
+  }
+
+  // Second pass — try every remaining tab if priority pass found nothing
+  if (!bestParsed || bestScore === 0) {
+    for (const [tabName, csv] of Object.entries(json)) {
+      const parsed = parseStateMonthlyCsv(csv);
+      const score  = scoreStateTable(parsed);
+      if (score > bestScore) { bestScore = score; bestParsed = parsed; bestTab = tabName; }
+    }
+  }
+
+  const liveMonthsEl = document.getElementById('live-months');
+
+  if (!bestParsed || bestScore === 0) {
+    if (liveMonthsEl) {
+      liveMonthsEl.textContent = '⚠ State tab not found in cache — click ? Tabs to debug';
+      liveMonthsEl.style.color = '#f59e0b';
+    }
+    // Fallback to hardcoded FALLBACK_STATE_ENC
     Object.entries(FALLBACK_STATE_ENC).forEach(([st, arr]) => {
       if (!STATE_MONTHLY[st]) return;
       arr.forEach((v, mi) => {
-        if (mi <= FALLBACK_ACTUAL_THRU && v >= 0) {
+        if (mi <= FALLBACK_ACTUAL_THRU && v >= 0)
           STATE_MONTHLY[st][mi] = { v, actual: true };
-        }
       });
     });
+    return false;
   }
-  return found;
+
+  // Apply via guarded function (respects FALLBACK_ACTUAL_THRU + date guard)
+  applyStateCells(bestParsed);
+
+  const matchedMos = [...new Set(
+    Object.values(bestParsed).flatMap(months =>
+      months.map((c, mi) => c?.actual && c.v > 0 ? ALL_MONTHS[mi] : null).filter(Boolean)
+    )
+  )].join(', ');
+
+  if (liveMonthsEl) {
+    liveMonthsEl.textContent = `● "${bestTab}" · ${bestScore} states · ${matchedMos}`;
+    liveMonthsEl.style.color = '#4ade80';
+  }
+  console.log(`[State monthly] "${bestTab}" | ${bestScore} states | ${matchedMos}`);
+  return true;
 }
 
 let hmMode = 'enc'; // kept for tooltip reference only
@@ -1060,8 +1295,35 @@ function getHmVal(st, mi) {
 function renderSparks() {
   const grid = document.getElementById('hm-spark-grid');
   if (!grid || !Object.keys(STATE_MONTHLY).length) return;
-  const states = Object.keys(STATE_DATA).filter(st => activeStates.includes(st));
+
+  // Sort active states: highest latest actual value first
+  const latestActualVal = st => {
+    const cells = STATE_MONTHLY[st] || [];
+    let best = { v: 0, mi: -1 };
+    cells.forEach((c, mi) => { if (c?.actual && c.v > 0) best = { v: c.v, mi }; });
+    return best.v;
+  };
+  const states = Object.keys(STATE_DATA)
+    .filter(st => activeStates.includes(st))
+    .sort((a, b) => latestActualVal(b) - latestActualVal(a));
+
   if (!states.length) { grid.innerHTML = ''; return; }
+
+  // Check if any state has actual data at all
+  const hasAnyActuals = states.some(st =>
+    (STATE_MONTHLY[st] || []).some(c => c?.actual && c.v > 0)
+  );
+  if (!hasAnyActuals) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;background:#161b22;border:1px solid #242d3f;border-radius:10px;text-align:center">
+      <div style="font-size:12px;color:#64748b;margin-bottom:10px">No state encounter data loaded yet</div>
+      <div style="font-size:11px;color:#484f58;margin-bottom:14px;line-height:1.7">
+        Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets<br>
+        Select all cells (Ctrl+A) → Copy (Ctrl+C) → click the button below
+      </div>
+      <button onclick="openPasteModal()" style="padding:8px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">⬆ Paste State Data</button>
+    </div>`;
+    return;
+  }
 
   let html = '';
   states.forEach(st => {
@@ -1069,9 +1331,11 @@ function renderSparks() {
     const cells = STATE_MONTHLY[st] || Array(12).fill({v:0, actual:false});
     const vals = cells.map(c => c?.v || 0);
 
-    // Most recent actual month
+    // Most recent actual month with v > 0
     let latestActual = { v: 0, mi: -1 };
-    cells.forEach((c, mi) => { if (c?.actual && (c.v > 0 || mi > latestActual.mi)) latestActual = { v: c.v, mi }; });
+    cells.forEach((c, mi) => {
+      if (c?.actual && c.v > 0 && mi > latestActual.mi) latestActual = { v: c.v, mi };
+    });
     // Count of actual months
     const actualCount = cells.filter(c => c?.actual).length;
     const prevVal = latestActual.mi > 0 ? (cells[latestActual.mi - 1]?.v || 0) : 0;
@@ -1171,6 +1435,116 @@ document.addEventListener('mousemove', e => {
   if (tt.style.display !== 'none') { tt.style.left=(e.clientX+14)+'px'; tt.style.top=(e.clientY-8)+'px'; }
 });
 
+function openPasteModal() {
+  document.getElementById('paste-modal').style.display = 'flex';
+  document.getElementById('paste-input').value = '';
+  document.getElementById('paste-error').style.display = 'none';
+  document.getElementById('paste-preview').style.display = 'none';
+  setTimeout(() => document.getElementById('paste-input').focus(), 50);
+}
+function closePasteModal() {
+  document.getElementById('paste-modal').style.display = 'none';
+}
+
+function importPastedData() {
+  const raw = document.getElementById('paste-input').value.trim();
+  if (!raw) { showPasteError('Nothing pasted — copy the sheet cells first.'); return; }
+
+  const parsed = parseStateMonthlyCsv(raw); // handles tab or comma separated
+  if (!parsed || Object.keys(parsed).length === 0) {
+    showPasteError('Could not find state data.\n\nExpected: row 1 has month names (Jan, Feb…), column A has state abbreviations (TX, NC…). Totals columns are automatically ignored.\n\nMake sure you selected ALL cells in the tab (Ctrl+A) before copying.');
+    return;
+  }
+
+  const stateCount = Object.keys(parsed).length;
+  const months = [...new Set(
+    Object.values(parsed).flatMap(mos =>
+      mos.map((c, mi) => c?.actual && c.v > 0 ? ALL_MONTHS[mi] : null).filter(Boolean)
+    )
+  )];
+
+  if (months.length === 0) {
+    showPasteError('Found ' + stateCount + ' states but no numeric values. Check that encounter counts are in the month columns (not just in a Totals column).');
+    return;
+  }
+
+  // Apply and persist
+  STATE_MONTHLY = buildStateMonthlySeed();
+  applyStateCells(parsed);
+  recalibrateFromMonthlyActuals();
+  computeStateCsvRevenue();
+
+  // Save raw CSV string so readStateCache().raw parses correctly on next load
+  saveStateCache(raw);
+
+  renderSparks();
+  closePasteModal();
+
+  const note = document.getElementById('spark-data-note');
+  if (note) { note.textContent = `· ${stateCount} states · ${months.join(', ')} imported`; note.style.color = '#4ade80'; }
+}
+
+function showPasteError(msg) {
+  const el = document.getElementById('paste-error');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('paste-preview').style.display = 'none';
+}
+
+// Close modal on backdrop click
+document.getElementById('paste-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('paste-modal')) closePasteModal();
+});
+
+// ── Daily data import modal ───────────────────────────────────────────────────
+let currentDailyTab = 'Apr';
+function openDailyImportModal() {
+  document.getElementById('daily-modal').style.display = 'flex';
+  document.getElementById('daily-input').value = '';
+  document.getElementById('daily-error').style.display = 'none';
+  document.getElementById('daily-preview').style.display = 'none';
+  setDailyTab('May'); // default to May since that's current
+  setTimeout(() => document.getElementById('daily-input').focus(), 50);
+}
+function closeDailyModal() { document.getElementById('daily-modal').style.display = 'none'; }
+function setDailyTab(mo) {
+  currentDailyTab = mo;
+  ['Apr','May','Jun'].forEach(m => {
+    const b = document.getElementById('dtab-' + m);
+    if (!b) return;
+    const on = m === mo;
+    b.style.borderColor = on ? '#4ade80' : '#30363d';
+    b.style.background  = on ? 'rgba(74,222,128,.12)' : 'transparent';
+    b.style.color       = on ? '#4ade80' : '#6e7681';
+  });
+}
+function importDailyData() {
+  const raw = document.getElementById('daily-input').value.trim();
+  if (!raw) { document.getElementById('daily-error').textContent = 'Nothing pasted.'; document.getElementById('daily-error').style.display = 'block'; return; }
+  const csv = raw.split('\n').map(l => l.split('\t').join(',')).join('\n');
+  const parsed = parseSheetCSV(csv, currentDailyTab);
+  if (!parsed) {
+    document.getElementById('daily-error').textContent = 'Could not parse. Make sure row 1 has date headers (e.g. 4/1, 4/2…) and row labels like RO, TD1, MDL.';
+    document.getElementById('daily-error').style.display = 'block';
+    return;
+  }
+  const daily = parsed.rhRev.map((v, i) => v + (parsed.tdRev[i]||0) + (parsed.mdlRev[i]||0));
+  const total  = daily.reduce((a,b)=>a+b,0);
+  // Store in LIVE_MONTHLY
+  LIVE_MONTHLY[currentDailyTab] = { daily, total, days: daily.length, rhEncTotal: parsed.rh.reduce((a,b)=>a+b,0), rhDailyArr: parsed.rh, year: 2026, month: parsed.month };
+  applyLiveData();
+  liveDataLoaded = true;
+  refresh();
+  const prev = document.getElementById('daily-preview');
+  prev.textContent = `✓ ${currentDailyTab}: ${daily.length} days · $${total.toLocaleString()} total · $${Math.round(total/daily.length).toLocaleString()}/day avg`;
+  prev.style.display = 'block';
+  document.getElementById('daily-error').style.display = 'none';
+  setLiveStatus('live', currentDailyTab + ' imported · ' + daily.length + ' days');
+  setTimeout(closeDailyModal, 1200);
+}
+document.getElementById('daily-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('daily-modal')) closeDailyModal();
+});
+
 function recalibrateFromMonthlyActuals() {
   Object.keys(STATE_DATA).forEach(st => {
     if (STATE_DATA[st].group !== 'existing') return;
@@ -1182,17 +1556,119 @@ function recalibrateFromMonthlyActuals() {
   });
 }
 
+// ── Derive monthly RH revenue totals from the state CSV ───────────────────────
+function computeStateCsvRevenue() {
+  STATE_CSV_MONTHLY_REV = {};
+  ALL_MONTHS.forEach((mo, mi) => {
+    let totalEnc = 0, hasActual = false;
+    Object.values(STATE_MONTHLY).forEach(cells => {
+      const cell = cells[mi];
+      if (cell?.actual) { totalEnc += cell.v; hasActual = true; }
+    });
+    if (hasActual) STATE_CSV_MONTHLY_REV[mo] = totalEnc * RATES.rh;
+  });
+}
+
+// ── Published CSV URL for state-by-state tally sheet ─────────────────────────
+// This is a public Google Sheets "publish to web" CSV — no CORS issues
+const LS_STATE_KEY  = 'tmd_state_monthly';
+const LS_STATE_TIME = 'tmd_state_time';
+
+function saveStateCache(raw) {
+  try { localStorage.setItem(LS_STATE_KEY, raw); localStorage.setItem(LS_STATE_TIME, Date.now().toString()); } catch(e) {}
+}
+function readStateCache() {
+  try {
+    const raw = localStorage.getItem(LS_STATE_KEY);
+    const ts  = localStorage.getItem(LS_STATE_TIME);
+    if (!raw || !ts) return null;
+    return { raw, ageMin: Math.round((Date.now() - +ts) / 60000) };
+  } catch(e) { return null; }
+}
+
+async function loadStateMonthlyDirect() {
+  // 1. Try published CSV URL (no CORS restriction — works from local files)
+  try {
+    const r = await fetch(STATE_CSV_URL + '&_=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const csv = await r.text();
+    if (!csv || csv.trim().length < 10) throw new Error('empty');
+
+    const parsed = parseStateMonthlyCsv(csv);
+    if (!parsed || Object.keys(parsed).length === 0) throw new Error('no state rows found');
+
+    // Rebuild seed, apply verified fallback first, then layer CSV on top (Jun+ only)
+    STATE_MONTHLY = buildStateMonthlySeed();
+    applyFallback();
+    applyStateCells(parsed);
+    debugStateCsv(csv);  // show raw structure in console + status bar
+    recalibrateFromMonthlyActuals();
+    computeStateCsvRevenue();
+    saveStateCache(csv);
+
+    const months = [...new Set(
+      Object.values(parsed).flatMap(mos =>
+        mos.map((c, mi) => c?.actual && c.v > 0 ? ALL_MONTHS[mi] : null).filter(Boolean)
+      )
+    )];
+    const liveMonthsEl = document.getElementById('live-months');
+    if (liveMonthsEl) {
+      liveMonthsEl.textContent = `● State sheet: ${Object.keys(parsed).length} states · ${months.join(', ')}`;
+      liveMonthsEl.style.color = '#4ade80';
+    }
+    console.log(`[State CSV] ${Object.keys(parsed).length} states · ${months.join(', ')}`);
+    return true;
+
+  } catch(e) {
+    console.warn('State CSV fetch failed:', e.message);
+    // 2. Fall back to cached CSV from previous successful fetch
+    const sc = readStateCache();
+    if (sc) {
+      const parsed = parseStateMonthlyCsv(sc.raw);
+      if (parsed) {
+        STATE_MONTHLY = buildStateMonthlySeed();
+        applyFallback();
+        applyStateCells(parsed);
+        recalibrateFromMonthlyActuals();
+        computeStateCsvRevenue();
+        const liveMonthsEl = document.getElementById('live-months');
+        if (liveMonthsEl) { liveMonthsEl.textContent = `● State sheet cached · ${sc.ageMin}m ago`; liveMonthsEl.style.color = '#f59e0b'; }
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
 function initSparks() {
   STATE_MONTHLY = buildStateMonthlySeed();
+  applyFallback(); // always seed with verified Jan-May actuals first
+
+  // Clear any stale cache saved as "[object Object]" by old buggy code
   try {
-    const cached = localStorage.getItem('tmd_c');
-    if (cached) {
-      const json = JSON.parse(cached);
-      const found = applyStateMonthlyFromSheet(json);
-      if (found) recalibrateFromMonthlyActuals();
+    const raw = localStorage.getItem(LS_STATE_KEY);
+    if (raw && (raw.startsWith('[object') || raw.startsWith('{'))) {
+      localStorage.removeItem(LS_STATE_KEY);
+      localStorage.removeItem(LS_STATE_TIME);
+      console.log('[State CSV] Cleared stale/invalid state cache');
     }
   } catch(e) {}
+
+  // Load from cached CSV if available (from previous successful fetch of published sheet)
+  const sc = readStateCache();
+  if (sc) {
+    const parsed = parseStateMonthlyCsv(sc.raw);
+    if (parsed) {
+      applyStateCells(parsed);
+      recalibrateFromMonthlyActuals();
+      computeStateCsvRevenue();
+    }
+  }
+
   renderSparks();
+
+  // Fetch live from published CSV URL in background
+  loadStateMonthlyDirect().then(ok => { if (ok) { computeStateCsvRevenue(); renderSparks(); refresh(); } });
 }
 </script>
 
@@ -1203,16 +1679,18 @@ function initSparks() {
 initSparks();
 const _origRefresh = refresh;
 window.refresh = function() {
-  _origRefresh();  // already generates both chartData and fullYearData
+  _origRefresh();
   STATE_MONTHLY = buildStateMonthlySeed();
-  try {
-    const cached = localStorage.getItem('tmd_c');
-    if (cached) {
-      const json = JSON.parse(cached);
-      const found = applyStateMonthlyFromSheet(json);
-      if (found) recalibrateFromMonthlyActuals();
+  applyFallback(); // always protect Jan-May actuals
+  const sc = readStateCache();
+  if (sc) {
+    const parsed = parseStateMonthlyCsv(sc.raw);
+    if (parsed) {
+      applyStateCells(parsed);
+      recalibrateFromMonthlyActuals();
+      computeStateCsvRevenue();
     }
-  } catch(e) {}
+  }
   renderSparks();
 };
 </script>
