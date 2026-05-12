@@ -63,7 +63,7 @@
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2+3: CO·MN·NJ·GA·WI·MO (~2 mo)</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·WI·MO — toggle to model "if licensed today"</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
 </div>
 <div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · projections recalibrate daily from live sheet</div>
@@ -500,12 +500,11 @@ const STATE_DATA = {
   MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},
   IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},
   AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},
+  // Phase 2 — all 6 new license states combined
   CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
-  MN:{group:"phase2",pop:5.8,dailyContrib:115,locked:false},
-  NJ:{group:"phase3a",pop:9.3,dailyContrib:190,locked:false},
-  GA:{group:"phase3a",pop:11,dailyContrib:170,locked:false},
-  WI:{group:"phase3b",pop:5.9,dailyContrib:100,locked:false},
-  MO:{group:"phase3b",pop:6.2,dailyContrib:105,locked:false}
+  GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
+  WI:{group:"phase2",pop:5.9,dailyContrib:100,locked:false},
+  MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false}
 };
 
 // Store originals for recalibration
@@ -518,16 +517,15 @@ const ALL_STATES = {
 };
 const PHASE_META = {
   existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
-  phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
-  phase2:{label:"Phase 2",color:"#f59e0b",states:["CO","MN"]},
-  phase3a:{label:"Phase 3A",color:"#e879f9",states:["NJ","GA"]},
-  phase3b:{label:"Phase 3B",color:"#f87171",states:["WI","MO"]}
+  phase1:  {label:"Phase 1", color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
+  phase2:  {label:"Phase 2", color:"#f59e0b",states:["CO","GA","WI","MO"]}
 };
-const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b",phase3a:"#e879f9",phase3b:"#f87171"};
+const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
+// Phase 2 launches from TODAY when toggled on — used as scenario planning tool
+const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·WI·MO"};
 const TZ = {ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
 const TZ_META = {PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
 let showTZ = false;
-const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL",phase2:"Phase 2 — CO·MN",phase3a:"Phase 3A — NJ·GA",phase3b:"Phase 3B — WI·MO"};
 const FIPS = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
 const SMALL = new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
 const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -596,7 +594,7 @@ function generateData() {
 
   const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
   const p1   = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p23  = activeStates.filter(s=>['phase2','phase3a','phase3b'].includes(STATE_DATA[s]?.group))
+  const p23  = activeStates.filter(s => STATE_DATA[s]?.group === 'phase2')
                             .reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
 
   const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length >= 5
@@ -605,7 +603,8 @@ function generateData() {
 
   // Phase 1 live Apr 26 2026 — exponential ramp from that date
   const p1LaunchDate  = new Date(2026, 3, 26);
-  const p23LaunchDate = new Date(curYear, curMoIdx + 2, curDay); // exactly 2 months from today
+  // Phase 2 scenario: launches TODAY (this is the "what if" projection)
+  const p23LaunchDate = new Date(curYear, curMoIdx, curDay);
 
   function p1Frac(date)  {
     const days = (date - p1LaunchDate)  / 86400000;
@@ -687,7 +686,7 @@ function generateFullYearData() {
 
   const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
   const p1   = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p23  = activeStates.filter(s=>['phase2','phase3a','phase3b'].includes(STATE_DATA[s]?.group))
+  const p23  = activeStates.filter(s => STATE_DATA[s]?.group === 'phase2')
                             .reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
 
   const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length >= 5
@@ -695,7 +694,8 @@ function generateFullYearData() {
     : base;
 
   const p1LaunchDate  = new Date(2026, 3, 26);
-  const p23LaunchDate = new Date(curYear, curMoIdx + 2, curDay);
+  // Phase 2 scenario: launches TODAY
+  const p23LaunchDate = new Date(curYear, curMoIdx, curDay);
 
   function p1Frac(date)  { const d=(date-p1LaunchDate)/86400000;  return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d)); }
   function p23Frac(date) { const d=(date-p23LaunchDate)/86400000; return d<=0?0:Math.min(1,1-Math.exp(-0.055*d)); }
@@ -837,11 +837,23 @@ function renderMonthlyTotals(){
 function renderPhases(){
   const wrap=document.getElementById("phases-view");wrap.innerHTML="";
   Object.entries(PHASE_META).forEach(([key,meta])=>{
-    const isLocked=key==="existing";const allOn=meta.states.every(s=>activeStates.includes(s));const contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);
-    const card=document.createElement("div");card.className="phase-card"+(isLocked?" locked":"");
-    card.style.borderColor=allOn?meta.color:"#30363d";card.style.background=allOn?meta.color+"11":"#161b22";
-    card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
-    if(!isLocked)card.onclick=()=>togglePhase(key);wrap.appendChild(card);
+    const isLocked = key==="existing";
+    const allOn    = meta.states.every(s=>activeStates.includes(s));
+    const contrib  = meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);
+
+    const card=document.createElement("div");
+    card.className="phase-card"+(isLocked?" locked":"");
+    card.style.borderColor = allOn ? meta.color : "#30363d";
+    card.style.background  = allOn ? meta.color+"11" : "#161b22";
+
+    if (key === 'phase2') {
+      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label} · 6 Licenses${allOn?' ✦ scenario on':''}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
+    } else {
+      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
+    }
+
+    if(!isLocked)card.onclick=()=>togglePhase(key);
+    wrap.appendChild(card);
   });
 }
 function renderStates(){
@@ -873,14 +885,18 @@ function draw(){
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom,maxY=Math.max(...chartData.map(d=>d.value))*1.18;
   ctx.fillStyle="#0d1117";ctx.fillRect(0,0,W,H);
   [0,.25,.5,.75,1].forEach(t=>{const v=Math.round(maxY*t),y=PAD.top+cH-t*cH;ctx.strokeStyle=t===0?"#30363d":"#161b22";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(W-PAD.right,y);ctx.stroke();ctx.fillStyle="#484f58";ctx.font="10px monospace";ctx.textAlign="right";ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`,PAD.left-6,y+3.5);});
-  // P2+3 launch marker — first day with p2V > 0
+  // Phase 2 scenario marker — launches today when active
   const p23Idx = chartData.findIndex(d => d.p2V > 0);
-  if (p23Idx > 0) {
+  const p2Active = activeStates.some(s => STATE_DATA[s]?.group === 'phase2');
+  if (p2Active && p23Idx >= 0) {
     const lx = PAD.left + (p23Idx / chartData.length) * cW;
-    ctx.strokeStyle = '#f59e0b55'; ctx.lineWidth = 1; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(lx, PAD.top+18); ctx.lineTo(lx, PAD.top+cH); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = '#f59e0b99'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
-    ctx.fillText('▲ P2+3', lx, PAD.top+14);
+    ctx.strokeStyle = '#f59e0b88'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(lx, PAD.top+14); ctx.lineTo(lx, PAD.top+cH); ctx.stroke(); ctx.setLineDash([]);
+    // Shaded "Phase 2 scenario" region
+    ctx.fillStyle = 'rgba(245,158,11,0.05)';
+    ctx.fillRect(lx, PAD.top, (W - PAD.right) - lx, cH);
+    ctx.fillStyle = '#f59e0baa'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('▲ P2 today', lx, PAD.top + 10);
   }
   // P1 live marker — find first day with p1V > 0
   const p1LiveIdx = chartData.findIndex(d => d.p1V > 0);
@@ -1078,7 +1094,6 @@ const FALLBACK_STATE_ENC = {
   AL:  [    0,    0,    0,   50,  180,    0,    0,    0,    0,    0,    0,    0],
   // Phase 2+3 — not yet live
   CO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-  MN:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
   NJ:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
   GA:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
   WI:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
@@ -1096,11 +1111,9 @@ function buildStateMonthlySeed() {
     const fallback = FALLBACK_STATE_ENC[st] || Array(12).fill(0);
     const isP1 = STATE_DATA[st].group === 'phase1';
     const isP2 = STATE_DATA[st].group === 'phase2';
-    const isP3a = STATE_DATA[st].group === 'phase3a';
-    const isP3b = STATE_DATA[st].group === 'phase3b';
 
-    // Anchor: use Apr fallback value (best known actual) for projection scaling
     const aprAnchor = fallback[3] || STATE_DATA[st].dailyContrib / RATES.rh * 30;
+    const curMo = new Date().getMonth(); // 0-indexed, phase2 scenario starts now
 
     result[st] = Array.from({length:12}, (_, mi) => {
       const noise = 0.82 + sRand(si * 100 + mi) * 0.36;
@@ -1115,18 +1128,11 @@ function buildStateMonthlySeed() {
         return { v: Math.round(target * frac * noise), actual: false };
       }
 
-      // P2: ramp starts Aug
+      // P2 scenario: ramps from current month (today) when active
       if (isP2) {
-        if (mi < 7) return { v: 0, actual: false };
-        const frac = Math.min(1, (mi - 7) / 4);
-        const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
-        return { v: Math.round(target * frac * noise), actual: false };
-      }
-
-      // P3: ramp starts Oct
-      if (isP3a || isP3b) {
-        if (mi < 9) return { v: 0, actual: false };
-        const frac = Math.min(1, (mi - 9) / 3);
+        if (mi < curMo) return { v: 0, actual: false };
+        const daysSinceLaunch = (mi - curMo) * 30;
+        const frac = Math.min(1, 1 - Math.exp(-0.055 * daysSinceLaunch));
         const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
         return { v: Math.round(target * frac * noise), actual: false };
       }
