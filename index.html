@@ -63,7 +63,7 @@
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·WI·MO — toggle to model "if licensed today"</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·MO·SC — toggle to model "if licensed today"</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
 </div>
 <div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · projections recalibrate daily from live sheet</div>
@@ -503,8 +503,8 @@ const STATE_DATA = {
   // Phase 2 — all 6 new license states combined
   CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
   GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
-  WI:{group:"phase2",pop:5.9,dailyContrib:100,locked:false},
-  MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false}
+  MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false},
+  SC:{group:"phase2",pop:5.3,dailyContrib:80,locked:false}
 };
 
 // Store originals for recalibration
@@ -518,11 +518,11 @@ const ALL_STATES = {
 const PHASE_META = {
   existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
   phase1:  {label:"Phase 1", color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
-  phase2:  {label:"Phase 2", color:"#f59e0b",states:["CO","GA","WI","MO"]}
+  phase2:  {label:"Phase 2", color:"#f59e0b",states:["CO","GA","MO","SC"]}
 };
 const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
 // Phase 2 launches from TODAY when toggled on — used as scenario planning tool
-const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·WI·MO"};
+const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·MO·SC"};
 const TZ = {ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
 const TZ_META = {PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
 let showTZ = false;
@@ -847,7 +847,7 @@ function renderPhases(){
     card.style.background  = allOn ? meta.color+"11" : "#161b22";
 
     if (key === 'phase2') {
-      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label} · 6 Licenses${allOn?' ✦ scenario on':''}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
+      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label} · ${meta.states.length} Licenses${allOn?' ✦ scenario on':''}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
     } else {
       card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
     }
@@ -1096,8 +1096,8 @@ const FALLBACK_STATE_ENC = {
   CO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
   NJ:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
   GA:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-  WI:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
   MO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  SC:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
 };
 const FALLBACK_ACTUAL_THRU = 4; // months 0-4 (Jan–May) are real actuals
 
