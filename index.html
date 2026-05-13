@@ -77,7 +77,7 @@
     </div>
     <button onclick="openPasteModal()" style="padding:3px 12px;border-radius:5px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">⬆ Import May Data</button>
   </div>
-  <div id="hm-spark-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div>
+  <div id="hm-spark-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:clamp(8px,1.5vw,14px)"></div>
 </div>
 
 <!-- Daily data import modal -->
@@ -512,8 +512,24 @@ const ORIGINAL_EXISTING_CONTRIB = Object.fromEntries(
   Object.entries(STATE_DATA).filter(([,v])=>v.group==='existing').map(([k,v])=>[k,v.dailyContrib])
 );
 
+// IMLC Compact member states — these get a teal bubble on the map
+// Non-compact states that still matter: OR (our license), SC (phase2 target)
+// Excluded (not compact, no current interest): CA, NY, MA
+const COMPACT_STATES = new Set([
+  'WA','MT','ID','WY','ND','SD','NE','KS','MN','IA','WI','MI','IN','OH','IL',
+  'KY','WV','VA','NC','TN','AL','GA','FL','MS','LA','AR','OK','TX','MO','CO',
+  'UT','NM','AZ','NV','AK','ME','NH','VT','CT','NJ','DE','MD','PA','HI',
+  'RI','WV','DC'
+]);
+
 const ALL_STATES = {
-  AK:{pop:0.7,estVolume:10},AR:{pop:3.1,estVolume:50},CA:{pop:39.0,estVolume:605},CT:{pop:3.6,estVolume:55},DE:{pop:1.0,estVolume:15},FL:{pop:22.6,estVolume:350},HI:{pop:1.5,estVolume:25},IA:{pop:3.2,estVolume:50},ID:{pop:1.9,estVolume:30},KS:{pop:2.9,estVolume:45},KY:{pop:4.5,estVolume:70},LA:{pop:4.6,estVolume:70},MA:{pop:7.0,estVolume:110},MD:{pop:6.2,estVolume:95},ME:{pop:1.4,estVolume:20},MS:{pop:3.0,estVolume:45},MT:{pop:1.1,estVolume:15},ND:{pop:0.8,estVolume:10},NE:{pop:2.0,estVolume:30},NH:{pop:1.4,estVolume:20},NM:{pop:2.1,estVolume:35},NV:{pop:3.2,estVolume:50},NY:{pop:19.6,estVolume:305},OK:{pop:4.0,estVolume:60},RI:{pop:1.1,estVolume:15},SC:{pop:5.3,estVolume:80},SD:{pop:0.9,estVolume:15},UT:{pop:3.4,estVolume:55},VA:{pop:8.7,estVolume:135},VT:{pop:0.6,estVolume:10},WV:{pop:1.8,estVolume:30},WY:{pop:0.6,estVolume:10}
+  AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},
+  FL:{pop:22.6},HI:{pop:1.5},IA:{pop:3.2},ID:{pop:1.9},KS:{pop:2.9},
+  KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},
+  MS:{pop:3.0},MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},
+  NM:{pop:2.1},NV:{pop:3.2},NY:{pop:19.6},NJ:{pop:9.3},OK:{pop:4.0},
+  RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},
+  WI:{pop:5.9},WV:{pop:1.8},WY:{pop:0.6},MN:{pop:5.8}
 };
 const PHASE_META = {
   existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
@@ -847,7 +863,7 @@ function renderPhases(){
     card.style.background  = allOn ? meta.color+"11" : "#161b22";
 
     if (key === 'phase2') {
-      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label} · ${meta.states.length} Licenses${allOn?' ✦ scenario on':''}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
+      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label} · ${meta.states.length} Licenses</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
     } else {
       card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
     }
@@ -978,8 +994,111 @@ function drawMap(){
     }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";}).on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);}).on("click",()=>{if(sd&&!isLocked)toggleState(st);});
   });
   svg.append("path").datum(topojson.mesh(usTopoData,usTopoData.objects.states,(a,b)=>a!==b)).attr("fill","none").attr("stroke","#080c12").attr("stroke-width",".5").attr("d",path).attr("pointer-events","none");
+
+  // ── Population bubble layer ───────────────────────────────────────────────
+  const ALL_POPS = Object.assign(
+    Object.fromEntries(Object.entries(STATE_DATA).map(([st,d])=>[st,d.pop])),
+    Object.fromEntries(Object.entries(ALL_STATES).map(([st,d])=>[st,d.pop]))
+  );
+  const maxPop = Math.max(...Object.values(ALL_POPS));
+  const maxR   = W * 0.042;
+
+  features.forEach(feat => {
+    const fips     = feat.id.toString().padStart(2,"0");
+    const st       = FIPS[fips];
+    if (!st) return;
+    const pop      = ALL_POPS[st];
+    if (!pop) return;
+    const centroid = path.centroid(feat);
+    if (!centroid || isNaN(centroid[0])) return;
+
+    const sd        = STATE_DATA[st];
+    const isOn      = sd ? activeStates.includes(st) : false;
+    const grp       = sd ? sd.group : null;
+    const color     = grp ? GRP_COLORS[grp] : null;
+    const isP2      = grp === "phase2";
+    const isCompact = COMPACT_STATES.has(st) && !sd;
+
+    if (!sd && !isCompact) return;
+
+    const r = Math.max(3, maxR * Math.sqrt(pop / maxPop));
+    const b = svg.append("g").attr("pointer-events","none");
+
+    if (isOn) {
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill",color).attr("opacity",.15);
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill","none").attr("stroke",color).attr("stroke-width",1.4).attr("opacity",.60);
+    } else if (isP2) {
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill",color).attr("opacity",.07);
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill","none").attr("stroke",color).attr("stroke-width",1)
+        .attr("stroke-dasharray","4,3").attr("opacity",.42);
+    } else if (isCompact) {
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill","#2dd4bf").attr("opacity",.05);
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill","none").attr("stroke","#2dd4bf")
+        .attr("stroke-width",.8).attr("stroke-dasharray","2,3").attr("opacity",.28);
+    } else {
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill","#334155").attr("opacity",.06);
+      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
+        .attr("fill","none").attr("stroke","#4a5568")
+        .attr("stroke-width",.8).attr("opacity",.30);
+    }
+  });
+
+  // Legend update with bubble scale reference
   const leg=document.getElementById("map-legend");
-  if(leg)leg.innerHTML=Object.entries(GRP_LABELS).map(([k,v])=>{const c=GRP_COLORS[k];return`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:${c}22;border:1.5px solid ${c};flex-shrink:0;"></div><span style="font-size:9px;color:#6e7681;font-family:monospace">${v}</span></div>`;}).join("")+`<div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:12px;border-radius:2px;background:#0d1520;border:1px solid #182535;flex-shrink:0;"></div><span style="font-size:9px;color:#253040;font-family:monospace">Other states (hover to assess)</span></div>`+(showTZ?`<div style="width:100%;margin-top:6px;border-top:1px solid #21262d;padding-top:8px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">`+["PT","MT","CST","ET"].map(k=>{const m=TZ_META[k];return`<div style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:2px;background:${m.color}25;border:1px solid ${m.color}55;"></div><span style="font-size:9px;color:${m.color};font-family:monospace">${m.abbr} — ${m.label}</span></div>`;}).join("")+`</div>`:"");
+  if(leg) {
+    buildMapLegend(leg, maxR, maxPop);
+  }
+}
+
+function buildMapLegend(leg, maxR, maxPop) {
+  const parts = [];
+  Object.entries(GRP_LABELS).forEach(([k,v]) => {
+    const c = GRP_COLORS[k];
+    const isP2 = k === 'phase2';
+    const dash = isP2 ? 'stroke-dasharray="3,2"' : '';
+    const sw = isP2 ? '1' : '1.5';
+    parts.push(
+      '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="' + c + '22" stroke="' + c + '" stroke-width="' + sw + '" ' + dash + '/>' + '<' + '/svg>'
+      + '<span style="font-size:9px;color:#6e7681;font-family:monospace">' + v + '<' + '/span>'
+      + '<' + '/div>'
+    );
+  });
+  parts.push(
+    '<div style="display:flex;align-items:center;gap:6px;">'
+    + '<svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#2dd4bf" stroke-width=".8" stroke-dasharray="2,3" opacity=".7"/>' + '<' + '/svg>'
+    + '<span style="font-size:9px;color:#2dd4bf99;font-family:monospace">IMLC compact — reachable via compact license<' + '/span>'
+    + '<' + '/div>'
+  );
+  parts.push(
+    '<div style="display:flex;align-items:center;gap:6px;">'
+    + '<svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#334155" stroke-width=".7" stroke-dasharray="2,3"/>' + '<' + '/svg>'
+    + '<span style="font-size:9px;color:#253040;font-family:monospace">Other states<' + '/span>'
+    + '<' + '/div>'
+  );
+  // Bubble scale reference
+  const scaleRow = [5, 15, 30].map(pop => {
+    const r = Math.max(4, Math.round(maxR * Math.sqrt(pop / maxPop)));
+    const d = r * 2 + 4;
+    return '<div style="display:flex;align-items:center;gap:4px;">'
+      + '<svg width="' + d + '" height="' + d + '" style="overflow:visible"><circle cx="' + (r+2) + '" cy="' + (r+2) + '" r="' + r + '" fill="none" stroke="#6e7681" stroke-width=".8" opacity=".5"/>' + '<' + '/svg>'
+      + '<span style="font-size:9px;color:#484f58;font-family:monospace">' + pop + 'M<' + '/span>'
+      + '<' + '/div>';
+  }).join('');
+  parts.push(
+    '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid #21262d;flex-wrap:wrap;">'
+    + '<span style="font-size:9px;color:#484f58;font-family:monospace">Pop:<' + '/span>'
+    + scaleRow
+    + '<' + '/div>'
+  );
+  leg.innerHTML = parts.join('');
 }
 
 // ── Refresh all UI ────────────────────────────────────────────────────────────
@@ -1409,7 +1528,7 @@ function renderSparks() {
           <div style="font-size:10px;color:#484f58">total ${totalActual.toLocaleString()}</div>
         </div>
       </div>
-      <svg width="${W}" height="${H + 14}" style="display:block;overflow:visible;margin-top:2px">
+      <svg viewBox="0 0 ${W} ${H + 14}" width="100%" style="display:block;overflow:visible;margin-top:2px">
         ${areaAct ? `<polygon points="${areaAct}" fill="${sc}" opacity=".07"/>` : ''}
         ${projPts.split(' ').length > 2 ? `<polyline points="${projPts}" fill="none" stroke="${sc}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".32"/>` : ''}
         ${actPts.split(' ').length > 2 ? `<polyline points="${actPts}" fill="none" stroke="${sc}" stroke-width="2.2"/>` : ''}
