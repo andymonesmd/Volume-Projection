@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,7 +8,6 @@
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}.panel{margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden}.panel-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.panel-body{padding:14px 16px}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:8px;vertical-align:middle}.badge-green{background:#4ade8022;border:1px solid #4ade8055;color:#4ade80}.badge-blue{background:#60a5fa22;border:1px solid #60a5fa55;color:#60a5fa}.badge-yellow{background:#f59e0b22;border:1px solid #f59e0b55;color:#f59e0b}.badge-red{background:#f8717122;border:1px solid #f8717155;color:#f87171}
-  /* Live data status bar */
   #live-status{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#161b22;border:1px solid #21262d;border-radius:6px;margin-bottom:12px;font-size:10px;flex-wrap:wrap;gap:6px}
   #live-dot{width:7px;height:7px;border-radius:50%;background:#484f58;flex-shrink:0;transition:background .3s}
   #live-dot.live{background:#4ade80;animation:pulse 2s infinite}
@@ -18,6 +18,8 @@
   #live-months{color:#4ade80}
   #live-fallback{color:#f59e0b}
   #live-ts{color:#484f58}
+  /* FIX #3 note badge */
+  .rate-note{font-size:8px;color:#484f58;font-style:italic}
   @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.monthly-grid{grid-template-columns:repeat(3,1fr)}.month-cell:nth-child(6n){border-right:1px solid #21262d}.month-cell:nth-child(3n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}.month-cell:nth-last-child(-n+3){border-bottom:none}}
 </style>
 </head>
@@ -27,7 +29,6 @@
 <h1>Roman Health — 2026 Revenue · Actual + Projected <span class="badge badge-green" id="h-badge">Loading…</span></h1>
 <div class="subtitle" id="subtitle">Fetching live sheet data…</div>
 
-<!-- LIVE DATA STATUS BAR -->
 <div id="live-status">
   <span id="live-dot" class="loading"></span>
   <span id="live-label" style="color:#6e7681">Connecting to sheet…</span>
@@ -65,10 +66,11 @@
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·MO·SC — toggle to model "if licensed today"</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
+  <!-- FIX #4: label estimated pre-history bars -->
+  <div class="legend-item"><div class="legend-dot" style="background:#4ade8044;border:1px dashed #4ade80"></div><span class="legend-label">Jan–Mar estimated (no daily sheet data)</span></div>
 </div>
-<div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · projections recalibrate daily from live sheet</div>
+<div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · May 5–14 estimated from 30-day line chart (~$2k/day avg) — use ⬆ Import Daily for exact daily values · projections recalibrate from live sheet</div>
 
-<!-- ── STATE TREND WIDGETS ──────────────────────────────────────────── -->
 <div style="margin-top:22px;margin-bottom:22px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
     <div>
@@ -87,10 +89,7 @@
       <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.08em">Import Daily Revenue Data</span>
       <button onclick="closeDailyModal()" style="background:transparent;border:none;color:#6e7681;font-size:18px;cursor:pointer;line-height:1">×</button>
     </div>
-    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">
-      Copy your monthly daily data tabs from Google Sheets and paste below.<br>
-      Select all cells in a month tab (Ctrl+A), copy, paste here. Repeat for each month.
-    </p>
+    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Copy your monthly daily data tabs from Google Sheets and paste below.<br>Select all cells in a month tab (Ctrl+A), copy, paste here. Repeat for each month.</p>
     <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
       <span style="font-size:9px;color:#484f58;text-transform:uppercase;letter-spacing:.08em;align-self:center">Paste as:</span>
       <button onclick="setDailyTab('Apr')" id="dtab-Apr" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer">Apr</button>
@@ -98,7 +97,7 @@
       <button onclick="setDailyTab('Jun')" id="dtab-Jun" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Jun</button>
     </div>
     <textarea id="daily-input" placeholder="Paste month tab here…" style="width:100%;height:180px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
-    <div id="daily-error"   style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
+    <div id="daily-error" style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
     <div id="daily-preview" style="display:none;margin-top:8px;font-size:11px;color:#4ade80"></div>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
       <button onclick="closeDailyModal()" style="padding:6px 16px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Cancel</button>
@@ -106,18 +105,15 @@
     </div>
   </div>
 </div>
+
 <div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center">
   <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;width:min(560px,94vw);max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.08em">Import State Monthly Data</span>
       <button onclick="closePasteModal()" style="background:transparent;border:none;color:#6e7681;font-size:18px;cursor:pointer;line-height:1">×</button>
     </div>
-    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">
-      Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets.<br>
-      Click the top-left corner cell to <strong style="color:#94a3b8">select all</strong> (or Ctrl+A), then <strong style="color:#94a3b8">copy</strong> (Ctrl+C), then paste below.<br>
-      <span style="color:#484f58">Hidden columns and Totals columns are automatically ignored.</span>
-    </p>
-    <textarea id="paste-input" placeholder="Paste sheet data here…&#10;&#10;Expected format:&#10;State  Jan  Feb  Mar  Apr  May&#10;TX     620  660  740  860  930&#10;NC     390  430  510  573  640&#10;…" style="width:100%;height:200px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
+    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets.<br>Click the top-left corner cell to <strong style="color:#94a3b8">select all</strong> (or Ctrl+A), then <strong style="color:#94a3b8">copy</strong> (Ctrl+C), then paste below.<br><span style="color:#484f58">Hidden columns and Totals columns are automatically ignored.</span></p>
+    <textarea id="paste-input" placeholder="Paste sheet data here…" style="width:100%;height:200px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
     <div id="paste-error" style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
     <div id="paste-preview" style="display:none;margin-top:8px;font-size:11px;color:#4ade80"></div>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
@@ -144,55 +140,60 @@
 <div id="map-tt"></div>
 
 <div class="totals-wrap">
-  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58" id="totals-note">loading…</span></div>
+  <div class="totals-header">
+    <span class="totals-header-label">Monthly totals</span>
+    <span style="font-size:9px;color:#484f58" id="totals-note">loading…</span>
+  </div>
   <div class="monthly-grid" id="monthly-grid"></div>
   <div class="annual-row" id="annual-row"></div>
 </div>
 
 <script>
-// ── Live sheet config (shared with dashboard) ─────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVT-Xukwe3rxiPAnaMGK8ywEVf0Tfnm9U6cTQo9Ts6DX3DOoGQNcgvHj2pnCAO0_N3/exec";
 const RATES = { rh:12, td1:23, td2:28, mdl1:25, mdl2:28 };
 const STATE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR58Y-q2wQtnGKkSraBWHu7xDfDTxIj6GqeWAYR3Qw_qsPBlK4T7flUPxw27BiHADcFxd1ME-e5g7ut/pub?gid=1484825929&single=true&output=csv";
 
-// ── Fallback hardcoded data (used if sheet unavailable) ───────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// FALLBACK DATA
+// ─────────────────────────────────────────────────────────────────────────────
 const FALLBACK_APR_DAILY = [396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
-const FALLBACK_MAY_DAILY  = [2093,2364,2796,1390];
+// May 1-4 from original hardcoded data; May 5-14 estimated from "Revenue — Last 30 Days" line chart
+// (Roman line clearly averages $2,000-2,500/day — use ⬆ Import Daily for exact values)
+const FALLBACK_MAY_DAILY  = [2093,2364,2796,1390, 1820,3200,2700,1750,1700, 2650,1620,2450,2050,1900];
 const FALLBACK_APR_TOTAL  = 32895;
 
-// ── Live data storage ─────────────────────────────────────────────────────────
-// Keyed by month name: { daily:[], total:0, days:0, rhEnc:0, year:0 }
+// ─────────────────────────────────────────────────────────────────────────────
+// LIVE DATA STORAGE
+// ─────────────────────────────────────────────────────────────────────────────
 let LIVE_MONTHLY = {};
 let liveDataLoaded = false;
-let STATE_CSV_MONTHLY_REV = {}; // populated from published state CSV sheet
+let STATE_CSV_MONTHLY_REV = {};
 
-// Working arrays (patched from live or fallback)
-let APR_DAILY   = [...FALLBACK_APR_DAILY];
+let APR_DAILY        = [...FALLBACK_APR_DAILY];
 let MAY_ACTUAL_DAILY = [...FALLBACK_MAY_DAILY];
-let APR_TOTAL   = FALLBACK_APR_TOTAL;
-let MAY_ACTUAL_DAYS = FALLBACK_MAY_DAILY.length;
+let APR_TOTAL        = FALLBACK_APR_TOTAL;
+let MAY_ACTUAL_DAYS  = FALLBACK_MAY_DAILY.length;
 
-// Phase 1 ramp constant (exponential, calibrated from actuals)
-// target * (1 - exp(-k * day)) = actual  → k ≈ 0.073
 let P1_K = 0.073;
-const P1_LIVE_APR_IDX = 25; // April 26 (0-indexed)
+const P1_LIVE_APR_IDX = 25;
 
-// ── CSV parsing (copied from dashboard) ──────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV PARSING
+// ─────────────────────────────────────────────────────────────────────────────
 function parseCSVRow(r) {
-  const cols = []; let cur = '', inQ = false;
-  for (const ch of r) {
-    if (ch === '"') { inQ = !inQ; continue; }
-    if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-    else cur += ch;
-  }
+  const cols=[]; let cur='',inQ=false;
+  for(const ch of r){if(ch==='"'){inQ=!inQ;continue;}if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=ch;}
   cols.push(cur.trim()); return cols;
 }
 function parseDateCol(h) {
   let m;
-  m = h.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/); if (m) return { month:+m[1], day:+m[2], year:+m[3] };
-  m = h.match(/([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/); if (m) { const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[1].toLowerCase()]; if(mo) return{month:mo,day:+m[2],year:+m[3]}; }
-  m = h.match(/^(\d{1,2})-([A-Za-z]{3})$/i); if (m) { const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[2].toLowerCase()]; if(mo) return{month:mo,day:+m[1],year:2026}; }
-  m = h.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/); if (m) return{month:+m[1],day:+m[2],year:m[3]?+m[3]:2026};
+  m=h.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/); if(m)return{month:+m[1],day:+m[2],year:+m[3]};
+  m=h.match(/([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/); if(m){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[1].toLowerCase()];if(mo)return{month:mo,day:+m[2],year:+m[3]};}
+  m=h.match(/^(\d{1,2})-([A-Za-z]{3})$/i); if(m){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[2].toLowerCase()];if(mo)return{month:mo,day:+m[1],year:2026};}
+  m=h.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/); if(m)return{month:+m[1],day:+m[2],year:m[3]?+m[3]:2026};
   return null;
 }
 function monthYearFromTabName(n) {
@@ -206,287 +207,265 @@ function yearFromTabName(n) {
   m=n.trim().match(/(\d{2})\s*$/); if(m){const y=+m[1];return y<50?2000+y:1900+y;} return null;
 }
 function parseSheetCSV(text, tabName) {
-  const rows = text.trim().split('\n').map(parseCSVRow); if(rows.length<2) return null;
-  const headers = rows[0], nameDate = tabName ? monthYearFromTabName(tabName) : null, allDC = [];
-  headers.forEach((h,i)=>{ if(i===0)return; const d=parseDateCol(h.trim()); if(!d) return; if(nameDate){if(d.month===nameDate.month)allDC.push({i,...d});}else allDC.push({i,...d}); });
-  const dateCols = allDC.length>0 ? allDC : (()=>{ const all=[]; headers.forEach((h,i)=>{ if(i===0)return; const d=parseDateCol(h.trim()); if(d)all.push({i,...d}); }); return all; })();
-  if(!dateCols.length) return null;
+  const rows=text.trim().split('\n').map(parseCSVRow); if(rows.length<2)return null;
+  const headers=rows[0],nameDate=tabName?monthYearFromTabName(tabName):null,allDC=[];
+  headers.forEach((h,i)=>{if(i===0)return;const d=parseDateCol(h.trim());if(!d)return;if(nameDate){if(d.month===nameDate.month)allDC.push({i,...d});}else allDC.push({i,...d});});
+  const dateCols=allDC.length>0?allDC:(()=>{const all=[];headers.forEach((h,i)=>{if(i===0)return;const d=parseDateCol(h.trim());if(d)all.push({i,...d});});return all;})();
+  if(!dateCols.length)return null;
   dateCols.sort((a,b)=>a.day-b.day);
-  const n=dateCols.length, labels=dateCols.map(d=>d.month+'/'+d.day);
-  const rh=new Array(n).fill(0), td1=new Array(n).fill(0), td2=new Array(n).fill(0), mdl1=new Array(n).fill(0), mdl2=new Array(n).fill(0), rev=new Array(n).fill(0);
-  let tdc=0, mc=0;
-  for (const row of rows.slice(1)) {
-    const nm=(row[0]||'').trim().toUpperCase().replace(/\s+/g,''); if(!nm) continue;
-    dateCols.forEach((col,j)=>{ const raw=(row[col.i]||'').toString().replace(/#[A-Z!]+/g,'').replace(/[$, ]/g,''); const v=parseFloat(raw)||0; if(nm==='RO'||nm==='RO+')rh[j]+=v; else if(nm==='TOT'||nm==='TOTAL')rev[j]+=v; });
-    const isTD=nm.startsWith('TD'), isMDL=nm==='MD'||nm==='MDL'||nm==='ML'||nm.startsWith('MLV')||nm.startsWith('MDL');
-    if(isTD){tdc++;dateCols.forEach((col,j)=>{ const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0; if(tdc===1)td1[j]+=v; else td2[j]+=v; });}
-    if(isMDL){mc++;dateCols.forEach((col,j)=>{ const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0; if(mc===1)mdl1[j]+=v; else mdl2[j]+=v; });}
+  const n=dateCols.length;
+  const rh=new Array(n).fill(0),td1=new Array(n).fill(0),td2=new Array(n).fill(0),mdl1=new Array(n).fill(0),mdl2=new Array(n).fill(0),rev=new Array(n).fill(0);
+  let tdc=0,mc=0;
+  for(const row of rows.slice(1)){
+    const nm=(row[0]||'').trim().toUpperCase().replace(/\s+/g,''); if(!nm)continue;
+    dateCols.forEach((col,j)=>{const raw=(row[col.i]||'').toString().replace(/#[A-Z!]+/g,'').replace(/[$, ]/g,'');const v=parseFloat(raw)||0;if(nm==='RO'||nm==='RO+')rh[j]+=v;else if(nm==='TOT'||nm==='TOTAL')rev[j]+=v;});
+    const isTD=nm.startsWith('TD'),isMDL=nm==='MD'||nm==='MDL'||nm==='ML'||nm.startsWith('MLV')||nm.startsWith('MDL');
+    if(isTD){tdc++;dateCols.forEach((col,j)=>{const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0;if(tdc===1)td1[j]+=v;else td2[j]+=v;});}
+    if(isMDL){mc++;dateCols.forEach((col,j)=>{const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0;if(mc===1)mdl1[j]+=v;else mdl2[j]+=v;});}
   }
-  const td=td1.map((v,i)=>v+td2[i]), mdl=mdl1.map((v,i)=>v+mdl2[i]);
-  let lastIdx=-1; for(let j=0;j<n;j++) if(rh[j]>0||td[j]>0||mdl[j]>0||rev[j]>0) lastIdx=j;
-  if(lastIdx<0) return null; const t=lastIdx+1;
-  const sm=nameDate?nameDate.month:dateCols[0].month, sy=nameDate?nameDate.year:dateCols[0].year;
-  return {
-    labels:labels.slice(0,t), rh:rh.slice(0,t), td:td.slice(0,t),
-    td1:td1.slice(0,t), td2:td2.slice(0,t), mdl:mdl.slice(0,t),
-    mdl1:mdl1.slice(0,t), mdl2:mdl2.slice(0,t), rev:rev.slice(0,t),
+  const td=td1.map((v,i)=>v+td2[i]),mdl=mdl1.map((v,i)=>v+mdl2[i]);
+  let lastIdx=-1; for(let j=0;j<n;j++)if(rh[j]>0||td[j]>0||mdl[j]>0||rev[j]>0)lastIdx=j;
+  if(lastIdx<0)return null; const t=lastIdx+1;
+  const sm=nameDate?nameDate.month:dateCols[0].month,sy=nameDate?nameDate.year:dateCols[0].year;
+  return{
+    labels:dateCols.slice(0,t).map(d=>d.month+'/'+d.day),
+    rh:rh.slice(0,t),td:td.slice(0,t),td1:td1.slice(0,t),td2:td2.slice(0,t),
+    mdl:mdl.slice(0,t),mdl1:mdl1.slice(0,t),mdl2:mdl2.slice(0,t),rev:rev.slice(0,t),
     rhRev:rh.slice(0,t).map(v=>Math.round(v*RATES.rh)),
     tdRev:td1.slice(0,t).map((v,i)=>Math.round(v*RATES.td1+td2[i]*RATES.td2)),
     mdlRev:mdl1.slice(0,t).map((v,i)=>Math.round(v*RATES.mdl1+mdl2[i]*RATES.mdl2)),
-    month:sm, year:sy
+    month:sm,year:sy
   };
 }
 
-// ── Live data loader ──────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// LIVE DATA LOADER
+// ─────────────────────────────────────────────────────────────────────────────
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-
-// localStorage keys — same as the dashboard so both files share the cache
 const LS_KEY  = 'tmd_c';
 const LS_TIME = 'tmd_t';
 
-function saveCache(text) {
-  try { localStorage.setItem(LS_KEY, text); localStorage.setItem(LS_TIME, Date.now().toString()); } catch(e) {}
-}
-function readCache() {
-  try {
-    const text = localStorage.getItem(LS_KEY);
-    const ts   = localStorage.getItem(LS_TIME);
-    if (!text || !ts) return null;
-    return { text, ageMin: Math.round((Date.now() - +ts) / 60000) };
-  } catch(e) { return null; }
-}
+function saveCache(text){try{localStorage.setItem(LS_KEY,text);localStorage.setItem(LS_TIME,Date.now().toString());}catch(e){}}
+function readCache(){try{const text=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);if(!text||!ts)return null;return{text,ageMin:Math.round((Date.now()-+ts)/60000)};}catch(e){return null;}}
 
 function parseRawText(text) {
-  const newMonthly = {};
+  const newMonthly={};
   let json;
-  try { json = JSON.parse(text); } catch(e) { return newMonthly; }
-  for (const [tabName, csv] of Object.entries(json)) {
-    const parsed = parseSheetCSV(csv, tabName);
-    if (!parsed) continue;
-    const yr = parsed.year || yearFromTabName(tabName) || 2026;
-    const monthKey = MONTH_NAMES[parsed.month - 1];
-    if (!monthKey) continue;
-    const daily = parsed.rhRev.map((v, i) => v + (parsed.tdRev[i] || 0) + (parsed.mdlRev[i] || 0));
-    newMonthly[monthKey] = {
-      daily,
-      total: daily.reduce((a, b) => a + b, 0),
-      days: daily.length,
-      rhEncTotal: parsed.rh.reduce((a, b) => a + b, 0),
-      rhDailyArr: parsed.rh,
-      year: yr,
-      month: parsed.month
+  try{json=JSON.parse(text);}catch(e){return newMonthly;}
+  for(const[tabName,csv]of Object.entries(json)){
+    const parsed=parseSheetCSV(csv,tabName);
+    if(!parsed)continue;
+    const yr=parsed.year||yearFromTabName(tabName)||2026;
+    const monthKey=MONTH_NAMES[parsed.month-1];
+    if(!monthKey)continue;
+    const daily=parsed.rhRev.map((v,i)=>v+(parsed.tdRev[i]||0)+(parsed.mdlRev[i]||0));
+    newMonthly[monthKey]={
+      daily,total:daily.reduce((a,b)=>a+b,0),days:daily.length,
+      rhEncTotal:parsed.rh.reduce((a,b)=>a+b,0),
+      rhDailyArr:parsed.rh,
+      tdDailyArr:parsed.td,  // FIX #3: preserve TD breakdown
+      mdlDailyArr:parsed.mdl, // FIX #3: preserve MDL breakdown
+      year:yr,month:parsed.month
     };
   }
   return newMonthly;
 }
 
-async function loadLiveData(bgRefresh = false) {
-  // Step 2 — live fetch (background, non-blocking)
-  try {
-    const r = await fetch(APPS_SCRIPT_URL + '?_=' + Date.now(), { cache: 'no-store', redirect: 'follow' });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const text = await r.text();
-    if (!text || text.trim().length < 10) throw new Error('Empty response');
-
-    const newMonthly = parseRawText(text);
-    if (!Object.keys(newMonthly).length) throw new Error('No sheets parsed');
-
+async function loadLiveData(bgRefresh=false) {
+  try{
+    const r=await fetch(APPS_SCRIPT_URL+'?_='+Date.now(),{cache:'no-store',redirect:'follow'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const text=await r.text();
+    if(!text||text.trim().length<10)throw new Error('Empty response');
+    const newMonthly=parseRawText(text);
+    if(!Object.keys(newMonthly).length)throw new Error('No sheets parsed');
     saveCache(text);
-    LIVE_MONTHLY = newMonthly;
-    liveDataLoaded = true;
-    const ts = new Date().toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
-    setLiveStatus('live', 'Live · ' + ts);
-    document.getElementById('live-ts').textContent = 'Updated ' + ts;
+    LIVE_MONTHLY=newMonthly;
+    liveDataLoaded=true;
+    const ts=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    setLiveStatus('live','Live · '+ts);
+    document.getElementById('live-ts').textContent='Updated '+ts;
     return true;
-  } catch (e) {
-    console.warn('Live fetch failed:', e.message);
-    if (liveDataLoaded) {
-      const cached = readCache();
-      const age = cached ? cached.ageMin + 'm ago' : '?';
-      setLiveStatus('live', 'Cached · ' + age);
-    } else {
-      setLiveStatus('err', 'Sheet fetch blocked (file:// CORS) — use ⬆ Import or open Dashboard first');
-    }
+  }catch(e){
+    console.warn('Live fetch failed:',e.message);
+    if(liveDataLoaded){const cached=readCache();const age=cached?cached.ageMin+'m ago':'?';setLiveStatus('live','Cached · '+age);}
+    else setLiveStatus('err','Sheet fetch blocked (file:// CORS) — use ⬆ Import or open Dashboard first');
     return liveDataLoaded;
   }
 }
 
-// ── Synchronous cache boot — runs immediately, before any async work ──────────
 function bootFromCache() {
-  try {
-    const text = localStorage.getItem(LS_KEY);
-    const ts   = localStorage.getItem(LS_TIME);
-    if (!text || !ts) return false;
-
-    const parsed = parseRawText(text);
-    if (!Object.keys(parsed).length) return false;
-
-    const ageMin = Math.round((Date.now() - +ts) / 60000);
-    LIVE_MONTHLY = parsed;
-    liveDataLoaded = true;
-    setLiveStatus('live', 'Cached · ' + ageMin + 'm ago');
-    document.getElementById('live-ts').textContent = 'Cached ' + ageMin + 'm ago';
-    document.getElementById('live-months').textContent = 'Months: ' + Object.keys(parsed).join(', ');
+  try{
+    const text=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);
+    if(!text||!ts)return false;
+    const parsed=parseRawText(text);
+    if(!Object.keys(parsed).length)return false;
+    const ageMin=Math.round((Date.now()-+ts)/60000);
+    LIVE_MONTHLY=parsed;liveDataLoaded=true;
+    setLiveStatus('live','Cached · '+ageMin+'m ago');
+    document.getElementById('live-ts').textContent='Cached '+ageMin+'m ago';
+    document.getElementById('live-months').textContent='Months: '+Object.keys(parsed).join(', ');
     applyLiveData();
     return true;
-  } catch (e) {
-    console.warn('Cache boot failed:', e);
-    return false;
-  }
+  }catch(e){console.warn('Cache boot failed:',e);return false;}
 }
 
-// ── Apply live data → patch working arrays + recalibrate STATE_DATA ───────────
-function applyLiveData() {
-  const fallbackMonths = [];
-  const liveMonths = [];
-
-  // April
-  if (LIVE_MONTHLY['Apr'] && LIVE_MONTHLY['Apr'].days >= 28) {
-    APR_DAILY = [...LIVE_MONTHLY['Apr'].daily];
-    APR_TOTAL = LIVE_MONTHLY['Apr'].total;
-    liveMonths.push('Apr (' + LIVE_MONTHLY['Apr'].days + 'd)');
-  } else {
-    APR_DAILY = [...FALLBACK_APR_DAILY];
-    APR_TOTAL = FALLBACK_APR_TOTAL;
-    fallbackMonths.push('Apr');
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX #3: BLENDED RATE CALCULATOR
+// Uses actual daily data from LIVE_MONTHLY to compute the ratio of
+// total revenue (RH+TD+MDL) to RH-only revenue, then applies this multiplier
+// when converting state CSV encounter counts to projected revenue.
+// Without this, state CSV-derived monthly totals undercount vs the chart.
+// ─────────────────────────────────────────────────────────────────────────────
+function computeBlendedRHRate() {
+  let totalRev=0, totalRHRev=0;
+  Object.values(LIVE_MONTHLY).forEach(mo => {
+    if(!mo.daily||!mo.rhDailyArr||!mo.total)return;
+    const rhOnly = mo.rhDailyArr.reduce((a,b)=>a+b,0) * RATES.rh;
+    if(rhOnly<=0)return;
+    totalRev    += mo.total;
+    totalRHRev  += rhOnly;
+  });
+  if(totalRHRev>0 && totalRev>totalRHRev*0.5){
+    const ratio = totalRev/totalRHRev;
+    console.log(`[Blended rate] ${ratio.toFixed(2)}x (total:$${Math.round(totalRev)} / rh:$${Math.round(totalRHRev)})`);
+    return ratio;
   }
+  return 1.0; // fallback: no TD/MDL data available yet
+}
 
-  // May (and any later months that are fully or partially actual)
-  const currentMonthIdx = new Date().getMonth(); // 0-indexed
-  MAY_ACTUAL_DAILY = [];
+// ─────────────────────────────────────────────────────────────────────────────
+// RECENT BASELINE — drives all projections instead of state model targets.
+// Uses only post-Phase1-launch data (Apr 26 onwards) so pre-P1 low days
+// don't drag the average below the current observed run rate.
+// existFrac splits projected bars into existing vs P1 for chart stacking.
+// ─────────────────────────────────────────────────────────────────────────────
+let RECENT_BASELINE = null;
+let RECENT_EXIST_FRAC = 0.5;
 
-  MONTH_NAMES.forEach((mo, idx) => {
-    if (idx < 4) return; // Skip Jan-Apr, handled above
-    const lm = LIVE_MONTHLY[mo];
-    if (lm && lm.days >= 1 && idx <= currentMonthIdx) {
-      // This is actual data for a month at or before now
-      if (mo === 'May') {
-        MAY_ACTUAL_DAILY = [...lm.daily];
-        liveMonths.push(mo + ' (' + lm.days + 'd)');
-      }
-      // Future months: handled similarly if needed
-    } else if (idx <= currentMonthIdx) {
-      if (mo === 'May') fallbackMonths.push(mo);
-    }
+function computeRecentBaseline() {
+  // Only use data from Phase 1 launch date onwards — pre-P1 April days
+  // are irrelevant to the current run rate and would understate projections.
+  const postP1Apr = APR_DAILY.slice(P1_LIVE_APR_IDX);       // Apr 26–30 (~5 days)
+  const allPostP1 = [...postP1Apr, ...MAY_ACTUAL_DAILY];     // grows as May loads
+  if (!allPostP1.length) { RECENT_BASELINE = null; return null; }
+
+  // Cap at last 30 post-P1 days; with current data this is all ~19 days
+  const recent = allPostP1.slice(-30);
+  const avg = recent.reduce((a, b) => a + b, 0) / recent.length;
+  RECENT_BASELINE = avg;
+
+  // Derive existing-state fraction from clean pre-P1 April baseline
+  const preP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX);
+  const existAvg = preP1.length >= 5
+    ? preP1.reduce((a, b) => a + b, 0) / preP1.length
+    : 1070;
+  RECENT_EXIST_FRAC = Math.min(0.85, Math.max(0.1, existAvg / avg));
+  console.log(`[Baseline] post-P1 avg (${recent.length}d): $${Math.round(avg)}/day · existFrac: ${(RECENT_EXIST_FRAC*100).toFixed(0)}%`);
+  return avg;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// APPLY LIVE DATA → patch working arrays + recalibrate
+// ─────────────────────────────────────────────────────────────────────────────
+function applyLiveData() {
+  const fallbackMonths=[], liveMonths=[];
+
+  if(LIVE_MONTHLY['Apr']&&LIVE_MONTHLY['Apr'].days>=28){
+    APR_DAILY=[...LIVE_MONTHLY['Apr'].daily];
+    APR_TOTAL=LIVE_MONTHLY['Apr'].total;
+    liveMonths.push('Apr ('+LIVE_MONTHLY['Apr'].days+'d)');
+  }else{APR_DAILY=[...FALLBACK_APR_DAILY];APR_TOTAL=FALLBACK_APR_TOTAL;fallbackMonths.push('Apr');}
+
+  const currentMonthIdx=new Date().getMonth();
+  MAY_ACTUAL_DAILY=[];
+
+  MONTH_NAMES.forEach((mo,idx)=>{
+    if(idx<4)return;
+    const lm=LIVE_MONTHLY[mo];
+    if(lm&&lm.days>=1&&idx<=currentMonthIdx){
+      if(mo==='May'){MAY_ACTUAL_DAILY=[...lm.daily];liveMonths.push(mo+' ('+lm.days+'d)');}
+    }else if(idx<=currentMonthIdx){if(mo==='May')fallbackMonths.push(mo);}
   });
 
-  // Fallback: if May live data wasn't found
-  if (MAY_ACTUAL_DAILY.length === 0) {
-    MAY_ACTUAL_DAILY = [...FALLBACK_MAY_DAILY];
-    if (!fallbackMonths.includes('May')) fallbackMonths.push('May');
-  }
+  if(MAY_ACTUAL_DAILY.length===0){MAY_ACTUAL_DAILY=[...FALLBACK_MAY_DAILY];if(!fallbackMonths.includes('May'))fallbackMonths.push('May');}
+  MAY_ACTUAL_DAYS=MAY_ACTUAL_DAILY.length;
 
-  MAY_ACTUAL_DAYS = MAY_ACTUAL_DAILY.length;
-
-  // ── Recalibrate existing-state daily contribution from actual pre-Phase1 days ──
-  // Use April 1–25 (before Phase 1 live) as the clean existing-state baseline
-  const preP1Days = APR_DAILY.slice(0, P1_LIVE_APR_IDX);
-  if (preP1Days.length >= 10) {
-    const preAvg = preP1Days.reduce((a, b) => a + b, 0) / preP1Days.length;
-    const originalBase = 1070; // original sum of existing state dailyContrib
-    const scale = preAvg / originalBase;
-    // Apply scale to all existing states proportionally
-    Object.keys(STATE_DATA).forEach(st => {
-      if (STATE_DATA[st].group === 'existing') {
-        STATE_DATA[st].dailyContrib = Math.round(
-          ORIGINAL_EXISTING_CONTRIB[st] * scale
-        );
+  // Compute recent baseline FIRST — everything else uses it
+  computeRecentBaseline();
+  const preP1Days=APR_DAILY.slice(0,P1_LIVE_APR_IDX);
+  if(preP1Days.length>=10){
+    const preAvg=preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length;
+    const originalBase=1070;
+    const scale=preAvg/originalBase;
+    Object.keys(STATE_DATA).forEach(st=>{
+      if(STATE_DATA[st].group==='existing'){
+        STATE_DATA[st].dailyContrib=Math.round(ORIGINAL_EXISTING_CONTRIB[st]*scale);
       }
     });
   }
 
-  // ── Recalibrate P1_K from actual Phase 1 ramp data ───────────────────────────
-  // Phase 1 live April 26. We have some actual days of Phase 1 data.
-  // Use Apr 26-30 + available May days to fit the exponential
-  const p1ActualDays = [];
-  // Apr 26-30: days 0-4 of Phase 1
-  for (let i = P1_LIVE_APR_IDX; i < APR_DAILY.length; i++) {
-    const existEst = preP1Days.length
-      ? preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length
-      : 1070;
-    const p1Rev = Math.max(0, APR_DAILY[i] - existEst);
-    p1ActualDays.push({ day: i - P1_LIVE_APR_IDX, rev: p1Rev });
+  // Recalibrate P1_K from actual ramp data
+  const preAvgEst=preP1Days.length>=5?preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length:1070;
+  const p1ActualDays=[];
+  for(let i=P1_LIVE_APR_IDX;i<APR_DAILY.length;i++){
+    const p1Rev=Math.max(0,APR_DAILY[i]-preAvgEst);
+    p1ActualDays.push({day:i-P1_LIVE_APR_IDX,rev:p1Rev});
   }
-  // May days
-  MAY_ACTUAL_DAILY.forEach((rev, i) => {
-    const existEst = preP1Days.length
-      ? preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length
-      : 1070;
-    const p1Rev = Math.max(0, rev - existEst);
-    p1ActualDays.push({ day: APR_DAILY.length - P1_LIVE_APR_IDX + i, rev: p1Rev });
+  MAY_ACTUAL_DAILY.forEach((rev,i)=>{
+    const p1Rev=Math.max(0,rev-preAvgEst);
+    p1ActualDays.push({day:APR_DAILY.length-P1_LIVE_APR_IDX+i,rev:p1Rev});
   });
-
-  // Compute P1 full target from STATE_DATA
-  const p1FullTarget = Object.keys(STATE_DATA)
-    .filter(s => STATE_DATA[s].group === 'phase1' && activeStates.includes(s))
-    .reduce((sum, s) => sum + STATE_DATA[s].dailyContrib, 0);
-
-  if (p1ActualDays.length >= 3 && p1FullTarget > 0) {
-    // Fit k using last few actual P1 days via least-squares approximation
-    // rev ≈ target * (1 - exp(-k * day))  →  solve for k
-    const validPts = p1ActualDays.filter(d => d.day > 1 && d.rev > 0);
-    if (validPts.length >= 2) {
-      const kEstimates = validPts.map(({ day, rev }) => {
-        const frac = Math.min(0.99, rev / p1FullTarget);
-        return frac > 0 ? -Math.log(1 - frac) / day : P1_K;
-      });
-      const kMean = kEstimates.reduce((a, b) => a + b, 0) / kEstimates.length;
-      if (kMean > 0.01 && kMean < 0.5) P1_K = kMean;
+  const p1FullTarget=Object.keys(STATE_DATA)
+    .filter(s=>STATE_DATA[s].group==='phase1'&&activeStates.includes(s))
+    .reduce((sum,s)=>sum+STATE_DATA[s].dailyContrib,0);
+  if(p1ActualDays.length>=3&&p1FullTarget>0){
+    const validPts=p1ActualDays.filter(d=>d.day>1&&d.rev>0);
+    if(validPts.length>=2){
+      const kEst=validPts.map(({day,rev})=>{const frac=Math.min(0.99,rev/p1FullTarget);return frac>0?-Math.log(1-frac)/day:P1_K;});
+      const kMean=kEst.reduce((a,b)=>a+b,0)/kEst.length;
+      if(kMean>0.01&&kMean<0.5){P1_K=kMean;console.log('[P1_K recal]',P1_K.toFixed(4));}
     }
   }
 
-  // ── Update status UI ──────────────────────────────────────────────────────────
-  const ts = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  const liveEl = document.getElementById('live-months');
-  const fbEl = document.getElementById('live-fallback');
-  const tsEl = document.getElementById('live-ts');
-  if (liveEl) liveEl.textContent = liveMonths.length ? 'Live: ' + liveMonths.join(' · ') : '';
-  if (fbEl) fbEl.textContent = fallbackMonths.length ? '· Fallback: ' + fallbackMonths.join(', ') : '';
-  if (tsEl) tsEl.textContent = 'Updated ' + ts;
+  // Update status UI
+  const ts=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  const liveEl=document.getElementById('live-months'),fbEl=document.getElementById('live-fallback'),tsEl=document.getElementById('live-ts');
+  if(liveEl)liveEl.textContent=liveMonths.length?'Live: '+liveMonths.join(' · '):'';
+  if(fbEl)fbEl.textContent=fallbackMonths.length?'· Fallback: '+fallbackMonths.join(', '):'';
+  if(tsEl)tsEl.textContent='Updated '+ts;
 
-  // ── Update header badge ───────────────────────────────────────────────────────
-  const badge = document.getElementById('h-badge');
-  const lastLiveMo = liveMonths[liveMonths.length - 1];
-  if (badge && lastLiveMo) {
-    badge.textContent = lastLiveMo + ' actuals loaded';
-    badge.className = 'badge badge-green';
-  }
+  const badge=document.getElementById('h-badge'),lastLiveMo=liveMonths[liveMonths.length-1];
+  if(badge&&lastLiveMo){badge.textContent=lastLiveMo+' actuals loaded';badge.className='badge badge-green';}
 
-  // ── Update subtitle ───────────────────────────────────────────────────────────
-  const sub = document.getElementById('subtitle');
-  if (sub) {
-    const aprAvg = APR_TOTAL > 0 ? Math.round(APR_TOTAL / APR_DAILY.length) : 0;
-    const mayTotal = MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);
-    const mayAvg = MAY_ACTUAL_DAILY.length ? Math.round(mayTotal / MAY_ACTUAL_DAILY.length) : 0;
-    const pctVsApr = aprAvg > 0 ? Math.round((mayAvg - aprAvg) / aprAvg * 100) : 0;
-    sub.textContent = [
-      'Apr 1–' + APR_DAILY.length + ' ($' + APR_TOTAL.toLocaleString() + ' · $' + aprAvg.toLocaleString() + '/day)',
-      MAY_ACTUAL_DAILY.length
-        ? 'May 1–' + MAY_ACTUAL_DAYS + ' ($' + mayTotal.toLocaleString() + ' · $' + mayAvg.toLocaleString() + '/day · ' + (pctVsApr >= 0 ? '+' : '') + pctVsApr + '% vs Apr)'
-        : '',
-      'Phase 1 live Apr 26 — ramp modeled exponentially from actuals (k=' + P1_K.toFixed(3) + ')'
+  const sub=document.getElementById('subtitle');
+  if(sub){
+    const aprAvg=APR_TOTAL>0?Math.round(APR_TOTAL/APR_DAILY.length):0;
+    const mayTotal=MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);
+    const mayAvg=MAY_ACTUAL_DAILY.length?Math.round(mayTotal/MAY_ACTUAL_DAILY.length):0;
+    const pctVsApr=aprAvg>0?Math.round((mayAvg-aprAvg)/aprAvg*100):0;
+    sub.textContent=[
+      'Apr 1–'+APR_DAILY.length+' ($'+APR_TOTAL.toLocaleString()+' · $'+aprAvg.toLocaleString()+'/day)',
+      MAY_ACTUAL_DAILY.length?'May 1–'+MAY_ACTUAL_DAYS+' ($'+mayTotal.toLocaleString()+' · $'+mayAvg.toLocaleString()+'/day · '+(pctVsApr>=0?'+':'')+pctVsApr+'% vs Apr)':'',
+      RECENT_BASELINE?'Projections anchored to last-30-day avg: $'+Math.round(RECENT_BASELINE).toLocaleString()+'/day':''
     ].filter(Boolean).join(' · ');
   }
 
-  // ── Update totals note ────────────────────────────────────────────────────────
-  const tn = document.getElementById('totals-note');
-  const lastActualMo = [...liveMonths].pop() || 'Apr';
-  if (tn) tn.textContent = 'actual Jan–' + lastActualMo.split(' ')[0] + ' · partial current month · projected remainder';
+  const tn=document.getElementById('totals-note'),lastActualMo=[...liveMonths].pop()||'Apr';
+  if(tn)tn.textContent='actual Jan–'+lastActualMo.split(' ')[0]+' · partial current month · projected remainder';
 
-  setLiveStatus(liveDataLoaded ? 'live' : 'err',
-    liveDataLoaded
-      ? 'Live · ' + (liveMonths.length ? liveMonths.join(', ') : 'connected')
-      : 'Using fallback data');
+  setLiveStatus(liveDataLoaded?'live':'err',liveDataLoaded?'Live · '+(liveMonths.length?liveMonths.join(', '):'connected'):'Using fallback data');
 }
 
-function setLiveStatus(state, msg) {
-  const dot = document.getElementById('live-dot');
-  const lbl = document.getElementById('live-label');
-  if (dot) { dot.className = ''; dot.classList.add(state === 'live' ? 'live' : state === 'err' ? 'err' : 'loading'); }
-  if (lbl) lbl.textContent = msg;
+function setLiveStatus(state,msg){
+  const dot=document.getElementById('live-dot'),lbl=document.getElementById('live-label');
+  if(dot){dot.className='';dot.classList.add(state==='live'?'live':state==='err'?'err':'loading');}
+  if(lbl)lbl.textContent=msg;
 }
 
-// ── State / phase data ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE / PHASE DATA
+// ─────────────────────────────────────────────────────────────────────────────
 const STATE_DATA = {
   IN:{group:"existing",pop:6.9,dailyContrib:98,locked:true},
   TX:{group:"existing",pop:31,dailyContrib:344,locked:true},
@@ -500,36 +479,27 @@ const STATE_DATA = {
   MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},
   IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},
   AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},
-  // Phase 2 — all 6 new license states combined
   CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
   GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
   MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false},
   SC:{group:"phase2",pop:5.3,dailyContrib:80,locked:false}
 };
 
-// Store originals for recalibration
 const ORIGINAL_EXISTING_CONTRIB = Object.fromEntries(
   Object.entries(STATE_DATA).filter(([,v])=>v.group==='existing').map(([k,v])=>[k,v.dailyContrib])
 );
+// FIX #1: store original P1 targets for recalibration reference
+const ORIGINAL_P1_CONTRIB = Object.fromEntries(
+  Object.entries(STATE_DATA).filter(([,v])=>v.group==='phase1').map(([k,v])=>[k,v.dailyContrib])
+);
 
-// IMLC Compact member states — these get a teal bubble on the map
-// Non-compact states that still matter: OR (our license), SC (phase2 target)
-// Excluded (not compact, no current interest): CA, NY, MA
-const COMPACT_STATES = new Set([
-  'WA','MT','ID','WY','ND','SD','NE','KS','MN','IA','WI','MI','IN','OH','IL',
-  'KY','WV','VA','NC','TN','AL','GA','FL','MS','LA','AR','OK','TX','MO','CO',
-  'UT','NM','AZ','NV','AK','ME','NH','VT','CT','NJ','DE','MD','PA','HI',
-  'RI','WV','DC'
-]);
-
+const COMPACT_STATES = new Set(['WA','MT','ID','WY','ND','SD','NE','KS','MN','IA','WI','MI','IN','OH','IL','KY','WV','VA','NC','TN','AL','GA','FL','MS','LA','AR','OK','TX','MO','CO','UT','NM','AZ','NV','AK','ME','NH','VT','CT','NJ','DE','MD','PA','HI','RI','WV','DC']);
 const ALL_STATES = {
-  AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},
-  FL:{pop:22.6},HI:{pop:1.5},IA:{pop:3.2},ID:{pop:1.9},KS:{pop:2.9},
-  KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},
-  MS:{pop:3.0},MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},
-  NM:{pop:2.1},NV:{pop:3.2},NY:{pop:19.6},NJ:{pop:9.3},OK:{pop:4.0},
-  RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},
-  WI:{pop:5.9},WV:{pop:1.8},WY:{pop:0.6},MN:{pop:5.8}
+  AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},FL:{pop:22.6},HI:{pop:1.5},IA:{pop:3.2},
+  ID:{pop:1.9},KS:{pop:2.9},KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},MS:{pop:3.0},
+  MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},NM:{pop:2.1},NV:{pop:3.2},NY:{pop:19.6},NJ:{pop:9.3},
+  OK:{pop:4.0},RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},WI:{pop:5.9},WV:{pop:1.8},
+  WY:{pop:0.6},MN:{pop:5.8}
 };
 const PHASE_META = {
   existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
@@ -537,7 +507,6 @@ const PHASE_META = {
   phase2:  {label:"Phase 2", color:"#f59e0b",states:["CO","GA","MO","SC"]}
 };
 const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
-// Phase 2 launches from TODAY when toggled on — used as scenario planning tool
 const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·MO·SC"};
 const TZ = {ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
 const TZ_META = {PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
@@ -546,218 +515,122 @@ const FIPS = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"
 const SMALL = new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
 const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-// ── Date guard: a month cannot be "actual" if it hasn't ended yet ─────────────
-function canBeActual(mi) {
-  return mi <= new Date().getMonth();
-}
+function canBeActual(mi){return mi<=new Date().getMonth();}
 
-// Always apply the verified hardcoded data as the authoritative baseline.
-// CSV can only extend beyond FALLBACK_ACTUAL_THRU — it never overwrites verified months.
-function applyFallback() {
-  Object.entries(FALLBACK_STATE_ENC).forEach(([st, arr]) => {
-    if (!STATE_MONTHLY[st]) return;
-    arr.forEach((v, mi) => {
-      if (mi <= FALLBACK_ACTUAL_THRU) {
-        STATE_MONTHLY[st][mi] = { v, actual: v > 0 };  // 0s are actual-but-zero for unlaunched states
-      }
-    });
-  });
-}
-
-function applyStateCells(parsed) {
-  if (!parsed) return;
-  Object.entries(parsed).forEach(([st, months]) => {
-    if (!STATE_MONTHLY[st]) return;
-    months.forEach((cell, mi) => {
-      // Only let CSV write months AFTER the hardcoded fallback window
-      // AND only if the month has actually happened
-      if (cell?.actual && canBeActual(mi) && mi > FALLBACK_ACTUAL_THRU) {
-        STATE_MONTHLY[st][mi] = cell;
-      }
-    });
-  });
-}
-
-// Debug: show first 3 CSV lines + TX values in console and status bar
-function debugStateCsv(csv) {
-  const lines = csv.trim().split('\n').slice(0, 3);
-  console.log('[State CSV raw lines]');
-  lines.forEach((l, i) => console.log(`  row ${i}:`, l.substring(0, 120)));
-  const txVals = (STATE_MONTHLY['TX'] || []).map((c, mi) =>
-    `${ALL_MONTHS[mi]}:${c?.v ?? '?'}${c?.actual ? '✓' : ''}`
-  ).join(' ');
-  console.log('[TX STATE_MONTHLY]', txVals);
-  const el = document.getElementById('live-months');
-  if (el) { el.textContent = 'TX: ' + txVals; el.style.color = '#94a3b8'; }
-}
-
-let activeStates = Object.keys(STATE_DATA).filter(s => STATE_DATA[s].locked);
-let hoveredIdx = null, chartData = [], usTopoData = null;
+let activeStates = Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
+let hoveredIdx=null,chartData=[],fullYearData=[],usTopoData=null;
 
 function sRand(s){const x=Math.sin(s+1)*43758.5453;return x-Math.floor(x);}
-function rampFn(spec,d){if(typeof spec==="number")return spec;const[a,b]=spec.split("_").map(Number);return Math.min(1,Math.max(0,d<a?0:(d-a)/b));}
 function fmtK(v){if(v>=1e6)return"$"+(v/1e6).toFixed(2)+"M";if(v>=1000)return"$"+(v/1000).toFixed(1)+"k";return"$"+Math.round(v);}
 
-// ── Data generation ───────────────────────────────────────────────────────────
-// Window: 3 calendar months before today through 3 months after today
-// Phase 2+3 launch exactly 2 calendar months from today
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA GENERATION
+// ─────────────────────────────────────────────────────────────────────────────
 function generateData() {
-  const now       = new Date();
-  const curMoIdx  = now.getMonth();  // 0=Jan
-  const curDay    = now.getDate();
-  const curYear   = now.getFullYear();
-  const DAYS_IN_MO = [31,28,31,30,31,30,31,31,30,31,30,31];
-
-  const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p1   = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p23  = activeStates.filter(s => STATE_DATA[s]?.group === 'phase2')
-                            .reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-
-  const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length >= 5
-    ? APR_DAILY.slice(0, P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0) / APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
-    : base;
-
-  // Phase 1 live Apr 26 2026 — exponential ramp from that date
-  const p1LaunchDate  = new Date(2026, 3, 26);
-  // Phase 2 scenario: launches TODAY (this is the "what if" projection)
-  const p23LaunchDate = new Date(curYear, curMoIdx, curDay);
-
-  function p1Frac(date)  {
-    const days = (date - p1LaunchDate)  / 86400000;
-    return days <= 0 ? 0 : Math.min(1, 1 - Math.exp(-P1_K  * days));
+  const now=new Date(),curMoIdx=now.getMonth(),curDay=now.getDate(),curYear=now.getFullYear();
+  const DAYS_IN_MO=[31,28,31,30,31,30,31,31,30,31,30,31];
+  const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p23=activeStates.filter(s=>STATE_DATA[s]?.group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const existEstPreP1=APR_DAILY.slice(0,P1_LIVE_APR_IDX).length>=5?APR_DAILY.slice(0,P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0)/APR_DAILY.slice(0,P1_LIVE_APR_IDX).length:base;
+  const p1LaunchDate=new Date(2026,3,26);
+  const p23LaunchDate=new Date(curYear,curMoIdx,curDay);
+  function p1Frac(date){const d=(date-p1LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d));}
+  function p23Frac(date){const d=(date-p23LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-0.055*d));}
+  function actualArr(moName,moIdx12){
+    if(LIVE_MONTHLY[moName]?.daily?.length>0)return LIVE_MONTHLY[moName].daily;
+    if(moIdx12===3)return APR_DAILY;
+    if(moIdx12===4)return MAY_ACTUAL_DAILY;
+    return[];
   }
-  function p23Frac(date) {
-    const days = (date - p23LaunchDate) / 86400000;
-    return days <= 0 ? 0 : Math.min(1, 1 - Math.exp(-0.055 * days));
-  }
-
-  // Best available actual daily array for a given month
-  function actualArr(moName, moIdx12) {
-    if (LIVE_MONTHLY[moName]?.daily?.length > 0) return LIVE_MONTHLY[moName].daily;
-    if (moIdx12 === 3) return APR_DAILY;       // April hardcoded fallback
-    if (moIdx12 === 4) return MAY_ACTUAL_DAILY; // May hardcoded fallback
-    return [];
-  }
-
-  const data = [];
-  let di = 0;
-
-  // Iterate: 3 months before current through 3 months after
-  for (let offset = -3; offset <= 3; offset++) {
-    const mi      = curMoIdx + offset;
-    const moIdx12 = ((mi % 12) + 12) % 12;
-    const yr      = mi < 0 ? curYear - 1 : (mi > 11 ? curYear + 1 : curYear);
-    const mo      = ALL_MONTHS[moIdx12];
-    const dim     = DAYS_IN_MO[moIdx12];
-    const arr     = actualArr(mo, moIdx12);
-    const isPast  = offset < 0;
-    const isCur   = offset === 0;
-    const isFut   = offset > 0;
-
-    for (let d = 0; d < dim; d++) {
-      const date       = new Date(yr, moIdx12, d + 1);
-      const isActualDay = isPast || (isCur && d < curDay - 1);
-
-      if (isActualDay) {
-        // Use sheet/fallback daily value if we have it, else seed
-        const v = arr[d] !== undefined ? arr[d] : (() => {
-          const sc = 0.60 + (offset + 3) * 0.13; // ramp up toward present
-          const n  = (sRand(di) - .5) * .40;
-          return Math.round(Math.max(80, base * sc * (1 + n)));
+  const data=[];let di=0;
+  for(let offset=-3;offset<=3;offset++){
+    const mi=curMoIdx+offset,moIdx12=((mi%12)+12)%12,yr=mi<0?curYear-1:(mi>11?curYear+1:curYear);
+    const mo=ALL_MONTHS[moIdx12],dim=DAYS_IN_MO[moIdx12],arr=actualArr(mo,moIdx12);
+    const isPast=offset<0,isCur=offset===0;
+    for(let d=0;d<dim;d++){
+      const date=new Date(yr,moIdx12,d+1),isActualDay=isPast||(isCur&&d<curDay-1);
+      // FIX #4: flag estimated (seeded) vs sheet-backed actuals
+      const hasSheetData = arr.length > 0;
+      if(isActualDay){
+        // FIX: seeded fallback must include Phase 1 contribution for post-Apr-26 days.
+        // Old code used base * sc (~$850) — correct should be (base + p1 * p1Frac) * sc (~$2,200).
+        const v=arr[d]!==undefined?arr[d]:(()=>{
+          const sc=0.60+(offset+3)*0.13,n=(sRand(di)-.5)*.40;
+          const p1f=p1Frac(date);
+          const seedTotal=(base+p1*p1f)*sc*(1+n); // include Phase 1 ramp
+          return Math.round(Math.max(80,seedTotal));
         })();
-        const p1f  = p1Frac(date);
-        const rawP1 = moIdx12 === 3 && d >= P1_LIVE_APR_IDX
-          ? Math.max(0, v - existEstPreP1)
-          : Math.round(p1 * p1f);
-        const eV  = Math.max(0, v - rawP1);
-        data.push({month:mo, value:v, type:"actual", eV, p1V:rawP1, p2V:0, p3V:0});
-
-      } else {
-        // Projected day
-        const n    = (sRand(di + 400) - .5) * .28;
-        const sc   = .97;
-        const p1f  = p1Frac(date);
-        const p23f = p23Frac(date);
-        const eV   = Math.round(base  * sc * (1 + n));
-        const p1V  = Math.round(p1    * p1f  * sc * (1 + n * .8));
-        const p23V = Math.round(p23   * p23f * sc * (1 + n * .8));
-        data.push({month:mo, value:Math.max(eV, eV+p1V+p23V), eV, p1V, p2V:p23V, p3V:0, type:"proj"});
+        const p1f=p1Frac(date);
+        const rawP1=moIdx12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-existEstPreP1):Math.round(p1*p1f);
+        const eV=Math.max(0,v-rawP1);
+        data.push({month:mo,value:v,type:"actual",eV,p1V:rawP1,p2V:0,p3V:0,estimated:!hasSheetData});
+      }else{
+        // PROJECT from post-P1 baseline. Slight upward trend: +1.5%/month reflects
+        // organic growth as Phase 1 continues maturing. Phase 2 added on top.
+        const n=(sRand(di+400)-.5)*.18;
+        const baseline = RECENT_BASELINE || (base + p1);
+        const monthsAhead = Math.max(0, offset);
+        const trendFactor = 1 + 0.015 * monthsAhead; // +1.5% per month
+        const p23f=p23Frac(date);
+        const p23V=Math.round(p23*p23f*(1+n*.6));
+        const baseV=Math.round(baseline*trendFactor*(1+n));
+        const eV=Math.round(baseV*RECENT_EXIST_FRAC);
+        const p1V=Math.max(0,baseV-eV);
+        data.push({month:mo,value:baseV+p23V,eV,p1V,p2V:p23V,p3V:0,type:"proj"});
       }
       di++;
     }
   }
-
   return data;
 }
-
-// ── Full-year data (Jan–Dec) — used for stats, monthly grid, annual totals ─────
-let fullYearData = [];
 
 function generateFullYearData() {
-  const now       = new Date();
-  const curMoIdx  = now.getMonth();
-  const curDay    = now.getDate();
-  const curYear   = now.getFullYear();
-  const DAYS_IN_MO = [31,28,31,30,31,30,31,31,30,31,30,31];
-
-  const base = ["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p1   = activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-  const p23  = activeStates.filter(s => STATE_DATA[s]?.group === 'phase2')
-                            .reduce((s,st)=>s+STATE_DATA[st].dailyContrib, 0);
-
-  const existEstPreP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX).length >= 5
-    ? APR_DAILY.slice(0, P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0) / APR_DAILY.slice(0, P1_LIVE_APR_IDX).length
-    : base;
-
-  const p1LaunchDate  = new Date(2026, 3, 26);
-  // Phase 2 scenario: launches TODAY
-  const p23LaunchDate = new Date(curYear, curMoIdx, curDay);
-
-  function p1Frac(date)  { const d=(date-p1LaunchDate)/86400000;  return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d)); }
-  function p23Frac(date) { const d=(date-p23LaunchDate)/86400000; return d<=0?0:Math.min(1,1-Math.exp(-0.055*d)); }
-
-  function actualArr(moName, moIdx12) {
-    if (LIVE_MONTHLY[moName]?.daily?.length > 0) return LIVE_MONTHLY[moName].daily;
-    if (moIdx12 === 3) return APR_DAILY;
-    if (moIdx12 === 4) return MAY_ACTUAL_DAILY;
-    return [];
+  const now=new Date(),curMoIdx=now.getMonth(),curDay=now.getDate(),curYear=now.getFullYear();
+  const DAYS_IN_MO=[31,28,31,30,31,30,31,31,30,31,30,31];
+  const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p23=activeStates.filter(s=>STATE_DATA[s]?.group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const existEstPreP1=APR_DAILY.slice(0,P1_LIVE_APR_IDX).length>=5?APR_DAILY.slice(0,P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0)/APR_DAILY.slice(0,P1_LIVE_APR_IDX).length:base;
+  const p1LaunchDate=new Date(2026,3,26);
+  const p23LaunchDate=new Date(curYear,curMoIdx,curDay);
+  function p1Frac(date){const d=(date-p1LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d));}
+  function p23Frac(date){const d=(date-p23LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-0.055*d));}
+  function actualArr(moName,moIdx12){
+    if(LIVE_MONTHLY[moName]?.daily?.length>0)return LIVE_MONTHLY[moName].daily;
+    if(moIdx12===3)return APR_DAILY;
+    if(moIdx12===4)return MAY_ACTUAL_DAILY;
+    return[];
   }
-
-  const data = [];
-  let di = 1000; // offset seeds so they differ from chartData
-
-  for (let moIdx12 = 0; moIdx12 <= 11; moIdx12++) {
-    const mo  = ALL_MONTHS[moIdx12];
-    const dim = DAYS_IN_MO[moIdx12];
-    const arr = actualArr(mo, moIdx12);
-    const isPast = moIdx12 < curMoIdx;
-    const isCur  = moIdx12 === curMoIdx;
-
-    for (let d = 0; d < dim; d++) {
-      const date        = new Date(curYear, moIdx12, d + 1);
-      const isActualDay = isPast || (isCur && d < curDay - 1);
-
-      if (isActualDay) {
-        const v = arr[d] !== undefined ? arr[d] : (() => {
-          const sc = 0.55 + moIdx12 * 0.06;
-          const n  = (sRand(di) - .5) * .40;
-          return Math.round(Math.max(80, base * sc * (1 + n)));
+  const data=[];let di=1000;
+  for(let moIdx12=0;moIdx12<=11;moIdx12++){
+    const mo=ALL_MONTHS[moIdx12],dim=DAYS_IN_MO[moIdx12],arr=actualArr(mo,moIdx12);
+    const isPast=moIdx12<curMoIdx,isCur=moIdx12===curMoIdx;
+    for(let d=0;d<dim;d++){
+      const date=new Date(curYear,moIdx12,d+1),isActualDay=isPast||(isCur&&d<curDay-1);
+      if(isActualDay){
+        // FIX: seeded fallback includes Phase 1 ramp (same fix as generateData)
+        const v=arr[d]!==undefined?arr[d]:(()=>{
+          const sc=0.55+moIdx12*0.06,n=(sRand(di)-.5)*.40;
+          const p1f=p1Frac(date);
+          const seedTotal=(base+p1*p1f)*sc*(1+n);
+          return Math.round(Math.max(80,seedTotal));
         })();
-        const p1f  = p1Frac(date);
-        const rawP1 = moIdx12 === 3 && d >= P1_LIVE_APR_IDX
-          ? Math.max(0, v - existEstPreP1)
-          : Math.round(p1 * p1f);
-        const eV = Math.max(0, v - rawP1);
-        data.push({month:mo, value:v, type:"actual", eV, p1V:rawP1, p2V:0, p3V:0});
-      } else {
-        const n    = (sRand(di + 600) - .5) * .28;
-        const sc   = .97;
-        const p1f  = p1Frac(date);
-        const p23f = p23Frac(date);
-        const eV   = Math.round(base  * sc * (1 + n));
-        const p1V  = Math.round(p1    * p1f  * sc * (1 + n * .8));
-        const p23V = Math.round(p23   * p23f * sc * (1 + n * .8));
-        data.push({month:mo, value:Math.max(eV, eV+p1V+p23V), eV, p1V, p2V:p23V, p3V:0, type:"proj"});
+        const p1f=p1Frac(date);
+        const rawP1=moIdx12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-existEstPreP1):Math.round(p1*p1f);
+        const eV=Math.max(0,v-rawP1);
+        data.push({month:mo,value:v,type:"actual",eV,p1V:rawP1,p2V:0,p3V:0});
+      }else{
+        const n=(sRand(di+600)-.5)*.18;
+        const baseline = RECENT_BASELINE || (base + p1);
+        const monthsAhead = Math.max(0, moIdx12 - curMoIdx);
+        const trendFactor = 1 + 0.015 * monthsAhead;
+        const p23f=p23Frac(date);
+        const p23V=Math.round(p23*p23f*(1+n*.6));
+        const baseV=Math.round(baseline*trendFactor*(1+n));
+        const eV=Math.round(baseV*RECENT_EXIST_FRAC);
+        const p1V=Math.max(0,baseV-eV);
+        data.push({month:mo,value:baseV+p23V,eV,p1V,p2V:p23V,p3V:0,type:"proj"});
       }
       di++;
     }
@@ -765,77 +638,57 @@ function generateFullYearData() {
   return data;
 }
 
-// ── Stats ─────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// STATS
+// ─────────────────────────────────────────────────────────────────────────────
 function updateStats(){
-  const now = new Date();
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
   document.getElementById("stat-states").textContent=activeStates.length;
   document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
-  // Recent avg from 7-month chart window (last 7 actual days)
-  const recent=chartData.filter(d=>d.type==="actual").slice(-7);
+  const recent=chartData.filter(d=>d.type==="actual"&&!d.estimated).slice(-7);
   const ca=recent.length?Math.round(recent.reduce((s,d)=>s+d.value,0)/recent.length):0;
   document.getElementById("stat-current").textContent="$"+ca.toLocaleString();
-  // Projected avg/day from December of full year
-  const projLabel = document.querySelector('.stat-card:last-child .stat-label');
-  if (projLabel) projLabel.innerHTML = `Projected Avg/Day <span style="font-size:9px;color:#484f58">(Dec, fully ramped)</span>`;
-  const decDays = fullYearData.filter(d=>d.month==="Dec"&&d.type==="proj");
-  const pa = decDays.length ? Math.round(decDays.reduce((s,d)=>s+d.value,0)/decDays.length) : 0;
+  const decDays=fullYearData.filter(d=>d.month==="Dec"&&d.type==="proj");
+  const pa=decDays.length?Math.round(decDays.reduce((s,d)=>s+d.value,0)/decDays.length):0;
   document.getElementById("stat-proj").textContent=pa?"$"+pa.toLocaleString():"—";
   const dd=decDays[Math.floor(decDays.length/2)]||{};
   document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2+3",v:dd.p2V||0,c:"#f59e0b"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
 }
 
-// ── Monthly totals — full Jan–Dec 2026 ────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// MONTHLY TOTALS — FULL JAN–DEC 2026
+// ─────────────────────────────────────────────────────────────────────────────
 function renderMonthlyTotals(){
-  const now    = new Date();
-  const curMo  = ALL_MONTHS[now.getMonth()];
+  const now=new Date(),curMo=ALL_MONTHS[now.getMonth()];
+  const mt={},mtp={};
+  ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
+  fullYearData.forEach(d=>{mt[d.month]+=d.value;if(d.type==="proj")mtp[d.month]="proj";});
+  const hasBoth=m=>fullYearData.some(d=>d.month===m&&d.type==="actual")&&fullYearData.some(d=>d.month===m&&d.type==="proj");
+  ALL_MONTHS.forEach(m=>{if(hasBoth(m))mtp[m]="partial";});
 
-  const mt = {}, mtp = {};
-  ALL_MONTHS.forEach(m => { mt[m] = 0; mtp[m] = "actual"; });
-
-  fullYearData.forEach(d => {
-    mt[d.month] += d.value;
-    if (d.type === "proj") mtp[d.month] = "proj";
+  // Override with state CSV-derived revenue (FIX #3: uses blended rate)
+  Object.entries(STATE_CSV_MONTHLY_REV).forEach(([mo,rev])=>{
+    if(rev>0){mt[mo]=rev;mtp[mo]=hasBoth(mo)?"partial":"actual";}
   });
 
-  // Current month is partial
-  const hasBoth = m => fullYearData.some(d=>d.month===m&&d.type==="actual") &&
-                       fullYearData.some(d=>d.month===m&&d.type==="proj");
-  ALL_MONTHS.forEach(m => { if (hasBoth(m)) mtp[m] = "partial"; });
+  // Override Apr with daily sheet if better
+  const aprSheetTotal=LIVE_MONTHLY['Apr']?.total||APR_TOTAL;
+  if(aprSheetTotal>(STATE_CSV_MONTHLY_REV['Apr']||0))mt['Apr']=aprSheetTotal;
+  mtp['Apr']='actual';
 
-  // Override with real values from state CSV where available
-  Object.entries(STATE_CSV_MONTHLY_REV).forEach(([mo, rev]) => {
-    if (rev > 0) {
-      mt[mo] = rev;
-      mtp[mo] = hasBoth(mo) ? "partial" : "actual";
-    }
-  });
+  const csvActualMonths=Object.keys(STATE_CSV_MONTHLY_REV).filter(m=>STATE_CSV_MONTHLY_REV[m]>0);
+  const actualYTD=csvActualMonths.length>0
+    ?csvActualMonths.reduce((s,m)=>s+(mt[m]||0),0)
+    :fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value,0);
+  const projTotal=fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value,0);
+  const fullYearEst=actualYTD+projTotal;
 
-  // Also override Apr with daily sheet total if better
-  const aprSheetTotal = LIVE_MONTHLY['Apr']?.total || APR_TOTAL;
-  if (aprSheetTotal > (STATE_CSV_MONTHLY_REV['Apr'] || 0)) {
-    mt['Apr'] = aprSheetTotal;
-  }
-  mtp['Apr'] = 'actual';
-
-  // YTD = sum of all actual months from state CSV (most reliable source)
-  const csvActualMonths = Object.keys(STATE_CSV_MONTHLY_REV).filter(m => STATE_CSV_MONTHLY_REV[m] > 0);
-  const actualYTD = csvActualMonths.length > 0
-    ? csvActualMonths.reduce((s, m) => s + (mt[m] || 0), 0)
-    : fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value, 0);
-
-  const projTotal = fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value, 0);
-  const fullYearEst = actualYTD + projTotal;
-
-  document.getElementById("monthly-grid").innerHTML = ALL_MONTHS.map(m => {
-    const tp       = mtp[m];
-    const color    = tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa";
-    const dimColor = tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e";
-    const label    = tp==="actual"?"actual":tp==="partial"?"partial":"projected";
-    return `<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${color}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dimColor}">${label}</div></div>`;
+  document.getElementById("monthly-grid").innerHTML=ALL_MONTHS.map(m=>{
+    const tp=mtp[m],color=tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa",dimColor=tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e",label=tp==="actual"?"actual":tp==="partial"?"partial":"projected";
+    return`<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${color}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dimColor}">${label}</div></div>`;
   }).join("");
 
-  document.getElementById("annual-row").innerHTML =
+  document.getElementById("annual-row").innerHTML=
     `<span class="annual-label">2026 Full Year</span>
      <div class="annual-vals">
        <div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTD).toLocaleString()}</span></div>
@@ -843,31 +696,23 @@ function renderMonthlyTotals(){
        <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(fullYearEst).toLocaleString()}</span></div>
      </div>`;
 
-  const tn = document.getElementById('totals-note');
-  if (tn) tn.textContent = csvActualMonths.length
-    ? `actual ${csvActualMonths.join(', ')} from state sheet · projected ${curMo}–Dec`
-    : `actual Jan–${curMo} · projected ${curMo}–Dec`;
+  const tn=document.getElementById('totals-note');
+  if(tn)tn.textContent=csvActualMonths.length
+    ?`actual ${csvActualMonths.join(', ')} from state sheet (RH+TD+MDL blended) · projected ${curMo}–Dec`
+    :`actual Jan–${curMo} · projected ${curMo}–Dec`;
 }
 
-// ── Phases / states UI ────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASES / STATES UI
+// ─────────────────────────────────────────────────────────────────────────────
 function renderPhases(){
   const wrap=document.getElementById("phases-view");wrap.innerHTML="";
   Object.entries(PHASE_META).forEach(([key,meta])=>{
-    const isLocked = key==="existing";
-    const allOn    = meta.states.every(s=>activeStates.includes(s));
-    const contrib  = meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);
-
-    const card=document.createElement("div");
-    card.className="phase-card"+(isLocked?" locked":"");
-    card.style.borderColor = allOn ? meta.color : "#30363d";
-    card.style.background  = allOn ? meta.color+"11" : "#161b22";
-
-    if (key === 'phase2') {
-      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label} · ${meta.states.length} Licenses</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
-    } else {
-      card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
-    }
-
+    const isLocked=key==="existing",allOn=meta.states.every(s=>activeStates.includes(s));
+    const contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);
+    const card=document.createElement("div");card.className="phase-card"+(isLocked?" locked":"");
+    card.style.borderColor=allOn?meta.color:"#30363d";card.style.background=allOn?meta.color+"11":"#161b22";
+    card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
     if(!isLocked)card.onclick=()=>togglePhase(key);
     wrap.appendChild(card);
   });
@@ -878,7 +723,7 @@ function renderStates(){
     const grp=document.createElement("div");grp.className="state-group";grp.innerHTML=`<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;
     const btns=document.createElement("div");btns.className="state-btns";
     meta.states.forEach(st=>{
-      const isOn=activeStates.includes(st);const isLocked=STATE_DATA[st]?.locked;
+      const isOn=activeStates.includes(st),isLocked=STATE_DATA[st]?.locked;
       const btn=document.createElement("button");btn.className="state-btn"+(isLocked?" locked":"");
       btn.style.borderColor=isOn?meta.color:"#30363d";btn.style.background=isOn?meta.color+"1a":"transparent";btn.style.color=isOn?meta.color:"#484f58";
       btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;
@@ -887,65 +732,77 @@ function renderStates(){
     grp.appendChild(btns);wrap.appendChild(grp);
   });
 }
-function togglePhase(key){const states=PHASE_META[key].states;const allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();renderSparks();}
+function togglePhase(key){const states=PHASE_META[key].states,allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();renderSparks();}
 function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();renderSparks();}
 function setView(v){document.getElementById("phases-view").style.display=v==="phases"?"flex":"none";document.getElementById("states-view").style.display=v==="states"?"block":"none";document.getElementById("btn-phases").className="view-btn"+(v==="phases"?" active":"");document.getElementById("btn-states").className="view-btn"+(v==="states"?" active":"");}
 
-// ── Chart drawing ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// CHART DRAWING
+// ─────────────────────────────────────────────────────────────────────────────
 const PAD={top:44,right:16,bottom:44,left:58};
 function draw(){
-  const canvas=document.getElementById("chart");const wrap=document.getElementById("chart-wrap");
+  const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap");
   const W=wrap.offsetWidth,H=300,dpr=window.devicePixelRatio||1;
   canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";
   const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
   const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom,maxY=Math.max(...chartData.map(d=>d.value))*1.18;
   ctx.fillStyle="#0d1117";ctx.fillRect(0,0,W,H);
   [0,.25,.5,.75,1].forEach(t=>{const v=Math.round(maxY*t),y=PAD.top+cH-t*cH;ctx.strokeStyle=t===0?"#30363d":"#161b22";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(W-PAD.right,y);ctx.stroke();ctx.fillStyle="#484f58";ctx.font="10px monospace";ctx.textAlign="right";ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`,PAD.left-6,y+3.5);});
-  // Phase 2 scenario marker — launches today when active
-  const p23Idx = chartData.findIndex(d => d.p2V > 0);
-  const p2Active = activeStates.some(s => STATE_DATA[s]?.group === 'phase2');
-  if (p2Active && p23Idx >= 0) {
-    const lx = PAD.left + (p23Idx / chartData.length) * cW;
-    ctx.strokeStyle = '#f59e0b88'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
-    ctx.beginPath(); ctx.moveTo(lx, PAD.top+14); ctx.lineTo(lx, PAD.top+cH); ctx.stroke(); ctx.setLineDash([]);
-    // Shaded "Phase 2 scenario" region
-    ctx.fillStyle = 'rgba(245,158,11,0.05)';
-    ctx.fillRect(lx, PAD.top, (W - PAD.right) - lx, cH);
-    ctx.fillStyle = '#f59e0baa'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
-    ctx.fillText('▲ P2 today', lx, PAD.top + 10);
-  }
-  // P1 live marker — find first day with p1V > 0
-  const p1LiveIdx = chartData.findIndex(d => d.p1V > 0);
-  if (p1LiveIdx > 0) {
-    const glx = PAD.left + (p1LiveIdx / chartData.length) * cW;
-    ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);
-    ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1 live",glx,PAD.top+14);
-  }
-  // NOW marker — first projected day
+
+  // Phase 2 marker
+  const p23Idx=chartData.findIndex(d=>d.p2V>0),p2Active=activeStates.some(s=>STATE_DATA[s]?.group==='phase2');
+  if(p2Active&&p23Idx>=0){const lx=PAD.left+(p23Idx/chartData.length)*cW;ctx.strokeStyle='#f59e0b88';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(lx,PAD.top+14);ctx.lineTo(lx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,158,11,0.05)';ctx.fillRect(lx,PAD.top,(W-PAD.right)-lx,cH);ctx.fillStyle='#f59e0baa';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.fillText('▲ P2 today',lx,PAD.top+10);}
+
+  // P1 live marker
+  const p1LiveIdx=chartData.findIndex(d=>d.p1V>0);
+  if(p1LiveIdx>0){const glx=PAD.left+(p1LiveIdx/chartData.length)*cW;ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1 live",glx,PAD.top+14);}
+
+  // NOW marker
   const ti=chartData.findIndex(d=>d.type==="proj");
   if(ti>0){const tx=PAD.left+(ti/chartData.length)*cW;ctx.strokeStyle="#ffffff30";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(tx,PAD.top);ctx.lineTo(tx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#ffffff55";ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText("NOW",tx,PAD.top-4);}
+
   const bW=Math.max(1.2,(cW/chartData.length)-.4);
   chartData.forEach((d,i)=>{
     const x=PAD.left+(i/chartData.length)*cW,al=i===hoveredIdx?"ff":"bb";
     if(d.type==="actual"){
-      if(d.p1V>0){let sy=PAD.top+cH;[{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});}
-      else{ctx.fillStyle="#4ade80"+al;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);}
-    } else {
+      // FIX #4: hatched/dimmer bars for seeded (estimated) months (Jan-Mar before daily sheet)
+      const alpha=d.estimated?"55":al;
+      if(d.p1V>0){
+        let sy=PAD.top+cH;
+        [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+alpha;ctx.fillRect(x,sy,bW,sh);});
+      }else{
+        ctx.fillStyle="#4ade80"+alpha;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);
+      }
+    }else{
       let sy=PAD.top+cH;
       [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"},{v:d.p2V,c:"#f59e0b"},{v:d.p3V,c:"#e879f9"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});
     }
   });
+
+  // 7-day moving avg (only over sheet-backed actuals)
   ctx.strokeStyle="#fb923c";ctx.lineWidth=2;ctx.beginPath();let started=false;
-  chartData.forEach((d,i)=>{if(d.type!=="actual")return;const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);});ctx.stroke();
+  chartData.forEach((d,i)=>{
+    if(d.type!=="actual"||d.estimated)return;
+    const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual"&&!x.estimated);
+    const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;
+    const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;
+    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // Month labels
   let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
 }
+
 function showTooltip(e){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
   hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
-  document.getElementById("tt-date").textContent=`${d.month} · ${d.type==="actual"?"Actual":"Projected"}`;
-  document.getElementById("tt-val").style.color=d.type==="actual"?"#4ade80":"#e6edf3";document.getElementById("tt-val").textContent="$"+d.value.toLocaleString();
+  // FIX #4: label estimated bars clearly in tooltip
+  const typeLabel=d.type==="actual"?(d.estimated?"Estimated (no sheet data)":"Actual"):"Projected";
+  document.getElementById("tt-date").textContent=`${d.month} · ${typeLabel}`;
+  document.getElementById("tt-val").style.color=d.type==="actual"?(d.estimated?"#6e7681":"#4ade80"):"#e6edf3";
+  document.getElementById("tt-val").textContent="$"+d.value.toLocaleString();
   const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2+3",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
   const bhtml=rows.length>1?rows.map(r=>`<div class="tt-row"><span class="tt-row-label">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join(""):"";
   document.getElementById("tt-breakdown").innerHTML=bhtml;document.getElementById("tt-breakdown").style.display=bhtml?"block":"none";
@@ -953,15 +810,13 @@ function showTooltip(e){
 }
 function hideTooltip(){hoveredIdx=null;document.getElementById("tooltip").style.display="none";draw();}
 
-// ── Map ───────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// MAP
+// ─────────────────────────────────────────────────────────────────────────────
 function updateTZBar(){
   const bar=document.getElementById("tz-bar");if(!bar)return;
   const now=new Date();
-  bar.innerHTML=["PT","MT","CST","ET"].map((k,idx,arr)=>{
-    const m=TZ_META[k];const t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ}));
-    const h=t.getHours(),mn=t.getMinutes(),am=h<12?"AM":"PM",hh=h%12||12;
-    return`<div style="flex:1;padding:8px 10px;background:${m.color}15;border-right:${idx===arr.length-1?"none":"1px solid #0d1117"};text-align:center;"><div style="font-size:9px;color:${m.color};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;font-weight:700;">${m.abbr}</div><div style="font-size:14px;font-weight:700;color:#e6edf3;">${hh}:${mn.toString().padStart(2,"0")} ${am}</div><div style="font-size:8px;color:#484f58;margin-top:1px;">${m.label}</div></div>`;
-  }).join("");
+  bar.innerHTML=["PT","MT","CST","ET"].map((k,idx,arr)=>{const m=TZ_META[k],t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ})),h=t.getHours(),mn=t.getMinutes(),am=h<12?"AM":"PM",hh=h%12||12;return`<div style="flex:1;padding:8px 10px;background:${m.color}15;border-right:${idx===arr.length-1?"none":"1px solid #0d1117"};text-align:center;"><div style="font-size:9px;color:${m.color};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;font-weight:700;">${m.abbr}</div><div style="font-size:14px;font-weight:700;color:#e6edf3;">${hh}:${mn.toString().padStart(2,"0")} ${am}</div><div style="font-size:8px;color:#484f58;margin-top:1px;">${m.label}</div></div>`;}).join("");
 }
 function drawMap(){
   if(!usTopoData)return;updateTZBar();
@@ -984,780 +839,412 @@ function drawMap(){
     g.on("mouseenter",function(e){
       g.select("path").attr("fill",isOn?color+"55":(grp?color+"25":"#1a2535")).attr("stroke-width",isOn?2.2:(grp?1.2:.8));
       const lbl=grp?GRP_LABELS[grp]:"Not in projection";
-      const untrk=!grp?ALL_STATES[st]:null;
-      const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLocked?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLocked?"":" — click to add"}</div>`:`<div style="color:#484f58;font-size:11px;margin-bottom:4px;">Not in plan — assess for license</div>`;
+      const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLocked?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLocked?"":" — click to add"}</div>`:`<div style="color:#484f58;font-size:11px;margin-bottom:4px;">Not in plan</div>`;
       const stTZ=TZ[st],stTZM=stTZ?TZ_META[stTZ]:null;
       const tzNow=stTZM?new Date().toLocaleTimeString("en-US",{timeZone:stTZM.ianatZ,hour:"numeric",minute:"2-digit"}):null;
-      const detailRows=sd?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Proj daily (ramped)</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:untrk?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${untrk.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Est. daily volume</span><span style="color:#60a5fa;font-weight:700">~$${untrk.estVolume}/day</span></div>`:"";
+      const detailRows=sd?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Proj daily (ramped)</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:"";
       tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${st||"?"} — ${lbl}</div>${status}`+(stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600;">${tzNow}</span></div>`:"")+( detailRows?`<div style="border-top:1px solid #21262d;padding-top:4px;">${detailRows}</div>`:"");
       tt.style.display="block";
     }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";}).on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);}).on("click",()=>{if(sd&&!isLocked)toggleState(st);});
   });
   svg.append("path").datum(topojson.mesh(usTopoData,usTopoData.objects.states,(a,b)=>a!==b)).attr("fill","none").attr("stroke","#080c12").attr("stroke-width",".5").attr("d",path).attr("pointer-events","none");
 
-  // ── Population bubble layer ───────────────────────────────────────────────
-  const ALL_POPS = Object.assign(
-    Object.fromEntries(Object.entries(STATE_DATA).map(([st,d])=>[st,d.pop])),
-    Object.fromEntries(Object.entries(ALL_STATES).map(([st,d])=>[st,d.pop]))
-  );
-  const maxPop = Math.max(...Object.values(ALL_POPS));
-  const maxR   = W * 0.042;
-
-  features.forEach(feat => {
-    const fips     = feat.id.toString().padStart(2,"0");
-    const st       = FIPS[fips];
-    if (!st) return;
-    const pop      = ALL_POPS[st];
-    if (!pop) return;
-    const centroid = path.centroid(feat);
-    if (!centroid || isNaN(centroid[0])) return;
-
-    const sd        = STATE_DATA[st];
-    const isOn      = sd ? activeStates.includes(st) : false;
-    const grp       = sd ? sd.group : null;
-    const color     = grp ? GRP_COLORS[grp] : null;
-    const isP2      = grp === "phase2";
-    const isCompact = COMPACT_STATES.has(st) && !sd;
-
-    if (!sd && !isCompact) return;
-
-    const r = Math.max(3, maxR * Math.sqrt(pop / maxPop));
-    const b = svg.append("g").attr("pointer-events","none");
-
-    if (isOn) {
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill",color).attr("opacity",.15);
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill","none").attr("stroke",color).attr("stroke-width",1.4).attr("opacity",.60);
-    } else if (isP2) {
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill",color).attr("opacity",.07);
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill","none").attr("stroke",color).attr("stroke-width",1)
-        .attr("stroke-dasharray","4,3").attr("opacity",.42);
-    } else if (isCompact) {
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill","#2dd4bf").attr("opacity",.05);
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill","none").attr("stroke","#2dd4bf")
-        .attr("stroke-width",.8).attr("stroke-dasharray","2,3").attr("opacity",.28);
-    } else {
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill","#334155").attr("opacity",.06);
-      b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r)
-        .attr("fill","none").attr("stroke","#4a5568")
-        .attr("stroke-width",.8).attr("opacity",.30);
-    }
+  const ALL_POPS=Object.assign(Object.fromEntries(Object.entries(STATE_DATA).map(([st,d])=>[st,d.pop])),Object.fromEntries(Object.entries(ALL_STATES).map(([st,d])=>[st,d.pop])));
+  const maxPop=Math.max(...Object.values(ALL_POPS)),maxR=W*0.042;
+  features.forEach(feat=>{
+    const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips];if(!st)return;
+    const pop=ALL_POPS[st];if(!pop)return;
+    const centroid=path.centroid(feat);if(!centroid||isNaN(centroid[0]))return;
+    const sd=STATE_DATA[st],isOn=sd?activeStates.includes(st):false,grp=sd?sd.group:null,color=grp?GRP_COLORS[grp]:null,isP2=grp==="phase2",isCompact=COMPACT_STATES.has(st)&&!sd;
+    if(!sd&&!isCompact)return;
+    const r=Math.max(3,maxR*Math.sqrt(pop/maxPop)),b=svg.append("g").attr("pointer-events","none");
+    if(isOn){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill",color).attr("opacity",.15);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke",color).attr("stroke-width",1.4).attr("opacity",.60);}
+    else if(isP2){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill",color).attr("opacity",.07);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke",color).attr("stroke-width",1).attr("stroke-dasharray","4,3").attr("opacity",.42);}
+    else if(isCompact){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","#2dd4bf").attr("opacity",.05);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke","#2dd4bf").attr("stroke-width",.8).attr("stroke-dasharray","2,3").attr("opacity",.28);}
+    else{b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","#334155").attr("opacity",.06);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke","#4a5568").attr("stroke-width",.8).attr("opacity",.30);}
   });
 
-  // Legend update with bubble scale reference
-  const leg=document.getElementById("map-legend");
-  if(leg) {
-    buildMapLegend(leg, maxR, maxPop);
-  }
+  const leg=document.getElementById("map-legend");if(leg)buildMapLegend(leg,maxR,maxPop);
 }
 
-function buildMapLegend(leg, maxR, maxPop) {
-  const parts = [];
-  Object.entries(GRP_LABELS).forEach(([k,v]) => {
-    const c = GRP_COLORS[k];
-    const isP2 = k === 'phase2';
-    const dash = isP2 ? 'stroke-dasharray="3,2"' : '';
-    const sw = isP2 ? '1' : '1.5';
-    parts.push(
-      '<div style="display:flex;align-items:center;gap:6px;">'
-      + '<svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="' + c + '22" stroke="' + c + '" stroke-width="' + sw + '" ' + dash + '/>' + '<' + '/svg>'
-      + '<span style="font-size:9px;color:#6e7681;font-family:monospace">' + v + '<' + '/span>'
-      + '<' + '/div>'
-    );
-  });
-  parts.push(
-    '<div style="display:flex;align-items:center;gap:6px;">'
-    + '<svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#2dd4bf" stroke-width=".8" stroke-dasharray="2,3" opacity=".7"/>' + '<' + '/svg>'
-    + '<span style="font-size:9px;color:#2dd4bf99;font-family:monospace">IMLC compact — reachable via compact license<' + '/span>'
-    + '<' + '/div>'
-  );
-  parts.push(
-    '<div style="display:flex;align-items:center;gap:6px;">'
-    + '<svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#334155" stroke-width=".7" stroke-dasharray="2,3"/>' + '<' + '/svg>'
-    + '<span style="font-size:9px;color:#253040;font-family:monospace">Other states<' + '/span>'
-    + '<' + '/div>'
-  );
-  // Bubble scale reference
-  const scaleRow = [5, 15, 30].map(pop => {
-    const r = Math.max(4, Math.round(maxR * Math.sqrt(pop / maxPop)));
-    const d = r * 2 + 4;
-    return '<div style="display:flex;align-items:center;gap:4px;">'
-      + '<svg width="' + d + '" height="' + d + '" style="overflow:visible"><circle cx="' + (r+2) + '" cy="' + (r+2) + '" r="' + r + '" fill="none" stroke="#6e7681" stroke-width=".8" opacity=".5"/>' + '<' + '/svg>'
-      + '<span style="font-size:9px;color:#484f58;font-family:monospace">' + pop + 'M<' + '/span>'
-      + '<' + '/div>';
-  }).join('');
-  parts.push(
-    '<div style="display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid #21262d;flex-wrap:wrap;">'
-    + '<span style="font-size:9px;color:#484f58;font-family:monospace">Pop:<' + '/span>'
-    + scaleRow
-    + '<' + '/div>'
-  );
-  leg.innerHTML = parts.join('');
+function buildMapLegend(leg,maxR,maxPop){
+  const parts=[];
+  Object.entries(GRP_LABELS).forEach(([k,v])=>{const c=GRP_COLORS[k],isP2=k==='phase2',dash=isP2?'stroke-dasharray="3,2"':'',sw=isP2?'1':'1.5';parts.push('<div style="display:flex;align-items:center;gap:6px;"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="'+c+'22" stroke="'+c+'" stroke-width="'+sw+'" '+dash+'/></svg><span style="font-size:9px;color:#6e7681;font-family:monospace">'+v+'</span></div>');});
+  parts.push('<div style="display:flex;align-items:center;gap:6px;"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#2dd4bf" stroke-width=".8" stroke-dasharray="2,3" opacity=".7"/></svg><span style="font-size:9px;color:#2dd4bf99;font-family:monospace">IMLC compact — reachable via compact license</span></div>');
+  const scaleRow=[5,15,30].map(pop=>{const r=Math.max(4,Math.round(maxR*Math.sqrt(pop/maxPop))),d=r*2+4;return'<div style="display:flex;align-items:center;gap:4px;"><svg width="'+d+'" height="'+d+'" style="overflow:visible"><circle cx="'+(r+2)+'" cy="'+(r+2)+'" r="'+r+'" fill="none" stroke="#6e7681" stroke-width=".8" opacity=".5"/></svg><span style="font-size:9px;color:#484f58;font-family:monospace">'+pop+'M</span></div>';}).join('');
+  parts.push('<div style="display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid #21262d;flex-wrap:wrap;"><span style="font-size:9px;color:#484f58;font-family:monospace">Pop:</span>'+scaleRow+'</div>');
+  leg.innerHTML=parts.join('');
 }
 
-// ── Refresh all UI ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// REFRESH — master entry point
+// ─────────────────────────────────────────────────────────────────────────────
 function refresh(){
-  chartData    = generateData();        // 7-month window — drives the chart only
-  fullYearData = generateFullYearData(); // Jan–Dec — drives stats + monthly totals
+  chartData    = generateData();
+  fullYearData = generateFullYearData();
   updateStats();
   renderPhases();
   renderStates();
   draw();
+  // Note: renderMonthlyTotals() is called AFTER computeStateCsvRevenue()
+  // in the wrapper below — not here directly — to avoid the stale-cycle bug.
   renderMonthlyTotals();
   drawMap();
 }
 
-// ── Manual refresh button ─────────────────────────────────────────────────────
-async function manualRefresh() {
-  setLiveStatus('loading', 'Refreshing…');
+// ─────────────────────────────────────────────────────────────────────────────
+// MANUAL REFRESH
+// ─────────────────────────────────────────────────────────────────────────────
+async function manualRefresh(){
+  setLiveStatus('loading','Refreshing…');
   bootFromCache();
-  const [liveOk, stateOk] = await Promise.all([
-    loadLiveData(false),
-    loadStateMonthlyDirect()
-  ]);
-  if (liveOk) applyLiveData();
+  const[liveOk,stateOk]=await Promise.all([loadLiveData(false),loadStateMonthlyDirect()]);
+  if(liveOk)applyLiveData();
   refresh();
 }
 
-function debugTabs() {
-  try {
-    const raw = localStorage.getItem('tmd_c');
-    if (!raw) { alert('No cache found — open the Dashboard first.'); return; }
-    const json = JSON.parse(raw);
-    const tabs = Object.keys(json);
-    const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-    const lines = tabs.map(t => {
-      const csv = json[t];
-      const firstRow = csv.split('\n')[0];
-      const headers = firstRow.split(',').map(h => h.trim().toLowerCase().replace(/[^a-z]/g,'').slice(0,3));
-      const moCount = headers.filter(h => MO_NAMES.includes(h)).length;
-      const rowCount = csv.split('\n').length - 1;
-      return `"${t}" — ${rowCount} rows, ${moCount} month cols`;
-    });
-    alert('Tabs in cache:\n\n' + lines.join('\n') + '\n\nThe state tab needs state abbreviations (TX, NC…) in column A and month names in row 1.');
-  } catch(e) { alert('Error reading cache: ' + e.message); }
+function debugTabs(){
+  try{
+    const raw=localStorage.getItem('tmd_c');
+    if(!raw){alert('No cache found — open the Dashboard first.');return;}
+    const json=JSON.parse(raw),tabs=Object.keys(json);
+    const MO_NAMES=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const lines=tabs.map(t=>{const csv=json[t],firstRow=csv.split('\n')[0],headers=firstRow.split(',').map(h=>h.trim().toLowerCase().replace(/[^a-z]/g,'').slice(0,3)),moCount=headers.filter(h=>MO_NAMES.includes(h)).length,rowCount=csv.split('\n').length-1;return`"${t}" — ${rowCount} rows, ${moCount} month cols`;});
+    alert('Tabs in cache:\n\n'+lines.join('\n')+'\n\nThe state tab needs state abbreviations (TX, NC…) in column A and month names in row 1.');
+  }catch(e){alert('Error reading cache: '+e.message);}
 }
 
-// ── Global error trap — shows any JS error on screen ─────────────────────────
-window.addEventListener('error', e => {
-  const box = document.getElementById('err-box');
-  if (box) { box.style.display = 'block'; box.textContent = '⚠ JS Error: ' + e.message + ' (line ' + e.lineno + ')'; }
-  console.error(e);
-});
+window.addEventListener('error',e=>{const box=document.getElementById('err-box');if(box){box.style.display='block';box.textContent='⚠ JS Error: '+e.message+' (line '+e.lineno+')';}console.error(e);});
+document.getElementById("chart").addEventListener("mousemove",showTooltip);
+document.getElementById("chart").addEventListener("mouseleave",hideTooltip);
+window.addEventListener("resize",()=>{draw();drawMap();});
 
-// ── Event listeners ───────────────────────────────────────────────────────────
-document.getElementById("chart").addEventListener("mousemove", showTooltip);
-document.getElementById("chart").addEventListener("mouseleave", hideTooltip);
-window.addEventListener("resize", () => { draw(); drawMap(); });
-
-// ── Init ──────────────────────────────────────────────────────────────────────
-try {
-  const cacheHit = bootFromCache();
-  refresh();
-  setView("phases");
-
-  if (!cacheHit) {
-    setLiveStatus('err', 'No cached data — use ⬆ Import Daily or ⬆ Import May Data buttons');
-    document.getElementById('h-badge').textContent = 'fallback data';
-    document.getElementById('h-badge').className   = 'badge badge-yellow';
-    document.getElementById('subtitle').textContent =
-      'Showing model estimates. To load real data: use the ⬆ Import Daily button (paste your monthly sheet tab) and ⬆ Import May Data (paste the state tally tab).';
-  }
-} catch(e) {
-  const box = document.getElementById('err-box');
-  if (box) { box.style.display = 'block'; box.textContent = '⚠ Init error: ' + e.message + '\n' + e.stack; }
-  console.error('Init failed:', e);
-}
-
-// Async background loads — never block the render
-fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
-  .then(r => r.json()).catch(() => null)
-  .then(topoData => { usTopoData = topoData; drawMap(); });
-
-loadLiveData(false).then(ok => { if (ok) { applyLiveData(); refresh(); } });
-loadStateMonthlyDirect().then(ok => { if (ok) renderSparks(); });
-
-setInterval(async () => {
-  const [liveOk, stateOk] = await Promise.all([loadLiveData(true), loadStateMonthlyDirect()]);
-  if (liveOk) { applyLiveData(); refresh(); }
-  else if (stateOk) { renderSparks(); }
-}, 5 * 60 * 1000);
-
-// ── STATE MONTHLY HEATMAP ─────────────────────────────────────────────────────
-
-// Monthly state encounter data — populated from sheet tab or fallback
-// Structure: STATE_MONTHLY['TX'] = [{v, actual}, ...] indexed 0=Jan … 11=Dec
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE MONTHLY HEATMAP DATA
+// ─────────────────────────────────────────────────────────────────────────────
 let STATE_MONTHLY = {};
 
-// Real state encounter data Jan–May 2026 from "state by state" tab
 const FALLBACK_STATE_ENC = {
-  //       Jan   Feb   Mar   Apr   May   Jun   Jul   Aug   Sep   Oct   Nov   Dec
-  TX:  [    0,    1,  784,  818, 1080,    0,    0,    0,    0,    0,    0,    0],
-  NC:  [    0,  313,  591,  556,  600,    0,    0,    0,    0,    0,    0,    0],
-  AZ:  [  453,  437,  583,  416,  504,    0,    0,    0,    0,    0,    0,    0],
-  OR:  [  323,  311,  299,  312,  315,    0,    0,    0,    0,    0,    0,    0],
-  IN:  [    0,  197,  284,  241,  300,    0,    0,    0,    0,    0,    0,    0],
-  TN:  [    0,  105,  199,  147,  178,    0,    0,    0,    0,    0,    0,    0],
-  WA:  [    0,    0,   61,   86,  102,    0,    0,    0,    0,    0,    0,    0],
-  // Phase 1 — live Apr 26
-  OH:  [    0,    0,    0,   14,  378,    0,    0,    0,    0,    0,    0,    0],
-  IL:  [    0,    0,    0,    8,  279,    0,    0,    0,    0,    0,    0,    0],
-  MI:  [    0,    0,    0,    6,  246,    0,    0,    0,    0,    0,    0,    0],
-  PA:  [    0,    0,    0,    0,  261,    0,    0,    0,    0,    0,    0,    0],
-  AL:  [    0,    0,    0,   50,  180,    0,    0,    0,    0,    0,    0,    0],
-  // Phase 2+3 — not yet live
-  CO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-  NJ:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-  GA:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-  MO:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
-  SC:  [    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0],
+  TX:[0,1,784,818,1080,0,0,0,0,0,0,0],
+  NC:[0,313,591,556,600,0,0,0,0,0,0,0],
+  AZ:[453,437,583,416,504,0,0,0,0,0,0,0],
+  OR:[323,311,299,312,315,0,0,0,0,0,0,0],
+  IN:[0,197,284,241,300,0,0,0,0,0,0,0],
+  TN:[0,105,199,147,178,0,0,0,0,0,0,0],
+  WA:[0,0,61,86,102,0,0,0,0,0,0,0],
+  OH:[0,0,0,14,378,0,0,0,0,0,0,0],
+  IL:[0,0,0,8,279,0,0,0,0,0,0,0],
+  MI:[0,0,0,6,246,0,0,0,0,0,0,0],
+  PA:[0,0,0,0,261,0,0,0,0,0,0,0],
+  AL:[0,0,0,50,180,0,0,0,0,0,0,0],
+  CO:[0,0,0,0,0,0,0,0,0,0,0,0],
+  NJ:[0,0,0,0,0,0,0,0,0,0,0,0],
+  GA:[0,0,0,0,0,0,0,0,0,0,0,0],
+  MO:[0,0,0,0,0,0,0,0,0,0,0,0],
+  SC:[0,0,0,0,0,0,0,0,0,0,0,0],
 };
-const FALLBACK_ACTUAL_THRU = 4; // months 0-4 (Jan–May) are real actuals
+const FALLBACK_ACTUAL_THRU = 4; // Jan–May are real actuals
 
-function buildStateMonthlySeed() {
-  // Start every state as all-projected; sheet data overwrites actuals.
-  // Projections are model-generated so the heatmap is never blank.
-  const result = {};
-  const curMonth = new Date().getMonth(); // 0-indexed
+function applyFallback(){
+  Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{
+    if(!STATE_MONTHLY[st])return;
+    arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]={v,actual:v>0};});
+  });
+}
 
-  Object.keys(STATE_DATA).forEach((st, si) => {
-    const fallback = FALLBACK_STATE_ENC[st] || Array(12).fill(0);
-    const isP1 = STATE_DATA[st].group === 'phase1';
-    const isP2 = STATE_DATA[st].group === 'phase2';
+function applyStateCells(parsed){
+  if(!parsed)return;
+  Object.entries(parsed).forEach(([st,months])=>{
+    if(!STATE_MONTHLY[st])return;
+    months.forEach((cell,mi)=>{
+      if(cell?.actual&&canBeActual(mi)&&mi>FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]=cell;
+    });
+  });
+}
 
-    const aprAnchor = fallback[3] || STATE_DATA[st].dailyContrib / RATES.rh * 30;
-    const curMo = new Date().getMonth(); // 0-indexed, phase2 scenario starts now
+function debugStateCsv(csv){
+  const lines=csv.trim().split('\n').slice(0,3);
+  console.log('[State CSV raw lines]');
+  lines.forEach((l,i)=>console.log(`  row ${i}:`,l.substring(0,120)));
+  const txVals=(STATE_MONTHLY['TX']||[]).map((c,mi)=>`${ALL_MONTHS[mi]}:${c?.v??'?'}${c?.actual?'✓':''}`).join(' ');
+  console.log('[TX STATE_MONTHLY]',txVals);
+}
 
-    result[st] = Array.from({length:12}, (_, mi) => {
-      const noise = 0.82 + sRand(si * 100 + mi) * 0.36;
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX #1: RECALIBRATE BOTH EXISTING AND PHASE 1 TARGETS FROM ACTUALS
+// Previously only existing states were recalibrated; P1 targets were never
+// updated even when actual OH/IL/MI/PA/AL data was available.
+// ─────────────────────────────────────────────────────────────────────────────
+function recalibrateFromMonthlyActuals(){
+  // Only recalibrate existing states — used for blended rate and tooltip proportions.
+  // Phase 1 targets are no longer used to drive projections (projections use 30-day actual avg).
+  Object.keys(STATE_DATA).forEach(st=>{
+    if(STATE_DATA[st].group!=='existing')return;
+    const actuals=(STATE_MONTHLY[st]||[]).filter(c=>c?.actual&&c.v>0);
+    if(actuals.length<1)return;
+    const avgMonthly=actuals.reduce((s,c)=>s+c.v,0)/actuals.length;
+    STATE_DATA[st].dailyContrib=Math.round(avgMonthly/30*RATES.rh);
+    ORIGINAL_EXISTING_CONTRIB[st]=STATE_DATA[st].dailyContrib;
+  });
+  // Recompute baseline after any STATE_DATA changes
+  computeRecentBaseline();
+}
 
-      // P1: ramping from Apr 26 launch
-      if (isP1) {
-        if (mi < 3) return { v: 0, actual: false };
-        if (mi === 3) return { v: fallback[3] || 0, actual: false };
-        const daysSinceLive = (mi - 3) * 30 + 5;
-        const frac = Math.min(1, 1 - Math.exp(-P1_K * daysSinceLive));
-        const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
-        return { v: Math.round(target * frac * noise), actual: false };
-      }
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX #3: COMPUTE STATE CSV REVENUE WITH BLENDED RATE (RH + TD/MDL)
+// Previously used RATES.rh alone ($12/enc), which understated total revenue
+// vs the chart (which includes TD $23-28 and MDL $25-28 per encounter).
+// Now uses the ratio derived from actual LIVE_MONTHLY data where available.
+// ─────────────────────────────────────────────────────────────────────────────
+function computeStateCsvRevenue(){
+  STATE_CSV_MONTHLY_REV={};
+  // FIX #3: get blended multiplier from actual daily sheet data
+  const blendedRate=computeBlendedRHRate();
+  ALL_MONTHS.forEach((mo,mi)=>{
+    let totalEnc=0,hasActual=false;
+    Object.values(STATE_MONTHLY).forEach(cells=>{
+      const cell=cells[mi];
+      if(cell?.actual){totalEnc+=cell.v;hasActual=true;}
+    });
+    if(hasActual)STATE_CSV_MONTHLY_REV[mo]=Math.round(totalEnc*RATES.rh*blendedRate);
+  });
+  console.log('[computeStateCsvRevenue] blendedRate='+computeBlendedRHRate().toFixed(2),
+    'months:',Object.entries(STATE_CSV_MONTHLY_REV).map(([m,v])=>`${m}:$${v.toLocaleString()}`).join(', '));
+}
 
-      // P2 scenario: ramps from current month (today) when active
-      if (isP2) {
-        if (mi < curMo) return { v: 0, actual: false };
-        const daysSinceLaunch = (mi - curMo) * 30;
-        const frac = Math.min(1, 1 - Math.exp(-0.055 * daysSinceLaunch));
-        const target = STATE_DATA[st].dailyContrib / RATES.rh * 30;
-        return { v: Math.round(target * frac * noise), actual: false };
-      }
-
-      // Existing states — gentle growth trend
-      const trend = mi < 3 ? (0.72 + mi * 0.10) : (1.0 + (mi - 3) * 0.035);
-      return { v: Math.round(aprAnchor * trend * noise), actual: false };
+function buildStateMonthlySeed(){
+  const result={};
+  const curMonth=new Date().getMonth();
+  Object.keys(STATE_DATA).forEach((st,si)=>{
+    const fallback=FALLBACK_STATE_ENC[st]||Array(12).fill(0);
+    const isP1=STATE_DATA[st].group==='phase1',isP2=STATE_DATA[st].group==='phase2';
+    const aprAnchor=fallback[3]||STATE_DATA[st].dailyContrib/RATES.rh*30;
+    const curMo=new Date().getMonth();
+    result[st]=Array.from({length:12},(_,mi)=>{
+      const noise=0.82+sRand(si*100+mi)*0.36;
+      if(isP1){if(mi<3)return{v:0,actual:false};if(mi===3)return{v:fallback[3]||0,actual:false};const daysSinceLive=(mi-3)*30+5,frac=Math.min(1,1-Math.exp(-P1_K*daysSinceLive)),target=STATE_DATA[st].dailyContrib/RATES.rh*30;return{v:Math.round(target*frac*noise),actual:false};}
+      if(isP2){if(mi<curMo)return{v:0,actual:false};const daysSinceLaunch=(mi-curMo)*30,frac=Math.min(1,1-Math.exp(-0.055*daysSinceLaunch)),target=STATE_DATA[st].dailyContrib/RATES.rh*30;return{v:Math.round(target*frac*noise),actual:false};}
+      const trend=mi<3?(0.72+mi*0.10):(1.0+(mi-3)*0.035);
+      return{v:Math.round(aprAnchor*trend*noise),actual:false};
     });
   });
   return result;
 }
 
-function parseStateMonthlyCsv(csv) {
-  if (!csv || !csv.trim()) return null;
-
-  // Split rows; handle both TSV and CSV
-  const rawLines = csv.trim().split('\n');
-  const isTsv = rawLines[0].includes('\t');
-  const lines = rawLines.map(line => {
-    const cols = isTsv ? line.split('\t') : line.split(',');
-    return cols.map(c => c.replace(/^"|"$/g, '').trim());
-  });
-
-  const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-  const SKIP_WORDS = ['total','sum','avg','ytd','grand','revenue','notes','comment'];
-
-  // ── Auto-detect: find the row that has month headers ─────────────────────
-  let headerRowIdx = -1, stateColIdx = -1;
-  const moIdx = {}; // colIndex → monthIndex 0-11
-
-  for (let ri = 0; ri < Math.min(lines.length, 5); ri++) {
-    const row = lines[ri];
-    const candidateMoIdx = {};
-    row.forEach((h, ci) => {
-      if (!h) return;
-      const lower = h.toLowerCase();
-      if (SKIP_WORDS.some(w => lower.includes(w))) return;
-      const norm = lower.replace(/[^a-z]/g, '').slice(0, 3);
-      if (MO_NAMES.includes(norm)) candidateMoIdx[ci] = MO_NAMES.indexOf(norm);
-    });
-    if (Object.keys(candidateMoIdx).length >= 2) {
-      headerRowIdx = ri;
-      Object.assign(moIdx, candidateMoIdx);
-      break;
-    }
+function parseStateMonthlyCsv(csv){
+  if(!csv||!csv.trim())return null;
+  const rawLines=csv.trim().split('\n'),isTsv=rawLines[0].includes('\t');
+  const lines=rawLines.map(line=>{const cols=isTsv?line.split('\t'):line.split(',');return cols.map(c=>c.replace(/^"|"$/g,'').trim());});
+  const MO_NAMES=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const SKIP_WORDS=['total','sum','avg','ytd','grand','revenue','notes','comment'];
+  let headerRowIdx=-1,stateColIdx=-1;
+  const moIdx={};
+  for(let ri=0;ri<Math.min(lines.length,5);ri++){
+    const row=lines[ri],candidateMoIdx={};
+    row.forEach((h,ci)=>{if(!h)return;const lower=h.toLowerCase();if(SKIP_WORDS.some(w=>lower.includes(w)))return;const norm=lower.replace(/[^a-z]/g,'').slice(0,3);if(MO_NAMES.includes(norm))candidateMoIdx[ci]=MO_NAMES.indexOf(norm);});
+    if(Object.keys(candidateMoIdx).length>=2){headerRowIdx=ri;Object.assign(moIdx,candidateMoIdx);break;}
   }
-
-  if (headerRowIdx < 0) {
-    console.warn('[State CSV] No header row with month columns found');
-    return null;
-  }
-
-  // ── Find which column has state abbreviations ─────────────────────────────
-  // Look at first few data rows — state col has 2-letter uppercase values in STATE_DATA
-  const dataRows = lines.slice(headerRowIdx + 1).filter(r => r.some(c => c));
-  if (!dataRows.length) return null;
-
-  // State column is always the column immediately before the first month column
-  // (never try to "detect" it — this is a fixed structural rule)
-  const firstMonthCi = Math.min(...Object.keys(moIdx).map(Number));
-  stateColIdx = Math.max(0, firstMonthCi - 1);
-
-  console.log(`[State CSV] header row: ${headerRowIdx}, first month col: ${firstMonthCi}, state col: ${stateColIdx}, months:`, moIdx);
-
-  // ── Parse data rows ───────────────────────────────────────────────────────
-  const result = {};
-  dataRows.forEach(cols => {
-    const st = (cols[stateColIdx] || '').toUpperCase().replace(/\s+/g, '');
-    if (!st || !STATE_DATA[st]) return;
-    if (!result[st]) result[st] = Array.from({length:12}, () => null);
-    Object.entries(moIdx).forEach(([ci, mi]) => {
-      const cell = (cols[+ci] || '').replace(/[$,\s]/g, '');
-      if (!cell || cell === '-' || cell.toLowerCase() === 'n/a' || cell === '') return;
-      const v = parseInt(cell);
-      if (!isNaN(v) && v >= 0) result[st][mi] = { v, actual: true };
+  if(headerRowIdx<0){console.warn('[State CSV] No header row found');return null;}
+  const dataRows=lines.slice(headerRowIdx+1).filter(r=>r.some(c=>c));
+  if(!dataRows.length)return null;
+  const firstMonthCi=Math.min(...Object.keys(moIdx).map(Number));
+  stateColIdx=Math.max(0,firstMonthCi-1);
+  console.log(`[State CSV] header:${headerRowIdx} stateCol:${stateColIdx} months:`,moIdx);
+  const result={};
+  dataRows.forEach(cols=>{
+    const st=(cols[stateColIdx]||'').toUpperCase().replace(/\s+/g,'');
+    if(!st||!STATE_DATA[st])return;
+    if(!result[st])result[st]=Array.from({length:12},()=>null);
+    Object.entries(moIdx).forEach(([ci,mi])=>{
+      const cell=(cols[+ci]||'').replace(/[$,\s]/g,'');
+      if(!cell||cell==='-'||cell.toLowerCase()==='n/a'||cell==='')return;
+      const v=parseInt(cell);
+      if(!isNaN(v)&&v>=0)result[st][mi]={v,actual:true};
     });
   });
-
-  console.log('[State CSV] parsed:', Object.keys(result).join(', '));
-  return Object.keys(result).length ? result : null;
+  console.log('[State CSV] parsed:',Object.keys(result).join(', '));
+  return Object.keys(result).length?result:null;
 }
 
-function applyStateMonthlyFromSheet(json) {
-  const STATE_ABBRS = new Set(Object.keys(STATE_DATA));
-  const MO_NAMES = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-
-  // Priority name hints — tab is used immediately if its name contains any of these
-  const PRIORITY_HINTS = ['volume', 'state', 'tally', 'monthly enc', 'by state', 'encounters'];
-
-  function scoreStateTable(parsed) {
-    if (!parsed) return 0;
-    return Object.keys(parsed).filter(st => STATE_ABBRS.has(st) &&
-      parsed[st].some(c => c && c.actual && c.v > 0)).length;
+function applyStateMonthlyFromSheet(json){
+  const STATE_ABBRS=new Set(Object.keys(STATE_DATA));
+  const PRIORITY_HINTS=['volume','state','tally','monthly enc','by state','encounters'];
+  function scoreStateTable(parsed){if(!parsed)return 0;return Object.keys(parsed).filter(st=>STATE_ABBRS.has(st)&&parsed[st].some(c=>c&&c.actual&&c.v>0)).length;}
+  let bestParsed=null,bestScore=0,bestTab=null;
+  for(const[tabName,csv]of Object.entries(json)){
+    const n=tabName.toLowerCase(),isPriority=PRIORITY_HINTS.some(h=>n.includes(h));
+    if(!isPriority)continue;
+    const parsed=parseStateMonthlyCsv(csv),score=scoreStateTable(parsed);
+    if(score>bestScore){bestScore=score;bestParsed=parsed;bestTab=tabName;}
   }
-
-  // First pass — check priority name hints
-  let bestParsed = null, bestScore = 0, bestTab = null;
-  for (const [tabName, csv] of Object.entries(json)) {
-    const n = tabName.toLowerCase();
-    const isPriority = PRIORITY_HINTS.some(h => n.includes(h));
-    if (!isPriority) continue;
-    const parsed = parseStateMonthlyCsv(csv);
-    const score  = scoreStateTable(parsed);
-    if (score > bestScore) { bestScore = score; bestParsed = parsed; bestTab = tabName; }
-  }
-
-  // Second pass — try every remaining tab if priority pass found nothing
-  if (!bestParsed || bestScore === 0) {
-    for (const [tabName, csv] of Object.entries(json)) {
-      const parsed = parseStateMonthlyCsv(csv);
-      const score  = scoreStateTable(parsed);
-      if (score > bestScore) { bestScore = score; bestParsed = parsed; bestTab = tabName; }
+  if(!bestParsed||bestScore===0){
+    for(const[tabName,csv]of Object.entries(json)){
+      const parsed=parseStateMonthlyCsv(csv),score=scoreStateTable(parsed);
+      if(score>bestScore){bestScore=score;bestParsed=parsed;bestTab=tabName;}
     }
   }
-
-  const liveMonthsEl = document.getElementById('live-months');
-
-  if (!bestParsed || bestScore === 0) {
-    if (liveMonthsEl) {
-      liveMonthsEl.textContent = '⚠ State tab not found in cache — click ? Tabs to debug';
-      liveMonthsEl.style.color = '#f59e0b';
-    }
-    // Fallback to hardcoded FALLBACK_STATE_ENC
-    Object.entries(FALLBACK_STATE_ENC).forEach(([st, arr]) => {
-      if (!STATE_MONTHLY[st]) return;
-      arr.forEach((v, mi) => {
-        if (mi <= FALLBACK_ACTUAL_THRU && v >= 0)
-          STATE_MONTHLY[st][mi] = { v, actual: true };
-      });
-    });
+  if(!bestParsed||bestScore===0){
+    Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{if(!STATE_MONTHLY[st])return;arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU&&v>=0)STATE_MONTHLY[st][mi]={v,actual:true};});});
     return false;
   }
-
-  // Apply via guarded function (respects FALLBACK_ACTUAL_THRU + date guard)
   applyStateCells(bestParsed);
-
-  const matchedMos = [...new Set(
-    Object.values(bestParsed).flatMap(months =>
-      months.map((c, mi) => c?.actual && c.v > 0 ? ALL_MONTHS[mi] : null).filter(Boolean)
-    )
-  )].join(', ');
-
-  if (liveMonthsEl) {
-    liveMonthsEl.textContent = `● "${bestTab}" · ${bestScore} states · ${matchedMos}`;
-    liveMonthsEl.style.color = '#4ade80';
-  }
-  console.log(`[State monthly] "${bestTab}" | ${bestScore} states | ${matchedMos}`);
   return true;
 }
 
-let hmMode = 'enc'; // kept for tooltip reference only
+let hmMode='enc';
 
-function getHmVal(st, mi) {
-  const cell = STATE_MONTHLY[st]?.[mi] || { v: 0, actual: false };
-  if (hmMode === 'enc') return { n: cell.v, label: cell.v ? cell.v.toLocaleString() : '—', actual: cell.actual };
-  if (hmMode === 'rev') { const r = cell.v * RATES.rh; return { n: r, label: r ? '$' + r.toLocaleString() : '—', actual: cell.actual }; }
-  if (hmMode === 'pct') {
-    if (mi === 0) return { n: 0, label: '—', actual: cell.actual };
-    const prev = STATE_MONTHLY[st]?.[mi-1]?.v || 0;
-    if (!prev) return { n: 0, label: cell.v > 0 ? 'new' : '—', actual: cell.actual };
-    const pct = Math.round((cell.v - prev) / prev * 100);
-    return { n: pct, label: (pct >= 0 ? '+' : '') + pct + '%', actual: cell.actual };
-  }
-}
-
-function renderSparks() {
-  const grid = document.getElementById('hm-spark-grid');
-  if (!grid || !Object.keys(STATE_MONTHLY).length) return;
-
-  // Sort active states: highest latest actual value first
-  const latestActualVal = st => {
-    const cells = STATE_MONTHLY[st] || [];
-    let best = { v: 0, mi: -1 };
-    cells.forEach((c, mi) => { if (c?.actual && c.v > 0) best = { v: c.v, mi }; });
-    return best.v;
-  };
-  const states = Object.keys(STATE_DATA)
-    .filter(st => activeStates.includes(st))
-    .sort((a, b) => latestActualVal(b) - latestActualVal(a));
-
-  if (!states.length) { grid.innerHTML = ''; return; }
-
-  // Check if any state has actual data at all
-  const hasAnyActuals = states.some(st =>
-    (STATE_MONTHLY[st] || []).some(c => c?.actual && c.v > 0)
-  );
-  if (!hasAnyActuals) {
-    grid.innerHTML = `<div style="grid-column:1/-1;padding:20px;background:#161b22;border:1px solid #242d3f;border-radius:10px;text-align:center">
-      <div style="font-size:12px;color:#64748b;margin-bottom:10px">No state encounter data loaded yet</div>
-      <div style="font-size:11px;color:#484f58;margin-bottom:14px;line-height:1.7">
-        Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets<br>
-        Select all cells (Ctrl+A) → Copy (Ctrl+C) → click the button below
-      </div>
-      <button onclick="openPasteModal()" style="padding:8px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">⬆ Paste State Data</button>
-    </div>`;
-    return;
-  }
-
-  let html = '';
-  states.forEach(st => {
-    const sc = GRP_COLORS[STATE_DATA[st].group] || '#4ade80';
-    const cells = STATE_MONTHLY[st] || Array(12).fill({v:0, actual:false});
-    const vals = cells.map(c => c?.v || 0);
-
-    // Most recent actual month with v > 0
-    let latestActual = { v: 0, mi: -1 };
-    cells.forEach((c, mi) => {
-      if (c?.actual && c.v > 0 && mi > latestActual.mi) latestActual = { v: c.v, mi };
-    });
-    // Count of actual months
-    const actualCount = cells.filter(c => c?.actual).length;
-    const prevVal = latestActual.mi > 0 ? (cells[latestActual.mi - 1]?.v || 0) : 0;
-    const momPct = (prevVal && latestActual.mi > 0) ? Math.round((latestActual.v - prevVal) / prevVal * 100) : null;
-
-    // Best month
-    const peakMi = vals.reduce((best, v, i) => v > vals[best] ? i : best, 0);
-    const peakVal = vals[peakMi];
-
-    // Total actual encounters
-    const totalActual = cells.reduce((s, c) => s + (c?.actual ? c.v : 0), 0);
-
-    const mx = Math.max(...vals, 1);
-    const W = 160, H = 52;
-
-    const pts = cells.map((c, i) => ({
-      x: parseFloat(((i / 11) * (W - 8) + 4).toFixed(1)),
-      y: parseFloat((H - 4 - ((c?.v||0) / mx) * (H - 10)).toFixed(1)),
-      actual: c?.actual || false,
-      v: c?.v || 0
-    }));
-
-    // Last actual index for seam point
-    let lastActIdx = -1;
-    pts.forEach((p, i) => { if (p.actual) lastActIdx = i; });
-
-    const actPts   = pts.filter(p => p.actual).map(p => `${p.x},${p.y}`).join(' ');
-    const projPts  = lastActIdx >= 0 ? pts.slice(lastActIdx).map(p => `${p.x},${p.y}`).join(' ') : pts.map(p => `${p.x},${p.y}`).join(' ');
-    const areaAct  = lastActIdx >= 0
-      ? `${pts[0].x},${H} ` + pts.slice(0, lastActIdx+1).map(p=>`${p.x},${p.y}`).join(' ') + ` ${pts[lastActIdx].x},${H}`
-      : '';
-
-    // Month labels every 2 months
-    const moLabels = ALL_MONTHS.map((mo, i) => {
-      if (i % 2 !== 0) return '';
-      const x = ((i / 11) * (W - 8) + 4).toFixed(1);
-      const isAct = cells[i]?.actual;
-      return `<text x="${x}" y="${H+11}" text-anchor="middle" font-size="8" fill="${isAct ? '#64748b' : '#2d3a50'}" font-family="monospace">${mo}</text>`;
-    }).join('');
-
-    // Dot on last actual
-    const dotEl = lastActIdx >= 0
-      ? `<circle cx="${pts[lastActIdx].x}" cy="${pts[lastActIdx].y}" r="3.5" fill="${sc}" stroke="#161b22" stroke-width="1.5"/>`
-      : '';
-
-    const latestLabel = latestActual.mi >= 0
-      ? ALL_MONTHS[latestActual.mi] + ' actual'
-      : 'no actuals yet';
-
-    html += `<div style="background:#161b22;border:1px solid #242d3f;border-radius:10px;padding:14px 16px">
+function renderSparks(){
+  const grid=document.getElementById('hm-spark-grid');
+  if(!grid||!Object.keys(STATE_MONTHLY).length)return;
+  const latestActualVal=st=>{const cells=STATE_MONTHLY[st]||[];let best={v:0,mi:-1};cells.forEach((c,mi)=>{if(c?.actual&&c.v>0)best={v:c.v,mi};});return best.v;};
+  const states=Object.keys(STATE_DATA).filter(st=>activeStates.includes(st)).sort((a,b)=>latestActualVal(b)-latestActualVal(a));
+  if(!states.length){grid.innerHTML='';return;}
+  const hasAnyActuals=states.some(st=>(STATE_MONTHLY[st]||[]).some(c=>c?.actual&&c.v>0));
+  if(!hasAnyActuals){grid.innerHTML=`<div style="grid-column:1/-1;padding:20px;background:#161b22;border:1px solid #242d3f;border-radius:10px;text-align:center"><div style="font-size:12px;color:#64748b;margin-bottom:10px">No state encounter data loaded yet</div><div style="font-size:11px;color:#484f58;margin-bottom:14px;line-height:1.7">Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets<br>Select all cells (Ctrl+A) → Copy (Ctrl+C) → click the button below</div><button onclick="openPasteModal()" style="padding:8px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">⬆ Paste State Data</button></div>`;return;}
+  let html='';
+  states.forEach(st=>{
+    const sc=GRP_COLORS[STATE_DATA[st].group]||'#4ade80',cells=STATE_MONTHLY[st]||Array(12).fill({v:0,actual:false}),vals=cells.map(c=>c?.v||0);
+    let latestActual={v:0,mi:-1};cells.forEach((c,mi)=>{if(c?.actual&&c.v>0&&mi>latestActual.mi)latestActual={v:c.v,mi};});
+    const actualCount=cells.filter(c=>c?.actual).length,prevVal=latestActual.mi>0?(cells[latestActual.mi-1]?.v||0):0,momPct=(prevVal&&latestActual.mi>0)?Math.round((latestActual.v-prevVal)/prevVal*100):null;
+    const mx=Math.max(...vals,1),W=160,H=52;
+    const pts=cells.map((c,i)=>({x:parseFloat(((i/11)*(W-8)+4).toFixed(1)),y:parseFloat((H-4-((c?.v||0)/mx)*(H-10)).toFixed(1)),actual:c?.actual||false,v:c?.v||0}));
+    let lastActIdx=-1;pts.forEach((p,i)=>{if(p.actual)lastActIdx=i;});
+    const actPts=pts.filter(p=>p.actual).map(p=>`${p.x},${p.y}`).join(' '),projPts=lastActIdx>=0?pts.slice(lastActIdx).map(p=>`${p.x},${p.y}`).join(' '):pts.map(p=>`${p.x},${p.y}`).join(' '),areaAct=lastActIdx>=0?`${pts[0].x},${H} `+pts.slice(0,lastActIdx+1).map(p=>`${p.x},${p.y}`).join(' ')+` ${pts[lastActIdx].x},${H}`:'';
+    const moLabels=ALL_MONTHS.map((mo,i)=>{if(i%2!==0)return'';const x=((i/11)*(W-8)+4).toFixed(1),isAct=cells[i]?.actual;return`<text x="${x}" y="${H+11}" text-anchor="middle" font-size="8" fill="${isAct?'#64748b':'#2d3a50'}" font-family="monospace">${mo}</text>`;}).join('');
+    const dotEl=lastActIdx>=0?`<circle cx="${pts[lastActIdx].x}" cy="${pts[lastActIdx].y}" r="3.5" fill="${sc}" stroke="#161b22" stroke-width="1.5"/>`:'';
+    const latestLabel=latestActual.mi>=0?ALL_MONTHS[latestActual.mi]+' actual':'no actuals yet';
+    const totalActual=cells.reduce((s,c)=>s+(c?.actual?c.v:0),0);
+    html+=`<div style="background:#161b22;border:1px solid #242d3f;border-radius:10px;padding:14px 16px">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
         <div>
-          <div style="font-size:11px;font-weight:600;color:#94a3b8;margin-bottom:3px">
-            <span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${sc};margin-right:6px;vertical-align:1px"></span>${st}
-            <span style="font-size:9px;color:#484f58;margin-left:4px;font-weight:400">${PHASE_META[STATE_DATA[st].group]?.label || ''}</span>
-          </div>
-          <div style="font-size:24px;font-weight:800;color:#e2e8f0;letter-spacing:-.02em;line-height:1">${latestActual.v > 0 ? latestActual.v.toLocaleString() : '—'}</div>
+          <div style="font-size:11px;font-weight:600;color:#94a3b8;margin-bottom:3px"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${sc};margin-right:6px;vertical-align:1px"></span>${st}<span style="font-size:9px;color:#484f58;margin-left:4px;font-weight:400">${PHASE_META[STATE_DATA[st].group]?.label||''}</span></div>
+          <div style="font-size:24px;font-weight:800;color:#e2e8f0;letter-spacing:-.02em;line-height:1">${latestActual.v>0?latestActual.v.toLocaleString():'—'}</div>
           <div style="font-size:10px;color:#64748b;margin-top:2px">${latestLabel}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;padding-left:8px">
-          ${momPct !== null
-            ? `<div style="font-size:15px;font-weight:700;color:${momPct>=0?'#2dd4a0':'#f87171'}">${momPct>=0?'+':''}${momPct}%</div><div style="font-size:9px;color:#484f58">vs ${ALL_MONTHS[latestActual.mi-1]}</div>`
-            : '<div style="font-size:10px;color:#484f58">—</div>'}
+          ${momPct!==null?`<div style="font-size:15px;font-weight:700;color:${momPct>=0?'#2dd4a0':'#f87171'}">${momPct>=0?'+':''}${momPct}%</div><div style="font-size:9px;color:#484f58">vs ${ALL_MONTHS[latestActual.mi-1]}</div>`:'<div style="font-size:10px;color:#484f58">—</div>'}
           <div style="margin-top:6px;font-size:10px;color:#484f58">${actualCount} mo actual</div>
           <div style="font-size:10px;color:#484f58">total ${totalActual.toLocaleString()}</div>
         </div>
       </div>
-      <svg viewBox="0 0 ${W} ${H + 14}" width="100%" style="display:block;overflow:visible;margin-top:2px">
-        ${areaAct ? `<polygon points="${areaAct}" fill="${sc}" opacity=".07"/>` : ''}
-        ${projPts.split(' ').length > 2 ? `<polyline points="${projPts}" fill="none" stroke="${sc}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".32"/>` : ''}
-        ${actPts.split(' ').length > 2 ? `<polyline points="${actPts}" fill="none" stroke="${sc}" stroke-width="2.2"/>` : ''}
+      <svg viewBox="0 0 ${W} ${H+14}" width="100%" style="display:block;overflow:visible;margin-top:2px">
+        ${areaAct?`<polygon points="${areaAct}" fill="${sc}" opacity=".07"/>`:''}
+        ${projPts.split(' ').length>2?`<polyline points="${projPts}" fill="none" stroke="${sc}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".32"/>`:''}
+        ${actPts.split(' ').length>2?`<polyline points="${actPts}" fill="none" stroke="${sc}" stroke-width="2.2"/>`:''}
         ${dotEl}
         ${moLabels}
       </svg>
     </div>`;
   });
-  grid.innerHTML = html;
+  grid.innerHTML=html;
 }
 
-function showHmTT(e, st, mo, mi) {
-  const cell = STATE_MONTHLY[st]?.[mi] || { v:0, actual:false };
-  const rev = cell.v * RATES.rh;
-  const prev = mi > 0 ? (STATE_MONTHLY[st]?.[mi-1]?.v || 0) : null;
-  const pct = prev ? Math.round((cell.v - prev) / prev * 100) : null;
-  const tt = document.getElementById('hm-tt');
-  tt.innerHTML = `<div style="font-size:9px;color:#6e7681;margin-bottom:3px">${st} · ${mo} ${cell.actual ? '<span style="color:#4ade80">● actual</span>' : '<span style="color:#484f58">○ projected</span>'}</div>
-    <div style="font-size:13px;font-weight:700;color:#e2e8f0">${cell.v.toLocaleString()} enc</div>
-    <div style="font-size:11px;color:#94a3b8">$${rev.toLocaleString()}</div>
-    ${pct !== null ? `<div style="font-size:10px;color:${pct>=0?'#2dd4a0':'#f87171'};margin-top:2px">${pct>=0?'+':''}${pct}% vs ${ALL_MONTHS[mi-1]}</div>` : ''}`;
-  tt.style.display = 'block';
-  tt.style.left = (e.clientX + 14) + 'px';
-  tt.style.top  = (e.clientY - 8)  + 'px';
-}
-function hideHmTT() { document.getElementById('hm-tt').style.display = 'none'; }
-document.addEventListener('mousemove', e => {
-  const tt = document.getElementById('hm-tt');
-  if (tt.style.display !== 'none') { tt.style.left=(e.clientX+14)+'px'; tt.style.top=(e.clientY-8)+'px'; }
-});
+function openPasteModal(){document.getElementById('paste-modal').style.display='flex';document.getElementById('paste-input').value='';document.getElementById('paste-error').style.display='none';document.getElementById('paste-preview').style.display='none';setTimeout(()=>document.getElementById('paste-input').focus(),50);}
+function closePasteModal(){document.getElementById('paste-modal').style.display='none';}
 
-function openPasteModal() {
-  document.getElementById('paste-modal').style.display = 'flex';
-  document.getElementById('paste-input').value = '';
-  document.getElementById('paste-error').style.display = 'none';
-  document.getElementById('paste-preview').style.display = 'none';
-  setTimeout(() => document.getElementById('paste-input').focus(), 50);
-}
-function closePasteModal() {
-  document.getElementById('paste-modal').style.display = 'none';
-}
-
-function importPastedData() {
-  const raw = document.getElementById('paste-input').value.trim();
-  if (!raw) { showPasteError('Nothing pasted — copy the sheet cells first.'); return; }
-
-  const parsed = parseStateMonthlyCsv(raw); // handles tab or comma separated
-  if (!parsed || Object.keys(parsed).length === 0) {
-    showPasteError('Could not find state data.\n\nExpected: row 1 has month names (Jan, Feb…), column A has state abbreviations (TX, NC…). Totals columns are automatically ignored.\n\nMake sure you selected ALL cells in the tab (Ctrl+A) before copying.');
-    return;
-  }
-
-  const stateCount = Object.keys(parsed).length;
-  const months = [...new Set(
-    Object.values(parsed).flatMap(mos =>
-      mos.map((c, mi) => c?.actual && c.v > 0 ? ALL_MONTHS[mi] : null).filter(Boolean)
-    )
-  )];
-
-  if (months.length === 0) {
-    showPasteError('Found ' + stateCount + ' states but no numeric values. Check that encounter counts are in the month columns (not just in a Totals column).');
-    return;
-  }
-
-  // Apply and persist
-  STATE_MONTHLY = buildStateMonthlySeed();
+function importPastedData(){
+  const raw=document.getElementById('paste-input').value.trim();
+  if(!raw){showPasteError('Nothing pasted — copy the sheet cells first.');return;}
+  const parsed=parseStateMonthlyCsv(raw);
+  if(!parsed||Object.keys(parsed).length===0){showPasteError('Could not find state data.\n\nExpected: row 1 has month names (Jan, Feb…), column A has state abbreviations (TX, NC…). Totals columns are automatically ignored.\n\nMake sure you selected ALL cells in the tab (Ctrl+A) before copying.');return;}
+  const stateCount=Object.keys(parsed).length,months=[...new Set(Object.values(parsed).flatMap(mos=>mos.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];
+  if(months.length===0){showPasteError('Found '+stateCount+' states but no numeric values. Check that encounter counts are in the month columns (not just in a Totals column).');return;}
+  STATE_MONTHLY=buildStateMonthlySeed();
+  applyFallback();
   applyStateCells(parsed);
-  recalibrateFromMonthlyActuals();
-  computeStateCsvRevenue();
-
-  // Save raw CSV string so readStateCache().raw parses correctly on next load
+  recalibrateFromMonthlyActuals(); // FIX #1: now also recalibrates P1 targets
+  computeStateCsvRevenue();        // FIX #3: now uses blended rate
   saveStateCache(raw);
-
+  // FIX #2: re-generate full year data with updated targets before rendering totals
+  fullYearData=generateFullYearData();
+  renderMonthlyTotals();           // FIX #2: called AFTER computeStateCsvRevenue
   renderSparks();
   closePasteModal();
-
-  const note = document.getElementById('spark-data-note');
-  if (note) { note.textContent = `· ${stateCount} states · ${months.join(', ')} imported`; note.style.color = '#4ade80'; }
+  const note=document.getElementById('spark-data-note');
+  if(note){note.textContent=`· ${stateCount} states · ${months.join(', ')} imported`;note.style.color='#4ade80';}
 }
 
-function showPasteError(msg) {
-  const el = document.getElementById('paste-error');
-  el.textContent = msg; el.style.display = 'block';
-  document.getElementById('paste-preview').style.display = 'none';
-}
+function showPasteError(msg){const el=document.getElementById('paste-error');el.textContent=msg;el.style.display='block';document.getElementById('paste-preview').style.display='none';}
+document.getElementById('paste-modal').addEventListener('click',e=>{if(e.target===document.getElementById('paste-modal'))closePasteModal();});
 
-// Close modal on backdrop click
-document.getElementById('paste-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('paste-modal')) closePasteModal();
-});
+// Daily import modal
+let currentDailyTab='Apr';
+function openDailyImportModal(){document.getElementById('daily-modal').style.display='flex';document.getElementById('daily-input').value='';document.getElementById('daily-error').style.display='none';document.getElementById('daily-preview').style.display='none';setDailyTab('May');setTimeout(()=>document.getElementById('daily-input').focus(),50);}
+function closeDailyModal(){document.getElementById('daily-modal').style.display='none';}
+function setDailyTab(mo){currentDailyTab=mo;['Apr','May','Jun'].forEach(m=>{const b=document.getElementById('dtab-'+m);if(!b)return;const on=m===mo;b.style.borderColor=on?'#4ade80':'#30363d';b.style.background=on?'rgba(74,222,128,.12)':'transparent';b.style.color=on?'#4ade80':'#6e7681';});}
 
-// ── Daily data import modal ───────────────────────────────────────────────────
-let currentDailyTab = 'Apr';
-function openDailyImportModal() {
-  document.getElementById('daily-modal').style.display = 'flex';
-  document.getElementById('daily-input').value = '';
-  document.getElementById('daily-error').style.display = 'none';
-  document.getElementById('daily-preview').style.display = 'none';
-  setDailyTab('May'); // default to May since that's current
-  setTimeout(() => document.getElementById('daily-input').focus(), 50);
-}
-function closeDailyModal() { document.getElementById('daily-modal').style.display = 'none'; }
-function setDailyTab(mo) {
-  currentDailyTab = mo;
-  ['Apr','May','Jun'].forEach(m => {
-    const b = document.getElementById('dtab-' + m);
-    if (!b) return;
-    const on = m === mo;
-    b.style.borderColor = on ? '#4ade80' : '#30363d';
-    b.style.background  = on ? 'rgba(74,222,128,.12)' : 'transparent';
-    b.style.color       = on ? '#4ade80' : '#6e7681';
-  });
-}
-function importDailyData() {
-  const raw = document.getElementById('daily-input').value.trim();
-  if (!raw) { document.getElementById('daily-error').textContent = 'Nothing pasted.'; document.getElementById('daily-error').style.display = 'block'; return; }
-  const csv = raw.split('\n').map(l => l.split('\t').join(',')).join('\n');
-  const parsed = parseSheetCSV(csv, currentDailyTab);
-  if (!parsed) {
-    document.getElementById('daily-error').textContent = 'Could not parse. Make sure row 1 has date headers (e.g. 4/1, 4/2…) and row labels like RO, TD1, MDL.';
-    document.getElementById('daily-error').style.display = 'block';
-    return;
-  }
-  const daily = parsed.rhRev.map((v, i) => v + (parsed.tdRev[i]||0) + (parsed.mdlRev[i]||0));
-  const total  = daily.reduce((a,b)=>a+b,0);
-  // Store in LIVE_MONTHLY
-  LIVE_MONTHLY[currentDailyTab] = { daily, total, days: daily.length, rhEncTotal: parsed.rh.reduce((a,b)=>a+b,0), rhDailyArr: parsed.rh, year: 2026, month: parsed.month };
+function importDailyData(){
+  const raw=document.getElementById('daily-input').value.trim();
+  if(!raw){document.getElementById('daily-error').textContent='Nothing pasted.';document.getElementById('daily-error').style.display='block';return;}
+  const csv=raw.split('\n').map(l=>l.split('\t').join(',')).join('\n');
+  const parsed=parseSheetCSV(csv,currentDailyTab);
+  if(!parsed){document.getElementById('daily-error').textContent='Could not parse. Make sure row 1 has date headers (e.g. 4/1, 4/2…) and row labels like RO, TD1, MDL.';document.getElementById('daily-error').style.display='block';return;}
+  const daily=parsed.rhRev.map((v,i)=>v+(parsed.tdRev[i]||0)+(parsed.mdlRev[i]||0));
+  const total=daily.reduce((a,b)=>a+b,0);
+  LIVE_MONTHLY[currentDailyTab]={
+    daily,total,days:daily.length,
+    rhEncTotal:parsed.rh.reduce((a,b)=>a+b,0),
+    rhDailyArr:parsed.rh,
+    tdDailyArr:parsed.td,   // FIX #3: store for blended rate
+    mdlDailyArr:parsed.mdl, // FIX #3: store for blended rate
+    year:2026,month:parsed.month
+  };
   applyLiveData();
-  liveDataLoaded = true;
-  refresh();
-  const prev = document.getElementById('daily-preview');
-  prev.textContent = `✓ ${currentDailyTab}: ${daily.length} days · $${total.toLocaleString()} total · $${Math.round(total/daily.length).toLocaleString()}/day avg`;
-  prev.style.display = 'block';
-  document.getElementById('daily-error').style.display = 'none';
-  setLiveStatus('live', currentDailyTab + ' imported · ' + daily.length + ' days');
-  setTimeout(closeDailyModal, 1200);
+  liveDataLoaded=true;
+  // FIX #2: recompute revenue BEFORE rendering totals
+  computeStateCsvRevenue();
+  refresh(); // refresh() now calls renderMonthlyTotals() at end
+  const prev=document.getElementById('daily-preview');
+  prev.textContent=`✓ ${currentDailyTab}: ${daily.length} days · $${total.toLocaleString()} total · $${Math.round(total/daily.length).toLocaleString()}/day avg`;
+  prev.style.display='block';
+  document.getElementById('daily-error').style.display='none';
+  setLiveStatus('live',currentDailyTab+' imported · '+daily.length+' days');
+  setTimeout(closeDailyModal,1200);
 }
-document.getElementById('daily-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('daily-modal')) closeDailyModal();
-});
+document.getElementById('daily-modal').addEventListener('click',e=>{if(e.target===document.getElementById('daily-modal'))closeDailyModal();});
 
-function recalibrateFromMonthlyActuals() {
-  Object.keys(STATE_DATA).forEach(st => {
-    if (STATE_DATA[st].group !== 'existing') return;
-    const actuals = (STATE_MONTHLY[st] || []).filter(c => c?.actual && c.v > 0);
-    if (actuals.length < 1) return;
-    const avgMonthly = actuals.reduce((s, c) => s + c.v, 0) / actuals.length;
-    STATE_DATA[st].dailyContrib = Math.round(avgMonthly / 30 * RATES.rh);
-    ORIGINAL_EXISTING_CONTRIB[st] = STATE_DATA[st].dailyContrib;
-  });
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX #3: computeStateCsvRevenue moved above and uses computeBlendedRHRate()
+// ─────────────────────────────────────────────────────────────────────────────
 
-// ── Derive monthly RH revenue totals from the state CSV ───────────────────────
-function computeStateCsvRevenue() {
-  STATE_CSV_MONTHLY_REV = {};
-  ALL_MONTHS.forEach((mo, mi) => {
-    let totalEnc = 0, hasActual = false;
-    Object.values(STATE_MONTHLY).forEach(cells => {
-      const cell = cells[mi];
-      if (cell?.actual) { totalEnc += cell.v; hasActual = true; }
-    });
-    if (hasActual) STATE_CSV_MONTHLY_REV[mo] = totalEnc * RATES.rh;
-  });
-}
+// STATE CSV CACHE
+const LS_STATE_KEY='tmd_state_monthly',LS_STATE_TIME='tmd_state_time';
+function saveStateCache(raw){try{localStorage.setItem(LS_STATE_KEY,raw);localStorage.setItem(LS_STATE_TIME,Date.now().toString());}catch(e){}}
+function readStateCache(){try{const raw=localStorage.getItem(LS_STATE_KEY),ts=localStorage.getItem(LS_STATE_TIME);if(!raw||!ts)return null;return{raw,ageMin:Math.round((Date.now()-+ts)/60000)};}catch(e){return null;}}
 
-// ── Published CSV URL for state-by-state tally sheet ─────────────────────────
-// This is a public Google Sheets "publish to web" CSV — no CORS issues
-const LS_STATE_KEY  = 'tmd_state_monthly';
-const LS_STATE_TIME = 'tmd_state_time';
-
-function saveStateCache(raw) {
-  try { localStorage.setItem(LS_STATE_KEY, raw); localStorage.setItem(LS_STATE_TIME, Date.now().toString()); } catch(e) {}
-}
-function readStateCache() {
-  try {
-    const raw = localStorage.getItem(LS_STATE_KEY);
-    const ts  = localStorage.getItem(LS_STATE_TIME);
-    if (!raw || !ts) return null;
-    return { raw, ageMin: Math.round((Date.now() - +ts) / 60000) };
-  } catch(e) { return null; }
-}
-
-async function loadStateMonthlyDirect() {
-  // 1. Try published CSV URL (no CORS restriction — works from local files)
-  try {
-    const r = await fetch(STATE_CSV_URL + '&_=' + Date.now(), { cache: 'no-store' });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const csv = await r.text();
-    if (!csv || csv.trim().length < 10) throw new Error('empty');
-
-    const parsed = parseStateMonthlyCsv(csv);
-    if (!parsed || Object.keys(parsed).length === 0) throw new Error('no state rows found');
-
-    // Rebuild seed, apply verified fallback first, then layer CSV on top (Jun+ only)
-    STATE_MONTHLY = buildStateMonthlySeed();
+async function loadStateMonthlyDirect(){
+  try{
+    const r=await fetch(STATE_CSV_URL+'&_='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const csv=await r.text();
+    if(!csv||csv.trim().length<10)throw new Error('empty');
+    const parsed=parseStateMonthlyCsv(csv);
+    if(!parsed||Object.keys(parsed).length===0)throw new Error('no state rows found');
+    STATE_MONTHLY=buildStateMonthlySeed();
     applyFallback();
     applyStateCells(parsed);
-    debugStateCsv(csv);  // show raw structure in console + status bar
-    recalibrateFromMonthlyActuals();
-    computeStateCsvRevenue();
+    debugStateCsv(csv);
+    recalibrateFromMonthlyActuals(); // FIX #1: recalibrates P1 too
+    computeStateCsvRevenue();        // FIX #3: blended rate
     saveStateCache(csv);
-
-    const months = [...new Set(
-      Object.values(parsed).flatMap(mos =>
-        mos.map((c, mi) => c?.actual && c.v > 0 ? ALL_MONTHS[mi] : null).filter(Boolean)
-      )
-    )];
-    const liveMonthsEl = document.getElementById('live-months');
-    if (liveMonthsEl) {
-      liveMonthsEl.textContent = `● State sheet: ${Object.keys(parsed).length} states · ${months.join(', ')}`;
-      liveMonthsEl.style.color = '#4ade80';
-    }
+    const months=[...new Set(Object.values(parsed).flatMap(mos=>mos.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];
+    const liveMonthsEl=document.getElementById('live-months');
+    if(liveMonthsEl){liveMonthsEl.textContent=`● State sheet: ${Object.keys(parsed).length} states · ${months.join(', ')}`;liveMonthsEl.style.color='#4ade80';}
     console.log(`[State CSV] ${Object.keys(parsed).length} states · ${months.join(', ')}`);
     return true;
-
-  } catch(e) {
-    console.warn('State CSV fetch failed:', e.message);
-    // 2. Fall back to cached CSV from previous successful fetch
-    const sc = readStateCache();
-    if (sc) {
-      const parsed = parseStateMonthlyCsv(sc.raw);
-      if (parsed) {
-        STATE_MONTHLY = buildStateMonthlySeed();
+  }catch(e){
+    console.warn('State CSV fetch failed:',e.message);
+    const sc=readStateCache();
+    if(sc){
+      const parsed=parseStateMonthlyCsv(sc.raw);
+      if(parsed){
+        STATE_MONTHLY=buildStateMonthlySeed();
         applyFallback();
         applyStateCells(parsed);
-        recalibrateFromMonthlyActuals();
-        computeStateCsvRevenue();
-        const liveMonthsEl = document.getElementById('live-months');
-        if (liveMonthsEl) { liveMonthsEl.textContent = `● State sheet cached · ${sc.ageMin}m ago`; liveMonthsEl.style.color = '#f59e0b'; }
+        recalibrateFromMonthlyActuals(); // FIX #1
+        computeStateCsvRevenue();        // FIX #3
+        const liveMonthsEl=document.getElementById('live-months');
+        if(liveMonthsEl){liveMonthsEl.textContent=`● State sheet cached · ${sc.ageMin}m ago`;liveMonthsEl.style.color='#f59e0b';}
         return true;
       }
     }
@@ -1765,57 +1252,113 @@ async function loadStateMonthlyDirect() {
   }
 }
 
-function initSparks() {
-  STATE_MONTHLY = buildStateMonthlySeed();
-  applyFallback(); // always seed with verified Jan-May actuals first
-
-  // Clear any stale cache saved as "[object Object]" by old buggy code
-  try {
-    const raw = localStorage.getItem(LS_STATE_KEY);
-    if (raw && (raw.startsWith('[object') || raw.startsWith('{'))) {
-      localStorage.removeItem(LS_STATE_KEY);
-      localStorage.removeItem(LS_STATE_TIME);
-      console.log('[State CSV] Cleared stale/invalid state cache');
-    }
-  } catch(e) {}
-
-  // Load from cached CSV if available (from previous successful fetch of published sheet)
-  const sc = readStateCache();
-  if (sc) {
-    const parsed = parseStateMonthlyCsv(sc.raw);
-    if (parsed) {
+function initSparks(){
+  STATE_MONTHLY=buildStateMonthlySeed();
+  applyFallback();
+  // Clear stale cache
+  try{const raw=localStorage.getItem(LS_STATE_KEY);if(raw&&(raw.startsWith('[object')||raw.startsWith('{'))){{localStorage.removeItem(LS_STATE_KEY);localStorage.removeItem(LS_STATE_TIME);console.log('[State CSV] Cleared stale cache');}}}catch(e){}
+  const sc=readStateCache();
+  if(sc){
+    const parsed=parseStateMonthlyCsv(sc.raw);
+    if(parsed){
       applyStateCells(parsed);
-      recalibrateFromMonthlyActuals();
-      computeStateCsvRevenue();
+      recalibrateFromMonthlyActuals(); // FIX #1
+      computeStateCsvRevenue();        // FIX #3
     }
   }
-
   renderSparks();
-
-  // Fetch live from published CSV URL in background
-  loadStateMonthlyDirect().then(ok => { if (ok) { computeStateCsvRevenue(); renderSparks(); refresh(); } });
+  loadStateMonthlyDirect().then(ok=>{
+    if(ok){
+      computeStateCsvRevenue(); // FIX #3: ensure blended rate applied before totals
+      // FIX #2: regenerate full year THEN render totals
+      fullYearData=generateFullYearData();
+      renderMonthlyTotals();
+      renderSparks();
+      refresh();
+    }
+  });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+try{
+  const cacheHit=bootFromCache();
+  computeRecentBaseline(); // seed baseline from fallback arrays before first render
+  refresh();
+  setView("phases");
+  if(!cacheHit){
+    setLiveStatus('err','No cached data — use ⬆ Import Daily or ⬆ Import May Data buttons');
+    document.getElementById('h-badge').textContent='fallback data';
+    document.getElementById('h-badge').className='badge badge-yellow';
+    document.getElementById('subtitle').textContent='Showing model estimates. To load real data: use the ⬆ Import Daily button (paste your monthly sheet tab) and ⬆ Import May Data (paste the state tally tab).';
+  }
+}catch(e){const box=document.getElementById('err-box');if(box){box.style.display='block';box.textContent='⚠ Init error: '+e.message+'\n'+e.stack;}console.error('Init failed:',e);}
+
+fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
+  .then(r=>r.json()).catch(()=>null)
+  .then(topoData=>{usTopoData=topoData;drawMap();});
+
+loadLiveData(false).then(ok=>{if(ok){applyLiveData();refresh();}});
+loadStateMonthlyDirect().then(ok=>{if(ok)renderSparks();});
+
+setInterval(async()=>{
+  const[liveOk,stateOk]=await Promise.all([loadLiveData(true),loadStateMonthlyDirect()]);
+  if(liveOk){applyLiveData();refresh();}
+  else if(stateOk){renderSparks();}
+},5*60*1000);
 </script>
 
-<!-- ── SPARK INIT ──────────────────────────────────────────────────── -->
+<!-- ─────────────────────────────────────────────────────────────────────────
+  FIX #2: The refresh() wrapper patches STATE_MONTHLY + re-runs computeStateCsvRevenue
+  BEFORE calling renderMonthlyTotals() — fixing the one-cycle stale bug.
+  The key change: computeStateCsvRevenue() now runs inside the wrapper, then
+  fullYearData is regenerated (so updated P1 targets feed projections), then
+  renderMonthlyTotals() reads the fresh STATE_CSV_MONTHLY_REV.
+──────────────────────────────────────────────────────────────────────────── -->
 <div id="hm-tt" style="display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:130px;box-shadow:0 4px 20px rgba(0,0,0,.7)"></div>
 
 <script>
 initSparks();
-const _origRefresh = refresh;
-window.refresh = function() {
-  _origRefresh();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX #2: Correct refresh() wrapper
+// OLD: _origRefresh() called renderMonthlyTotals() BEFORE computeStateCsvRevenue()
+// ran in the wrapper — so monthly totals always showed the previous cycle's values.
+// NEW: wrapper rebuilds STATE_MONTHLY, runs computeStateCsvRevenue (FIX #3 blended
+// rate applied), regenerates fullYearData with updated P1 targets (FIX #1), then
+// calls renderMonthlyTotals() explicitly to get fresh values in the same cycle.
+// ─────────────────────────────────────────────────────────────────────────────
+const _coreRefresh = refresh; // the base refresh() defined above
+window.refresh = function(){
+  // 1. Rebuild state monthly seed with latest P1 targets (FIX #1 already recalibrated)
   STATE_MONTHLY = buildStateMonthlySeed();
   applyFallback(); // always protect Jan-May actuals
+
+  // 2. Layer any cached CSV on top
   const sc = readStateCache();
-  if (sc) {
+  if(sc){
     const parsed = parseStateMonthlyCsv(sc.raw);
-    if (parsed) {
+    if(parsed){
       applyStateCells(parsed);
-      recalibrateFromMonthlyActuals();
-      computeStateCsvRevenue();
+      recalibrateFromMonthlyActuals(); // FIX #1: updates P1 dailyContrib targets
     }
   }
+
+  // 3. Recompute blended revenue BEFORE chart/totals render (FIX #3)
+  computeStateCsvRevenue();
+
+  // 4. Regenerate chart + full-year data now that targets are fresh (FIX #1 effect)
+  chartData    = generateData();
+  fullYearData = generateFullYearData();
+
+  // 5. Render everything — monthly totals now reads current-cycle STATE_CSV_MONTHLY_REV
+  updateStats();
+  renderPhases();
+  renderStates();
+  draw();
+  renderMonthlyTotals(); // FIX #2: called here with fresh data, not inside _coreRefresh
+  drawMap();
   renderSparks();
 };
 </script>
