@@ -148,6 +148,42 @@
   <div class="annual-row" id="annual-row"></div>
 </div>
 
+<!-- 2027 FULL YEAR PROJECTION CARD -->
+<div style="margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden" id="proj-2027-wrap">
+  <div style="padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681">2027 Full Year Projection</span>
+      <span style="font-size:9px;color:#484f58">· fully ramped · 365 days · anchored to last-30d actual avg</span>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span style="font-size:9px;color:#484f58">Phase 2 scenario:</span>
+      <button id="p2-toggle-2027" onclick="toggle2027P2()" style="padding:3px 12px;border-radius:5px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">OFF</button>
+    </div>
+  </div>
+
+  <!-- headline numbers -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #21262d">
+    <div style="padding:16px 18px;border-right:1px solid #21262d">
+      <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Existing + Phase 1</div>
+      <div style="font-size:26px;font-weight:800;color:#4ade80;letter-spacing:-.02em" id="y27-base-total">—</div>
+      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-base-daily">—/day avg</div>
+    </div>
+    <div style="padding:16px 18px;border-right:1px solid #21262d" id="y27-p2-col">
+      <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">+ Phase 2 add-on</div>
+      <div style="font-size:26px;font-weight:800;color:#f59e0b;letter-spacing:-.02em" id="y27-p2-add">—</div>
+      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-p2-daily">—/day avg · CO·GA·MO·SC</div>
+    </div>
+    <div style="padding:16px 18px;background:#161b22">
+      <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Total 2027 (with Phase 2)</div>
+      <div style="font-size:26px;font-weight:800;color:#e879f9;letter-spacing:-.02em" id="y27-total">—</div>
+      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-total-daily">—/day avg</div>
+    </div>
+  </div>
+
+  <!-- monthly grid 2027 -->
+  <div style="display:grid;grid-template-columns:repeat(6,1fr)" id="grid-2027"></div>
+</div>
+
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIG
@@ -159,6 +195,17 @@ const STATE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR58Y-q2w
 // ─────────────────────────────────────────────────────────────────────────────
 // FALLBACK DATA
 // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// VERIFIED MONTHLY TOTALS — exact figures from Google Sheet, never overridden
+// ─────────────────────────────────────────────────────────────────────────────
+const VERIFIED_MONTHLY_TOTALS = {
+  Jan:  8964,
+  Feb:  25512,
+  Mar:  31404,
+  Apr:  32352,
+  // May and beyond: computed from daily sheet data or projected
+};
+
 const FALLBACK_APR_DAILY = [396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
 // May 1-4 from original hardcoded data; May 5-14 estimated from "Revenue — Last 30 Days" line chart
 // (Roman line clearly averages $2,000-2,500/day — use ⬆ Import Daily for exact values)
@@ -639,6 +686,114 @@ function generateFullYearData() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 2027 FULL YEAR PROJECTION
+// Fully ramped — every month uses 100% of the trend baseline.
+// Phase 2 shown as additive scenario (fully ramped by Jan 2027 if launched today).
+// ─────────────────────────────────────────────────────────────────────────────
+let show2027P2 = true; // default to showing Phase 2 scenario
+
+function toggle2027P2() {
+  show2027P2 = !show2027P2;
+  const btn = document.getElementById('p2-toggle-2027');
+  if (btn) {
+    btn.textContent = show2027P2 ? 'ON' : 'OFF';
+    btn.style.borderColor   = show2027P2 ? '#f59e0b' : '#30363d';
+    btn.style.background    = show2027P2 ? 'rgba(245,158,11,.12)' : 'transparent';
+    btn.style.color         = show2027P2 ? '#f59e0b' : '#6e7681';
+  }
+  render2027Card();
+}
+
+function generate2027Projection() {
+  const now       = new Date();
+  const curYear   = now.getFullYear();
+  const curMoIdx  = now.getMonth();
+  const DAYS_IN_MO = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+  const baseline = RECENT_BASELINE || 2050;
+
+  // Phase 2 full set (all 4 states regardless of what's toggled)
+  const p2Full = Object.keys(STATE_DATA)
+    .filter(s => STATE_DATA[s].group === 'phase2')
+    .reduce((sum, s) => sum + STATE_DATA[s].dailyContrib, 0);
+
+  // Phase 2 launches today — by Jan 2027 (~8 months) it's fully ramped (k=0.055)
+  const p2LaunchDate = new Date(curYear, curMoIdx, now.getDate());
+  function p2Frac(date) {
+    const d = (date - p2LaunchDate) / 86400000;
+    return d <= 0 ? 0 : Math.min(1, 1 - Math.exp(-0.055 * d));
+  }
+
+  // Months ahead from current month to each 2027 month
+  const todayMoBase = curYear * 12 + curMoIdx;
+
+  return ALL_MONTHS.map((mo, mi) => {
+    const midMonth    = new Date(2027, mi, 15);
+    const monthsAhead = (2027 * 12 + mi) - todayMoBase;
+    const trendFactor = 1 + 0.015 * monthsAhead;
+    const dim         = DAYS_IN_MO[mi];
+
+    const baseDaily = Math.round(baseline * trendFactor);
+    const p2Daily   = Math.round(p2Full * p2Frac(midMonth));
+    const baseMonthly = baseDaily * dim;
+    const p2Monthly   = p2Daily * dim;
+
+    return { mo, mi, dim, baseDaily, p2Daily, baseMonthly, p2Monthly,
+             totalMonthly: baseMonthly + p2Monthly };
+  });
+}
+
+function render2027Card() {
+  const months = generate2027Projection();
+  const showP2  = show2027P2;
+
+  const annualBase  = months.reduce((s, m) => s + m.baseMonthly, 0);
+  const annualP2    = months.reduce((s, m) => s + m.p2Monthly, 0);
+  const annualTotal = annualBase + (showP2 ? annualP2 : 0);
+  const avgBase     = Math.round(annualBase / 365);
+  const avgP2       = Math.round(annualP2 / 365);
+  const avgTotal    = Math.round(annualTotal / 365);
+
+  // Headline numbers
+  const fmtM = v => v >= 1e6 ? '$' + (v/1e6).toFixed(2) + 'M' : '$' + Math.round(v/1000).toFixed(1) + 'k';
+  document.getElementById('y27-base-total').textContent  = fmtM(annualBase);
+  document.getElementById('y27-base-daily').textContent  = '$' + avgBase.toLocaleString() + '/day avg';
+  document.getElementById('y27-p2-add').textContent      = showP2 ? '+' + fmtM(annualP2) : '—';
+  document.getElementById('y27-p2-daily').textContent    = showP2
+    ? '+$' + avgP2.toLocaleString() + '/day · CO·GA·MO·SC'
+    : 'toggle ON to model · CO·GA·MO·SC';
+  document.getElementById('y27-total').textContent       = fmtM(annualTotal);
+  document.getElementById('y27-total-daily').textContent = '$' + avgTotal.toLocaleString() + '/day avg';
+
+  // Monthly grid
+  const grid = document.getElementById('grid-2027');
+  if (grid) {
+    grid.innerHTML = months.map(m => {
+      const total = m.baseMonthly + (showP2 ? m.p2Monthly : 0);
+      return `<div style="padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d;${m.mi%6===5?'border-right:none':''}"
+        ><div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${m.mo}</div
+        ><div style="font-size:14px;font-weight:700;color:#e879f9">${fmtM(total)}</div
+        >${showP2 && m.p2Monthly > 0
+          ? `<div style="font-size:9px;color:#6e7681;margin-top:2px">base ${fmtM(m.baseMonthly)} <span style="color:#f59e0b">+${fmtM(m.p2Monthly)}</span></div>`
+          : `<div style="font-size:9px;color:#484f58;margin-top:2px">$${m.baseDaily.toLocaleString()}/day</div>`
+        }</div>`;
+    }).join('');
+  }
+
+  // Draw mini chart
+  toggle2027P2Btn();
+}
+
+function toggle2027P2Btn() {
+  const btn = document.getElementById('p2-toggle-2027');
+  if (!btn) return;
+  btn.textContent     = show2027P2 ? 'ON' : 'OFF';
+  btn.style.borderColor = show2027P2 ? '#f59e0b' : '#30363d';
+  btn.style.background  = show2027P2 ? 'rgba(245,158,11,.12)' : 'transparent';
+  btn.style.color       = show2027P2 ? '#f59e0b' : '#6e7681';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // STATS
 // ─────────────────────────────────────────────────────────────────────────────
 function updateStats(){
@@ -676,10 +831,19 @@ function renderMonthlyTotals(){
   if(aprSheetTotal>(STATE_CSV_MONTHLY_REV['Apr']||0))mt['Apr']=aprSheetTotal;
   mtp['Apr']='actual';
 
+  // VERIFIED ACTUALS: always win over any computed/estimated value
+  Object.entries(VERIFIED_MONTHLY_TOTALS).forEach(([mo, val]) => {
+    mt[mo]  = val;
+    mtp[mo] = 'actual';
+  });
+
   const csvActualMonths=Object.keys(STATE_CSV_MONTHLY_REV).filter(m=>STATE_CSV_MONTHLY_REV[m]>0);
-  const actualYTD=csvActualMonths.length>0
-    ?csvActualMonths.reduce((s,m)=>s+(mt[m]||0),0)
-    :fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value,0);
+  // YTD: verified months + any CSV months not already verified + partial current month
+  const verifiedMonths = Object.keys(VERIFIED_MONTHLY_TOTALS);
+  const allActualMonths = [...new Set([...verifiedMonths, ...csvActualMonths])];
+  const actualYTD = allActualMonths.length > 0
+    ? allActualMonths.reduce((s, m) => s + (mt[m] || 0), 0)
+    : fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value,0);
   const projTotal=fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value,0);
   const fullYearEst=actualYTD+projTotal;
 
@@ -697,9 +861,7 @@ function renderMonthlyTotals(){
      </div>`;
 
   const tn=document.getElementById('totals-note');
-  if(tn)tn.textContent=csvActualMonths.length
-    ?`actual ${csvActualMonths.join(', ')} from state sheet (RH+TD+MDL blended) · projected ${curMo}–Dec`
-    :`actual Jan–${curMo} · projected ${curMo}–Dec`;
+  if(tn)tn.textContent=`verified Jan–Apr · ${csvActualMonths.filter(m=>!verifiedMonths.includes(m)).length?'state sheet '+csvActualMonths.filter(m=>!verifiedMonths.includes(m)).join(', ')+' · ':''}projected Jun–Dec`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -886,10 +1048,9 @@ function refresh(){
   renderPhases();
   renderStates();
   draw();
-  // Note: renderMonthlyTotals() is called AFTER computeStateCsvRevenue()
-  // in the wrapper below — not here directly — to avoid the stale-cycle bug.
   renderMonthlyTotals();
   drawMap();
+  render2027Card();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1360,6 +1521,7 @@ window.refresh = function(){
   renderMonthlyTotals(); // FIX #2: called here with fresh data, not inside _coreRefresh
   drawMap();
   renderSparks();
+  render2027Card();
 };
 </script>
 
