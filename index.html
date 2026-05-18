@@ -64,7 +64,7 @@
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·MO·SC — toggle to model "if licensed today"</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·MO·FL — toggle to model "if licensed today"</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
   <!-- FIX #4: label estimated pre-history bars -->
   <div class="legend-item"><div class="legend-dot" style="background:#4ade8044;border:1px dashed #4ade80"></div><span class="legend-label">Jan–Mar estimated (no daily sheet data)</span></div>
@@ -171,7 +171,7 @@
     <div style="padding:16px 18px;border-right:1px solid #21262d" id="y27-p2-col">
       <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">+ Phase 2 add-on</div>
       <div style="font-size:26px;font-weight:800;color:#f59e0b;letter-spacing:-.02em" id="y27-p2-add">—</div>
-      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-p2-daily">—/day avg · CO·GA·MO·SC</div>
+      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-p2-daily">—/day avg · CO·GA·MO·FL</div>
     </div>
     <div style="padding:16px 18px;background:#161b22">
       <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Total 2027 (with Phase 2)</div>
@@ -530,7 +530,7 @@ const STATE_DATA = {
   CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
   GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
   MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false},
-  SC:{group:"phase2",pop:5.3,dailyContrib:80,locked:false}
+  FL:{group:"phase2",pop:22.6,dailyContrib:280,locked:false,note:"Military bases + lifestyle demographic — largest compact state"},
 };
 
 const ORIGINAL_EXISTING_CONTRIB = Object.fromEntries(
@@ -541,7 +541,13 @@ const ORIGINAL_P1_CONTRIB = Object.fromEntries(
   Object.entries(STATE_DATA).filter(([,v])=>v.group==='phase1').map(([k,v])=>[k,v.dailyContrib])
 );
 
-const COMPACT_STATES = new Set(['WA','MT','ID','WY','ND','SD','NE','KS','MN','IA','WI','MI','IN','OH','IL','KY','WV','VA','NC','TN','AL','GA','FL','MS','LA','AR','OK','TX','MO','CO','UT','NM','AZ','NV','AK','ME','NH','VT','CT','NJ','DE','MD','PA','HI','RI','WV','DC']);
+// IMLC Compact states — verified list (source: IMLC official)
+const COMPACT_STATES = new Set([
+  'AL','AZ','AR','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS',
+  'KY','LA','ME','MD','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM',
+  'NC','ND','OH','OK','PA','SD','TN','TX','UT','VT','WA','WV','WI','WY',
+  'DC' // District of Columbia also on compact list
+]);
 const ALL_STATES = {
   AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},FL:{pop:22.6},HI:{pop:1.5},IA:{pop:3.2},
   ID:{pop:1.9},KS:{pop:2.9},KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},MS:{pop:3.0},
@@ -552,10 +558,10 @@ const ALL_STATES = {
 const PHASE_META = {
   existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
   phase1:  {label:"Phase 1", color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
-  phase2:  {label:"Phase 2", color:"#f59e0b",states:["CO","GA","MO","SC"]}
+  phase2:  {label:"Phase 2", color:"#f59e0b",states:["CO","GA","MO","FL"]}
 };
 const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
-const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·MO·SC"};
+const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·MO·FL"};
 const TZ = {ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
 const TZ_META = {PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
 let showTZ = false;
@@ -761,8 +767,8 @@ function render2027Card() {
   document.getElementById('y27-base-daily').textContent  = '$' + avgBase.toLocaleString() + '/day avg';
   document.getElementById('y27-p2-add').textContent      = showP2 ? '+' + fmtM(annualP2) : '—';
   document.getElementById('y27-p2-daily').textContent    = showP2
-    ? '+$' + avgP2.toLocaleString() + '/day · CO·GA·MO·SC'
-    : 'toggle ON to model · CO·GA·MO·SC';
+    ? '+$' + avgP2.toLocaleString() + '/day · CO·GA·MO·FL'
+    : 'toggle ON to model · CO·GA·MO·FL';
   document.getElementById('y27-total').textContent       = fmtM(annualTotal);
   document.getElementById('y27-total-daily').textContent = '$' + avgTotal.toLocaleString() + '/day avg';
 
@@ -1106,7 +1112,7 @@ const FALLBACK_STATE_ENC = {
   NJ:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
   GA:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
   MO:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
-  SC:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
+  FL:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],  // Phase 2 target
 };
 const FALLBACK_ACTUAL_THRU = 4; // Jan–May are real actuals
 
