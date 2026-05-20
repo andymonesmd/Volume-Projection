@@ -2,25 +2,101 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Roman Health — Revenue Projection 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:18px;min-height:100vh}h1{font-size:15px;font-weight:700;margin-bottom:3px}.subtitle{font-size:10px;color:#6e7681;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}.stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px}.stat-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}.stat-val{font-size:18px;font-weight:700}.view-toggle{display:flex;gap:6px;margin-bottom:12px}.view-btn{padding:4px 12px;border-radius:5px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s}.view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}.phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.phase-card{padding:10px 14px;border-radius:8px;min-width:130px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}.phase-card.locked{cursor:default}.phase-card-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}.phase-card-states{font-size:10px;color:#6e7681;margin-bottom:6px}.phase-card-contrib{font-size:13px;color:#e6edf3;font-weight:600}.phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}.phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}.states-wrap{margin-bottom:14px}.state-group{margin-bottom:8px}.state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}.state-btns{display:flex;flex-wrap:wrap;gap:5px}.state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}.state-btn.locked{cursor:default}.chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px}canvas{display:block;cursor:crosshair;width:100%}#tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none}.tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}.tt-val{font-weight:700;font-size:18px;margin-bottom:6px}.tt-breakdown{border-top:1px solid #30363d;padding-top:6px}.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}.tt-row-label{color:#6e7681}.legend{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:10px}.legend-item{display:flex;align-items:center;gap:5px}.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}.legend-label{font-size:9px;color:#6e7681}.footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px}.map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}.map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.map-body{padding:16px 20px 20px;background:#080c12}#us-map{width:100%;display:block}#map-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;justify-content:center}#map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:160px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}.totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}.totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center}.totals-header-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}.monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}.month-cell{padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d}.month-cell:nth-child(6n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:none}.month-cell-name{font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}.month-cell-val{font-size:14px;font-weight:700}.month-cell-type{font-size:9px;margin-top:2px}.annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.annual-label{font-size:10px;color:#6e7681;text-transform:uppercase;letter-spacing:1px}.annual-vals{display:flex;gap:24px;align-items:baseline;flex-wrap:wrap}.annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.annual-item-label{font-size:9px;color:#6e7681}.annual-item-val{font-size:17px;font-weight:700}.panel{margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden}.panel-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}.panel-body{padding:14px 16px}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:8px;vertical-align:middle}.badge-green{background:#4ade8022;border:1px solid #4ade8055;color:#4ade80}.badge-blue{background:#60a5fa22;border:1px solid #60a5fa55;color:#60a5fa}.badge-yellow{background:#f59e0b22;border:1px solid #f59e0b55;color:#f59e0b}.badge-red{background:#f8717122;border:1px solid #f8717155;color:#f87171}
-  #live-status{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#161b22;border:1px solid #21262d;border-radius:6px;margin-bottom:12px;font-size:10px;flex-wrap:wrap;gap:6px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{overflow-x:hidden;max-width:100vw}
+  body{background:#0d1117;color:#e6edf3;font-family:monospace;padding:clamp(10px,3vw,18px);min-height:100vh}
+  h1{font-size:clamp(12px,2.5vw,15px);font-weight:700;margin-bottom:3px}
+  .subtitle{font-size:clamp(9px,1.8vw,10px);color:#6e7681;margin-bottom:14px;word-break:break-word}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .stat-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:10px 12px;min-width:0;overflow:hidden}
+  .stat-label{font-size:clamp(8px,1.5vw,10px);color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+  .stat-val{font-size:clamp(14px,3vw,18px);font-weight:700}
+  .view-toggle{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+  .view-btn{padding:4px 12px;border-radius:5px;font-size:clamp(9px,1.8vw,10px);font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all .15s;white-space:nowrap}
+  .view-btn.active{border-color:#388bfd;background:rgba(31,111,235,.13);color:#60a5fa}
+  .phases-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .phase-card{padding:10px 14px;border-radius:8px;min-width:120px;flex:1 1 120px;border:1.5px solid #30363d;background:#161b22;cursor:pointer;transition:all .15s;user-select:none}
+  .phase-card.locked{cursor:default}
+  .phase-card-label{font-size:clamp(9px,1.8vw,10px);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+  .phase-card-states{font-size:clamp(9px,1.8vw,10px);color:#6e7681;margin-bottom:6px;word-break:break-word}
+  .phase-card-contrib{font-size:clamp(11px,2.2vw,13px);color:#e6edf3;font-weight:600}
+  .phase-progress{margin-top:6px;height:3px;background:#21262d;border-radius:2px}
+  .phase-progress-bar{height:100%;border-radius:2px;transition:width .25s}
+  .states-wrap{margin-bottom:14px}
+  .state-group{margin-bottom:8px}
+  .state-group-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+  .state-btns{display:flex;flex-wrap:wrap;gap:5px}
+  .state-btn{padding:4px 10px;border-radius:5px;font-size:11px;font-family:monospace;border:1.5px solid #30363d;background:transparent;color:#484f58;cursor:pointer;transition:all .15s}
+  .state-btn.locked{cursor:default}
+  .chart-wrap{position:relative;background:#0d1117;border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:10px;width:100%}
+  canvas{display:block;cursor:crosshair;width:100%!important;max-width:100%}
+  #tooltip{position:absolute;background:rgba(28,33,40,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:140px;max-width:190px;display:none}
+  .tt-date{color:#6e7681;font-size:10px;margin-bottom:5px}
+  .tt-val{font-weight:700;font-size:16px;margin-bottom:6px}
+  .tt-breakdown{border-top:1px solid #30363d;padding-top:6px}
+  .tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px}
+  .tt-row-label{color:#6e7681}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+  .legend-item{display:flex;align-items:center;gap:5px}
+  .legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+  .legend-label{font-size:clamp(8px,1.6vw,9px);color:#6e7681}
+  .footnote{font-size:9px;color:#30363d;margin-top:4px;margin-bottom:18px;word-break:break-word}
+  .map-section{border:1px solid #21262d;border-radius:10px;overflow:hidden;margin-bottom:18px}
+  .map-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+  .map-body{padding:clamp(8px,2vw,16px) clamp(8px,2vw,20px) 20px;background:#080c12;overflow:hidden}
+  #us-map{width:100%;max-width:100%;display:block}
+  #map-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;justify-content:center}
+  #map-tt{display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:9px 13px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:140px;max-width:260px;line-height:1.8;box-shadow:0 4px 24px rgba(0,0,0,.8)}
+  .totals-wrap{border:1px solid #21262d;border-radius:10px;overflow:hidden}
+  .totals-header{padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+  .totals-header-label{font-size:clamp(9px,1.8vw,10px);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681}
+  .monthly-grid{display:grid;grid-template-columns:repeat(6,1fr)}
+  .month-cell{padding:clamp(6px,1.5vw,10px) clamp(4px,1.2vw,12px);border-right:1px solid #21262d;border-bottom:1px solid #21262d;min-width:0;overflow:hidden}
+  .month-cell:nth-child(6n){border-right:none}
+  .month-cell:nth-last-child(-n+6){border-bottom:none}
+  .month-cell-name{font-size:clamp(8px,1.4vw,9px);color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+  .month-cell-val{font-size:clamp(11px,2.2vw,14px);font-weight:700}
+  .month-cell-sub{font-size:clamp(7px,1.2vw,9px);margin-top:1px}
+  .month-cell-type{font-size:clamp(7px,1.2vw,9px);margin-top:2px}
+  .month-cell.at-goal .month-cell-val{color:#22c55e!important}
+  .month-cell.at-goal{box-shadow:inset 0 0 0 1px #22c55e33}
+  .annual-row{padding:12px 14px;border-top:1px solid #30363d;background:#161b22;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .annual-label{font-size:clamp(9px,1.8vw,10px);color:#6e7681;text-transform:uppercase;letter-spacing:1px}
+  .annual-vals{display:flex;gap:clamp(12px,2.5vw,24px);align-items:baseline;flex-wrap:wrap}
+  .annual-item{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+  .annual-item-label{font-size:clamp(8px,1.5vw,9px);color:#6e7681}
+  .annual-item-val{font-size:clamp(14px,2.8vw,17px);font-weight:700}
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-left:8px;vertical-align:middle}
+  .badge-green{background:#4ade8022;border:1px solid #4ade8055;color:#4ade80}
+  .badge-yellow{background:#f59e0b22;border:1px solid #f59e0b55;color:#f59e0b}
+  #live-status{display:flex;align-items:center;gap:6px;padding:6px 10px;background:#161b22;border:1px solid #21262d;border-radius:6px;margin-bottom:12px;font-size:clamp(9px,1.8vw,10px);flex-wrap:wrap;overflow:hidden}
   #live-dot{width:7px;height:7px;border-radius:50%;background:#484f58;flex-shrink:0;transition:background .3s}
   #live-dot.live{background:#4ade80;animation:pulse 2s infinite}
   #live-dot.err{background:#f87171}
   #live-dot.loading{background:#f59e0b;animation:pulse .8s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .live-sep{color:#30363d}
-  #live-months{color:#4ade80}
+  #live-months{color:#4ade80;word-break:break-all}
   #live-fallback{color:#f59e0b}
   #live-ts{color:#484f58}
-  /* FIX #3 note badge */
-  .rate-note{font-size:8px;color:#484f58;font-style:italic}
-  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.monthly-grid{grid-template-columns:repeat(3,1fr)}.month-cell:nth-child(6n){border-right:1px solid #21262d}.month-cell:nth-child(3n){border-right:none}.month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}.month-cell:nth-last-child(-n+3){border-bottom:none}}
+  @media(max-width:700px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .monthly-grid{grid-template-columns:repeat(3,1fr)}
+    .month-cell:nth-child(6n){border-right:1px solid #21262d}
+    .month-cell:nth-child(3n){border-right:none}
+    .month-cell:nth-last-child(-n+6){border-bottom:1px solid #21262d}
+    .month-cell:nth-last-child(-n+3){border-bottom:none}
+    .phases-wrap .phase-card{min-width:calc(50% - 4px);flex:1 1 calc(50% - 4px)}
+  }
+  @media(max-width:440px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    h1{font-size:11px}
+    .annual-vals{gap:8px}
+  }
 </style>
 </head>
 <body>
@@ -32,21 +108,21 @@
 <div id="live-status">
   <span id="live-dot" class="loading"></span>
   <span id="live-label" style="color:#6e7681">Connecting to sheet…</span>
-  <span class="live-sep">·</span>
+  <span style="color:#30363d">·</span>
   <span id="live-months"></span>
   <span id="live-fallback"></span>
-  <span style="flex:1"></span>
+  <span style="flex:1;min-width:0"></span>
   <span id="live-ts"></span>
-  <button onclick="manualRefresh()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">↻ Refresh</button>
-  <button onclick="openDailyImportModal()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">⬆ Import Daily</button>
-  <button onclick="debugTabs()" style="padding:2px 10px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">? Tabs</button>
+  <button onclick="manualRefresh()" style="padding:2px 8px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;white-space:nowrap">↻ Refresh</button>
+  <button onclick="openDailyImportModal()" style="padding:2px 8px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;white-space:nowrap">⬆ Import Daily</button>
+  <button onclick="debugTabs()" style="padding:2px 8px;border-radius:4px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;white-space:nowrap">? Tabs</button>
 </div>
 
 <div class="stats">
   <div class="stat-card"><div class="stat-label">Active States</div><div class="stat-val" id="stat-states" style="color:#4ade80">7</div></div>
   <div class="stat-card"><div class="stat-label">Population</div><div class="stat-val" id="stat-pop" style="color:#60a5fa">—</div></div>
-  <div class="stat-card"><div class="stat-label">Recent Avg/Day <span style="font-size:8px;color:#484f58">(last 7 actual days)</span></div><div class="stat-val" id="stat-current" style="color:#f9fafb">—</div></div>
-  <div class="stat-card"><div class="stat-label">Projected Avg/Day <span style="font-size:9px;color:#484f58">(Dec, fully ramped)</span></div><div class="stat-val" id="stat-proj" style="color:#e879f9">—</div><div id="stat-proj-breakdown" style="margin-top:6px;font-size:10px;line-height:1.7"></div></div>
+  <div class="stat-card"><div class="stat-label">Recent Avg/Day <span style="font-size:8px;color:#484f58">(last 7d)</span></div><div class="stat-val" id="stat-current" style="color:#f9fafb">—</div></div>
+  <div class="stat-card"><div class="stat-label">Proj Avg/Day <span style="font-size:8px;color:#484f58">(Dec)</span></div><div class="stat-val" id="stat-proj" style="color:#e879f9">—</div><div id="stat-proj-breakdown" style="margin-top:4px;font-size:9px;line-height:1.6"></div></div>
 </div>
 
 <div class="view-toggle">
@@ -64,12 +140,12 @@
 <div class="legend">
   <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2: FL·GA·CO·NV — toggle to model "if licensed today"</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: CO·GA·MO·SC</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
-  <!-- FIX #4: label estimated pre-history bars -->
-  <div class="legend-item"><div class="legend-dot" style="background:#4ade8044;border:1px dashed #4ade80"></div><span class="legend-label">Jan–Mar estimated (no daily sheet data)</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4ade8044;border:1px dashed #4ade80"></div><span class="legend-label">Estimated (no daily data)</span></div>
+  <div class="legend-item"><div style="width:10px;height:2px;border-bottom:2px dashed #22c55e;margin-top:4px"></div><span class="legend-label" style="margin-left:5px">$2k/day goal</span></div>
 </div>
-<div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL phone $25 / video $28 · Phase 1 live Apr 26 · May 5–14 estimated from 30-day line chart (~$2k/day avg) — use ⬆ Import Daily for exact daily values · projections recalibrate from live sheet</div>
+<div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL $25 / $28 · Goal: $2,000/day · $60,000/month · Phase 1 live Apr 26 · projections anchor to post-P1 30-day actual avg</div>
 
 <div style="margin-top:22px;margin-bottom:22px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
@@ -77,26 +153,25 @@
       <span style="font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:#484f58;font-weight:600">State trends · actual + projected</span>
       <span id="spark-data-note" style="font-size:9px;color:#484f58;margin-left:10px"></span>
     </div>
-    <button onclick="openPasteModal()" style="padding:3px 12px;border-radius:5px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">⬆ Import May Data</button>
+    <button onclick="openPasteModal()" style="padding:3px 12px;border-radius:5px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap">⬆ Import State Data</button>
   </div>
-  <div id="hm-spark-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:clamp(8px,1.5vw,14px)"></div>
+  <div id="hm-spark-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:clamp(8px,1.5vw,12px)"></div>
 </div>
 
-<!-- Daily data import modal -->
-<div id="daily-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center">
-  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;width:min(560px,94vw);max-height:90vh;overflow-y:auto">
+<div id="daily-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;width:min(520px,100%);max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.08em">Import Daily Revenue Data</span>
       <button onclick="closeDailyModal()" style="background:transparent;border:none;color:#6e7681;font-size:18px;cursor:pointer;line-height:1">×</button>
     </div>
-    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Copy your monthly daily data tabs from Google Sheets and paste below.<br>Select all cells in a month tab (Ctrl+A), copy, paste here. Repeat for each month.</p>
+    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Select all cells in a month tab (Ctrl+A), copy, paste here.</p>
     <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
       <span style="font-size:9px;color:#484f58;text-transform:uppercase;letter-spacing:.08em;align-self:center">Paste as:</span>
       <button onclick="setDailyTab('Apr')" id="dtab-Apr" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer">Apr</button>
       <button onclick="setDailyTab('May')" id="dtab-May" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">May</button>
       <button onclick="setDailyTab('Jun')" id="dtab-Jun" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Jun</button>
     </div>
-    <textarea id="daily-input" placeholder="Paste month tab here…" style="width:100%;height:180px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
+    <textarea id="daily-input" placeholder="Paste month tab here…" style="width:100%;height:160px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
     <div id="daily-error" style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
     <div id="daily-preview" style="display:none;margin-top:8px;font-size:11px;color:#4ade80"></div>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
@@ -106,14 +181,14 @@
   </div>
 </div>
 
-<div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;align-items:center;justify-content:center">
-  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:24px;width:min(560px,94vw);max-height:90vh;overflow-y:auto">
+<div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#161b22;border:1px solid #30363d;border-radius:12px;padding:20px;width:min(520px,100%);max-height:90vh;overflow-y:auto">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <span style="font-size:12px;font-weight:700;color:#e2e8f0;text-transform:uppercase;letter-spacing:.08em">Import State Monthly Data</span>
       <button onclick="closePasteModal()" style="background:transparent;border:none;color:#6e7681;font-size:18px;cursor:pointer;line-height:1">×</button>
     </div>
-    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets.<br>Click the top-left corner cell to <strong style="color:#94a3b8">select all</strong> (or Ctrl+A), then <strong style="color:#94a3b8">copy</strong> (Ctrl+C), then paste below.<br><span style="color:#484f58">Hidden columns and Totals columns are automatically ignored.</span></p>
-    <textarea id="paste-input" placeholder="Paste sheet data here…" style="width:100%;height:200px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
+    <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Go to your <strong style="color:#94a3b8">"state by state"</strong> tab → Ctrl+A → Ctrl+C → paste below.<br><span style="color:#484f58">Totals and hidden columns are ignored automatically.</span></p>
+    <textarea id="paste-input" placeholder="Paste sheet data here…" style="width:100%;height:180px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
     <div id="paste-error" style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
     <div id="paste-preview" style="display:none;margin-top:8px;font-size:11px;color:#4ade80"></div>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
@@ -125,14 +200,14 @@
 
 <div class="map-section">
   <div class="map-header">
-    <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681;">State Coverage Map</span>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span style="font-size:9px;color:#484f58;">hover for details · click inactive state to toggle</span>
-      <button id="tz-toggle" onclick="showTZ=!showTZ;this.className=showTZ?'view-btn active':'view-btn';drawMap();" class="view-btn" style="padding:3px 10px;font-size:9px;">🕐 Time Zones</button>
+    <span style="font-size:clamp(9px,1.8vw,10px);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681">State Coverage Map</span>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span style="font-size:9px;color:#484f58">hover · click to toggle</span>
+      <button id="tz-toggle" onclick="showTZ=!showTZ;this.className=showTZ?'view-btn active':'view-btn';drawMap();" class="view-btn" style="padding:3px 10px;font-size:9px;">🕐 TZ</button>
     </div>
   </div>
   <div class="map-body">
-    <div id="tz-bar" style="display:flex;gap:0;margin-bottom:12px;border-radius:8px;overflow:hidden;font-family:monospace;"></div>
+    <div id="tz-bar" style="display:flex;gap:0;margin-bottom:12px;border-radius:8px;overflow:hidden;font-family:monospace"></div>
     <svg id="us-map"></svg>
     <div id="map-legend"></div>
   </div>
@@ -140,824 +215,331 @@
 <div id="map-tt"></div>
 
 <div class="totals-wrap">
-  <div class="totals-header">
-    <span class="totals-header-label">Monthly totals</span>
-    <span style="font-size:9px;color:#484f58" id="totals-note">loading…</span>
-  </div>
+  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58" id="totals-note">loading…</span></div>
   <div class="monthly-grid" id="monthly-grid"></div>
   <div class="annual-row" id="annual-row"></div>
 </div>
 
-<!-- 2027 FULL YEAR PROJECTION CARD -->
 <div style="margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden" id="proj-2027-wrap">
   <div style="padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-    <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681">2027 Full Year Projection</span>
-      <span style="font-size:9px;color:#484f58">· fully ramped · 365 days · anchored to last-30d actual avg</span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:clamp(9px,1.8vw,10px);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6e7681">2027 Full Year Projection</span>
+      <span style="font-size:9px;color:#484f58">· fully ramped · anchored to 30-day actual avg</span>
     </div>
     <div style="display:flex;gap:6px;align-items:center">
-      <span style="font-size:9px;color:#484f58">Phase 2 scenario:</span>
+      <span style="font-size:9px;color:#484f58">Phase 2:</span>
       <button id="p2-toggle-2027" onclick="toggle2027P2()" style="padding:3px 12px;border-radius:5px;font-size:9px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;letter-spacing:1px;text-transform:uppercase">OFF</button>
     </div>
   </div>
-
-  <!-- headline numbers -->
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #21262d">
-    <div style="padding:16px 18px;border-right:1px solid #21262d">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #21262d">
+    <div style="padding:clamp(10px,2vw,16px) clamp(10px,2vw,18px);border-right:1px solid #21262d;min-width:0">
       <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Existing + Phase 1</div>
-      <div style="font-size:26px;font-weight:800;color:#4ade80;letter-spacing:-.02em" id="y27-base-total">—</div>
-      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-base-daily">—/day avg</div>
+      <div style="font-size:clamp(18px,4vw,26px);font-weight:800;color:#4ade80;letter-spacing:-.02em" id="y27-base-total">—</div>
+      <div style="font-size:clamp(9px,1.8vw,10px);color:#484f58;margin-top:3px" id="y27-base-daily">—/day avg</div>
     </div>
-    <div style="padding:16px 18px;border-right:1px solid #21262d" id="y27-p2-col">
+    <div style="padding:clamp(10px,2vw,16px) clamp(10px,2vw,18px);border-right:1px solid #21262d;min-width:0">
       <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">+ Phase 2 add-on</div>
-      <div style="font-size:26px;font-weight:800;color:#f59e0b;letter-spacing:-.02em" id="y27-p2-add">—</div>
-      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-p2-daily">—/day avg · FL·GA·CO·NV</div>
+      <div style="font-size:clamp(18px,4vw,26px);font-weight:800;color:#f59e0b;letter-spacing:-.02em" id="y27-p2-add">—</div>
+      <div style="font-size:clamp(9px,1.8vw,10px);color:#484f58;margin-top:3px" id="y27-p2-daily">toggle ON · CO·GA·MO·SC</div>
     </div>
-    <div style="padding:16px 18px;background:#161b22">
-      <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Total 2027 (with Phase 2)</div>
-      <div style="font-size:26px;font-weight:800;color:#e879f9;letter-spacing:-.02em" id="y27-total">—</div>
-      <div style="font-size:10px;color:#484f58;margin-top:3px" id="y27-total-daily">—/day avg</div>
+    <div style="padding:clamp(10px,2vw,16px) clamp(10px,2vw,18px);background:#161b22;min-width:0">
+      <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Total 2027</div>
+      <div style="font-size:clamp(18px,4vw,26px);font-weight:800;color:#e879f9;letter-spacing:-.02em" id="y27-total">—</div>
+      <div style="font-size:clamp(9px,1.8vw,10px);color:#484f58;margin-top:3px" id="y27-total-daily">—/day avg</div>
     </div>
   </div>
-
-  <!-- monthly grid 2027 -->
   <div style="display:grid;grid-template-columns:repeat(6,1fr)" id="grid-2027"></div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────────────────────────────────────
+// ── GOALS ─────────────────────────────────────────────────────────────────────
+const GOAL_DAILY   = 2000;
+const GOAL_MONTHLY = 60000;
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVT-Xukwe3rxiPAnaMGK8ywEVf0Tfnm9U6cTQo9Ts6DX3DOoGQNcgvHj2pnCAO0_N3/exec";
 const RATES = { rh:12, td1:23, td2:28, mdl1:25, mdl2:28 };
 const STATE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR58Y-q2wQtnGKkSraBWHu7xDfDTxIj6GqeWAYR3Qw_qsPBlK4T7flUPxw27BiHADcFxd1ME-e5g7ut/pub?gid=1484825929&single=true&output=csv";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FALLBACK DATA
-// ─────────────────────────────────────────────────────────────────────────────
-// ─────────────────────────────────────────────────────────────────────────────
-// VERIFIED MONTHLY TOTALS — exact figures from Google Sheet, never overridden
-// ─────────────────────────────────────────────────────────────────────────────
-const VERIFIED_MONTHLY_TOTALS = {
-  Jan:  8964,
-  Feb:  25512,
-  Mar:  31404,
-  Apr:  32352,
-  // May and beyond: computed from daily sheet data or projected
-};
-
+const VERIFIED_MONTHLY_TOTALS = { Jan:8964, Feb:25512, Mar:31404, Apr:32352 };
 const FALLBACK_APR_DAILY = [396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
-// May 1-4 from original hardcoded data; May 5-14 estimated from "Revenue — Last 30 Days" line chart
-// Updated May state tally: 5,189 total encounters (TX 1442, NC 718, OH 388, AZ 546, IL 300, AL 257, PA 276, MI 252, IN 320, OR 342, TN 232, WA 116)
-// — use ⬆ Import Daily for exact daily values
-const FALLBACK_MAY_DAILY  = [2093,2364,2796,1390, 2050,3400,2900,1900,1850, 2850,1750,2650,2200,2050];
+const FALLBACK_MAY_DAILY  = [2093,2364,2796,1390,2050,3400,2900,1900,1850,2850,1750,2650,2200,2050];
 const FALLBACK_APR_TOTAL  = 32895;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LIVE DATA STORAGE
-// ─────────────────────────────────────────────────────────────────────────────
-let LIVE_MONTHLY = {};
-let liveDataLoaded = false;
-let STATE_CSV_MONTHLY_REV = {};
+let LIVE_MONTHLY={},liveDataLoaded=false,STATE_CSV_MONTHLY_REV={};
+let APR_DAILY=[...FALLBACK_APR_DAILY],MAY_ACTUAL_DAILY=[...FALLBACK_MAY_DAILY];
+let APR_TOTAL=FALLBACK_APR_TOTAL,MAY_ACTUAL_DAYS=FALLBACK_MAY_DAILY.length;
+let P1_K=0.032;
+const P1_LIVE_APR_IDX=25;
 
-let APR_DAILY        = [...FALLBACK_APR_DAILY];
-let MAY_ACTUAL_DAILY = [...FALLBACK_MAY_DAILY];
-let APR_TOTAL        = FALLBACK_APR_TOTAL;
-let MAY_ACTUAL_DAYS  = FALLBACK_MAY_DAILY.length;
+function parseCSVRow(r){const c=[];let cur='',inQ=false;for(const ch of r){if(ch==='"'){inQ=!inQ;continue;}if(ch===','&&!inQ){c.push(cur.trim());cur='';}else cur+=ch;}c.push(cur.trim());return c;}
+function parseDateCol(h){let m;m=h.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);if(m)return{month:+m[1],day:+m[2],year:+m[3]};m=h.match(/([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/);if(m){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[1].toLowerCase()];if(mo)return{month:mo,day:+m[2],year:+m[3]};}m=h.match(/^(\d{1,2})-([A-Za-z]{3})$/i);if(m){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[2].toLowerCase()];if(mo)return{month:mo,day:+m[1],year:2026};}m=h.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/);if(m)return{month:+m[1],day:+m[2],year:m[3]?+m[3]:2026};return null;}
+function monthYearFromTabName(n){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};const m=n.trim().match(/^([A-Za-z]{3})[\s-]*(\d{2,4})$/i);if(m){const mv=mo[m[1].toLowerCase()];if(mv){let yr=+m[2];if(yr<100)yr+=yr<50?2000:1900;return{month:mv,year:yr};}}return null;}
+function yearFromTabName(n){let m;m=n.trim().match(/(\d{4})/);if(m)return+m[1];m=n.trim().match(/(\d{2})\s*$/);if(m){const y=+m[1];return y<50?2000+y:1900+y;}return null;}
+function parseSheetCSV(text,tabName){const rows=text.trim().split('\n').map(parseCSVRow);if(rows.length<2)return null;const headers=rows[0],nd=tabName?monthYearFromTabName(tabName):null,allDC=[];headers.forEach((h,i)=>{if(i===0)return;const d=parseDateCol(h.trim());if(!d)return;if(nd){if(d.month===nd.month)allDC.push({i,...d});}else allDC.push({i,...d});});const dateCols=allDC.length>0?allDC:(()=>{const a=[];headers.forEach((h,i)=>{if(i===0)return;const d=parseDateCol(h.trim());if(d)a.push({i,...d});});return a;})();if(!dateCols.length)return null;dateCols.sort((a,b)=>a.day-b.day);const n=dateCols.length;const rh=new Array(n).fill(0),td1=new Array(n).fill(0),td2=new Array(n).fill(0),mdl1=new Array(n).fill(0),mdl2=new Array(n).fill(0),rev=new Array(n).fill(0);let tdc=0,mc=0;for(const row of rows.slice(1)){const nm=(row[0]||'').trim().toUpperCase().replace(/\s+/g,'');if(!nm)continue;dateCols.forEach((col,j)=>{const raw=(row[col.i]||'').toString().replace(/#[A-Z!]+/g,'').replace(/[$, ]/g,'');const v=parseFloat(raw)||0;if(nm==='RO'||nm==='RO+')rh[j]+=v;else if(nm==='TOT'||nm==='TOTAL')rev[j]+=v;});const isTD=nm.startsWith('TD'),isMDL=nm==='MD'||nm==='MDL'||nm==='ML'||nm.startsWith('MLV')||nm.startsWith('MDL');if(isTD){tdc++;dateCols.forEach((col,j)=>{const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0;if(tdc===1)td1[j]+=v;else td2[j]+=v;});}if(isMDL){mc++;dateCols.forEach((col,j)=>{const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0;if(mc===1)mdl1[j]+=v;else mdl2[j]+=v;});}}const td=td1.map((v,i)=>v+td2[i]),mdl=mdl1.map((v,i)=>v+mdl2[i]);let lastIdx=-1;for(let j=0;j<n;j++)if(rh[j]>0||td[j]>0||mdl[j]>0||rev[j]>0)lastIdx=j;if(lastIdx<0)return null;const t=lastIdx+1;const sm=nd?nd.month:dateCols[0].month,sy=nd?nd.year:dateCols[0].year;return{labels:dateCols.slice(0,t).map(d=>d.month+'/'+d.day),rh:rh.slice(0,t),td:td.slice(0,t),td1:td1.slice(0,t),td2:td2.slice(0,t),mdl:mdl.slice(0,t),mdl1:mdl1.slice(0,t),mdl2:mdl2.slice(0,t),rev:rev.slice(0,t),rhRev:rh.slice(0,t).map(v=>Math.round(v*RATES.rh)),tdRev:td1.slice(0,t).map((v,i)=>Math.round(v*RATES.td1+td2[i]*RATES.td2)),mdlRev:mdl1.slice(0,t).map((v,i)=>Math.round(v*RATES.mdl1+mdl2[i]*RATES.mdl2)),month:sm,year:sy};}
 
-let P1_K = 0.073;
-const P1_LIVE_APR_IDX = 25;
+const MONTH_NAMES=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const LS_KEY='tmd_c',LS_TIME='tmd_t';
+function saveCache(t){try{localStorage.setItem(LS_KEY,t);localStorage.setItem(LS_TIME,Date.now().toString());}catch(e){}}
+function readCache(){try{const t=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);if(!t||!ts)return null;return{text:t,ageMin:Math.round((Date.now()-+ts)/60000)};}catch(e){return null;}}
+function parseRawText(text){const nm={};let json;try{json=JSON.parse(text);}catch(e){return nm;}for(const[tab,csv]of Object.entries(json)){const p=parseSheetCSV(csv,tab);if(!p)continue;const yr=p.year||yearFromTabName(tab)||2026;const mk=MONTH_NAMES[p.month-1];if(!mk)continue;const daily=p.rhRev.map((v,i)=>v+(p.tdRev[i]||0)+(p.mdlRev[i]||0));nm[mk]={daily,total:daily.reduce((a,b)=>a+b,0),days:daily.length,rhEncTotal:p.rh.reduce((a,b)=>a+b,0),rhDailyArr:p.rh,year:yr,month:p.month};}return nm;}
+async function loadLiveData(bg=false){try{const r=await fetch(APPS_SCRIPT_URL+'?_='+Date.now(),{cache:'no-store',redirect:'follow'});if(!r.ok)throw new Error('HTTP '+r.status);const text=await r.text();if(!text||text.trim().length<10)throw new Error('Empty');const nm=parseRawText(text);if(!Object.keys(nm).length)throw new Error('No sheets');saveCache(text);LIVE_MONTHLY=nm;liveDataLoaded=true;const ts=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});setLiveStatus('live','Live · '+ts);document.getElementById('live-ts').textContent='Updated '+ts;return true;}catch(e){console.warn('Live fetch:',e.message);if(liveDataLoaded){const c=readCache();setLiveStatus('live','Cached · '+(c?c.ageMin+'m ago':'?'));}else setLiveStatus('err','Sheet blocked — use ⬆ Import');return liveDataLoaded;}}
+function bootFromCache(){try{const t=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);if(!t||!ts)return false;const p=parseRawText(t);if(!Object.keys(p).length)return false;const age=Math.round((Date.now()-+ts)/60000);LIVE_MONTHLY=p;liveDataLoaded=true;setLiveStatus('live','Cached · '+age+'m ago');document.getElementById('live-ts').textContent='Cached '+age+'m ago';document.getElementById('live-months').textContent='Months: '+Object.keys(p).join(', ');applyLiveData();return true;}catch(e){return false;}}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CSV PARSING
-// ─────────────────────────────────────────────────────────────────────────────
-function parseCSVRow(r) {
-  const cols=[]; let cur='',inQ=false;
-  for(const ch of r){if(ch==='"'){inQ=!inQ;continue;}if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else cur+=ch;}
-  cols.push(cur.trim()); return cols;
-}
-function parseDateCol(h) {
-  let m;
-  m=h.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/); if(m)return{month:+m[1],day:+m[2],year:+m[3]};
-  m=h.match(/([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/); if(m){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[1].toLowerCase()];if(mo)return{month:mo,day:+m[2],year:+m[3]};}
-  m=h.match(/^(\d{1,2})-([A-Za-z]{3})$/i); if(m){const mo={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12}[m[2].toLowerCase()];if(mo)return{month:mo,day:+m[1],year:2026};}
-  m=h.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{4}))?$/); if(m)return{month:+m[1],day:+m[2],year:m[3]?+m[3]:2026};
-  return null;
-}
-function monthYearFromTabName(n) {
-  const moMap={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
-  const m=n.trim().match(/^([A-Za-z]{3})[\s-]*(\d{2,4})$/i);
-  if(m){const mo=moMap[m[1].toLowerCase()];if(mo){let yr=+m[2];if(yr<100)yr+=yr<50?2000:1900;return{month:mo,year:yr};}}
-  return null;
-}
-function yearFromTabName(n) {
-  let m; m=n.trim().match(/(\d{4})/); if(m)return+m[1];
-  m=n.trim().match(/(\d{2})\s*$/); if(m){const y=+m[1];return y<50?2000+y:1900+y;} return null;
-}
-function parseSheetCSV(text, tabName) {
-  const rows=text.trim().split('\n').map(parseCSVRow); if(rows.length<2)return null;
-  const headers=rows[0],nameDate=tabName?monthYearFromTabName(tabName):null,allDC=[];
-  headers.forEach((h,i)=>{if(i===0)return;const d=parseDateCol(h.trim());if(!d)return;if(nameDate){if(d.month===nameDate.month)allDC.push({i,...d});}else allDC.push({i,...d});});
-  const dateCols=allDC.length>0?allDC:(()=>{const all=[];headers.forEach((h,i)=>{if(i===0)return;const d=parseDateCol(h.trim());if(d)all.push({i,...d});});return all;})();
-  if(!dateCols.length)return null;
-  dateCols.sort((a,b)=>a.day-b.day);
-  const n=dateCols.length;
-  const rh=new Array(n).fill(0),td1=new Array(n).fill(0),td2=new Array(n).fill(0),mdl1=new Array(n).fill(0),mdl2=new Array(n).fill(0),rev=new Array(n).fill(0);
-  let tdc=0,mc=0;
-  for(const row of rows.slice(1)){
-    const nm=(row[0]||'').trim().toUpperCase().replace(/\s+/g,''); if(!nm)continue;
-    dateCols.forEach((col,j)=>{const raw=(row[col.i]||'').toString().replace(/#[A-Z!]+/g,'').replace(/[$, ]/g,'');const v=parseFloat(raw)||0;if(nm==='RO'||nm==='RO+')rh[j]+=v;else if(nm==='TOT'||nm==='TOTAL')rev[j]+=v;});
-    const isTD=nm.startsWith('TD'),isMDL=nm==='MD'||nm==='MDL'||nm==='ML'||nm.startsWith('MLV')||nm.startsWith('MDL');
-    if(isTD){tdc++;dateCols.forEach((col,j)=>{const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0;if(tdc===1)td1[j]+=v;else td2[j]+=v;});}
-    if(isMDL){mc++;dateCols.forEach((col,j)=>{const v=parseFloat((row[col.i]||'').replace(/[$, ]/g,''))||0;if(mc===1)mdl1[j]+=v;else mdl2[j]+=v;});}
-  }
-  const td=td1.map((v,i)=>v+td2[i]),mdl=mdl1.map((v,i)=>v+mdl2[i]);
-  let lastIdx=-1; for(let j=0;j<n;j++)if(rh[j]>0||td[j]>0||mdl[j]>0||rev[j]>0)lastIdx=j;
-  if(lastIdx<0)return null; const t=lastIdx+1;
-  const sm=nameDate?nameDate.month:dateCols[0].month,sy=nameDate?nameDate.year:dateCols[0].year;
-  return{
-    labels:dateCols.slice(0,t).map(d=>d.month+'/'+d.day),
-    rh:rh.slice(0,t),td:td.slice(0,t),td1:td1.slice(0,t),td2:td2.slice(0,t),
-    mdl:mdl.slice(0,t),mdl1:mdl1.slice(0,t),mdl2:mdl2.slice(0,t),rev:rev.slice(0,t),
-    rhRev:rh.slice(0,t).map(v=>Math.round(v*RATES.rh)),
-    tdRev:td1.slice(0,t).map((v,i)=>Math.round(v*RATES.td1+td2[i]*RATES.td2)),
-    mdlRev:mdl1.slice(0,t).map((v,i)=>Math.round(v*RATES.mdl1+mdl2[i]*RATES.mdl2)),
-    month:sm,year:sy
-  };
-}
+let RECENT_BASELINE=null,RECENT_EXIST_FRAC=0.5;
+function computeRecentBaseline(){const p1=[...APR_DAILY.slice(P1_LIVE_APR_IDX),...MAY_ACTUAL_DAILY];if(!p1.length){RECENT_BASELINE=null;return null;}const r=p1.slice(-30);RECENT_BASELINE=r.reduce((a,b)=>a+b,0)/r.length;const pre=APR_DAILY.slice(0,P1_LIVE_APR_IDX);const ea=pre.length>=5?pre.reduce((a,b)=>a+b,0)/pre.length:1070;RECENT_EXIST_FRAC=Math.min(0.85,Math.max(0.1,ea/RECENT_BASELINE));return RECENT_BASELINE;}
+function computeBlendedRHRate(){let tot=0,rh=0;Object.values(LIVE_MONTHLY).forEach(m=>{if(!m.daily||!m.rhDailyArr||!m.total)return;const r=m.rhDailyArr.reduce((a,b)=>a+b,0)*RATES.rh;if(r<=0)return;tot+=m.total;rh+=r;});return(rh>0&&tot>rh*0.5)?tot/rh:1.0;}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// LIVE DATA LOADER
-// ─────────────────────────────────────────────────────────────────────────────
-const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const LS_KEY  = 'tmd_c';
-const LS_TIME = 'tmd_t';
-
-function saveCache(text){try{localStorage.setItem(LS_KEY,text);localStorage.setItem(LS_TIME,Date.now().toString());}catch(e){}}
-function readCache(){try{const text=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);if(!text||!ts)return null;return{text,ageMin:Math.round((Date.now()-+ts)/60000)};}catch(e){return null;}}
-
-function parseRawText(text) {
-  const newMonthly={};
-  let json;
-  try{json=JSON.parse(text);}catch(e){return newMonthly;}
-  for(const[tabName,csv]of Object.entries(json)){
-    const parsed=parseSheetCSV(csv,tabName);
-    if(!parsed)continue;
-    const yr=parsed.year||yearFromTabName(tabName)||2026;
-    const monthKey=MONTH_NAMES[parsed.month-1];
-    if(!monthKey)continue;
-    const daily=parsed.rhRev.map((v,i)=>v+(parsed.tdRev[i]||0)+(parsed.mdlRev[i]||0));
-    newMonthly[monthKey]={
-      daily,total:daily.reduce((a,b)=>a+b,0),days:daily.length,
-      rhEncTotal:parsed.rh.reduce((a,b)=>a+b,0),
-      rhDailyArr:parsed.rh,
-      tdDailyArr:parsed.td,  // FIX #3: preserve TD breakdown
-      mdlDailyArr:parsed.mdl, // FIX #3: preserve MDL breakdown
-      year:yr,month:parsed.month
-    };
-  }
-  return newMonthly;
-}
-
-async function loadLiveData(bgRefresh=false) {
-  try{
-    const r=await fetch(APPS_SCRIPT_URL+'?_='+Date.now(),{cache:'no-store',redirect:'follow'});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    if(!text||text.trim().length<10)throw new Error('Empty response');
-    const newMonthly=parseRawText(text);
-    if(!Object.keys(newMonthly).length)throw new Error('No sheets parsed');
-    saveCache(text);
-    LIVE_MONTHLY=newMonthly;
-    liveDataLoaded=true;
-    const ts=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-    setLiveStatus('live','Live · '+ts);
-    document.getElementById('live-ts').textContent='Updated '+ts;
-    return true;
-  }catch(e){
-    console.warn('Live fetch failed:',e.message);
-    if(liveDataLoaded){const cached=readCache();const age=cached?cached.ageMin+'m ago':'?';setLiveStatus('live','Cached · '+age);}
-    else setLiveStatus('err','Sheet fetch blocked (file:// CORS) — use ⬆ Import or open Dashboard first');
-    return liveDataLoaded;
-  }
-}
-
-function bootFromCache() {
-  try{
-    const text=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);
-    if(!text||!ts)return false;
-    const parsed=parseRawText(text);
-    if(!Object.keys(parsed).length)return false;
-    const ageMin=Math.round((Date.now()-+ts)/60000);
-    LIVE_MONTHLY=parsed;liveDataLoaded=true;
-    setLiveStatus('live','Cached · '+ageMin+'m ago');
-    document.getElementById('live-ts').textContent='Cached '+ageMin+'m ago';
-    document.getElementById('live-months').textContent='Months: '+Object.keys(parsed).join(', ');
-    applyLiveData();
-    return true;
-  }catch(e){console.warn('Cache boot failed:',e);return false;}
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FIX #3: BLENDED RATE CALCULATOR
-// Uses actual daily data from LIVE_MONTHLY to compute the ratio of
-// total revenue (RH+TD+MDL) to RH-only revenue, then applies this multiplier
-// when converting state CSV encounter counts to projected revenue.
-// Without this, state CSV-derived monthly totals undercount vs the chart.
-// ─────────────────────────────────────────────────────────────────────────────
-function computeBlendedRHRate() {
-  let totalRev=0, totalRHRev=0;
-  Object.values(LIVE_MONTHLY).forEach(mo => {
-    if(!mo.daily||!mo.rhDailyArr||!mo.total)return;
-    const rhOnly = mo.rhDailyArr.reduce((a,b)=>a+b,0) * RATES.rh;
-    if(rhOnly<=0)return;
-    totalRev    += mo.total;
-    totalRHRev  += rhOnly;
-  });
-  if(totalRHRev>0 && totalRev>totalRHRev*0.5){
-    const ratio = totalRev/totalRHRev;
-    console.log(`[Blended rate] ${ratio.toFixed(2)}x (total:$${Math.round(totalRev)} / rh:$${Math.round(totalRHRev)})`);
-    return ratio;
-  }
-  return 1.0; // fallback: no TD/MDL data available yet
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RECENT BASELINE — drives all projections instead of state model targets.
-// Uses only post-Phase1-launch data (Apr 26 onwards) so pre-P1 low days
-// don't drag the average below the current observed run rate.
-// existFrac splits projected bars into existing vs P1 for chart stacking.
-// ─────────────────────────────────────────────────────────────────────────────
-let RECENT_BASELINE = null;
-let RECENT_EXIST_FRAC = 0.5;
-
-function computeRecentBaseline() {
-  // Only use data from Phase 1 launch date onwards — pre-P1 April days
-  // are irrelevant to the current run rate and would understate projections.
-  const postP1Apr = APR_DAILY.slice(P1_LIVE_APR_IDX);       // Apr 26–30 (~5 days)
-  const allPostP1 = [...postP1Apr, ...MAY_ACTUAL_DAILY];     // grows as May loads
-  if (!allPostP1.length) { RECENT_BASELINE = null; return null; }
-
-  // Cap at last 30 post-P1 days; with current data this is all ~19 days
-  const recent = allPostP1.slice(-30);
-  const avg = recent.reduce((a, b) => a + b, 0) / recent.length;
-  RECENT_BASELINE = avg;
-
-  // Derive existing-state fraction from clean pre-P1 April baseline
-  const preP1 = APR_DAILY.slice(0, P1_LIVE_APR_IDX);
-  const existAvg = preP1.length >= 5
-    ? preP1.reduce((a, b) => a + b, 0) / preP1.length
-    : 1070;
-  RECENT_EXIST_FRAC = Math.min(0.85, Math.max(0.1, existAvg / avg));
-  console.log(`[Baseline] post-P1 avg (${recent.length}d): $${Math.round(avg)}/day · existFrac: ${(RECENT_EXIST_FRAC*100).toFixed(0)}%`);
-  return avg;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// APPLY LIVE DATA → patch working arrays + recalibrate
-// ─────────────────────────────────────────────────────────────────────────────
-function applyLiveData() {
-  const fallbackMonths=[], liveMonths=[];
-
-  if(LIVE_MONTHLY['Apr']&&LIVE_MONTHLY['Apr'].days>=28){
-    APR_DAILY=[...LIVE_MONTHLY['Apr'].daily];
-    APR_TOTAL=LIVE_MONTHLY['Apr'].total;
-    liveMonths.push('Apr ('+LIVE_MONTHLY['Apr'].days+'d)');
-  }else{APR_DAILY=[...FALLBACK_APR_DAILY];APR_TOTAL=FALLBACK_APR_TOTAL;fallbackMonths.push('Apr');}
-
-  const currentMonthIdx=new Date().getMonth();
-  MAY_ACTUAL_DAILY=[];
-
-  MONTH_NAMES.forEach((mo,idx)=>{
-    if(idx<4)return;
-    const lm=LIVE_MONTHLY[mo];
-    if(lm&&lm.days>=1&&idx<=currentMonthIdx){
-      if(mo==='May'){MAY_ACTUAL_DAILY=[...lm.daily];liveMonths.push(mo+' ('+lm.days+'d)');}
-    }else if(idx<=currentMonthIdx){if(mo==='May')fallbackMonths.push(mo);}
-  });
-
-  if(MAY_ACTUAL_DAILY.length===0){MAY_ACTUAL_DAILY=[...FALLBACK_MAY_DAILY];if(!fallbackMonths.includes('May'))fallbackMonths.push('May');}
+function applyLiveData(){
+  const fb=[],lv=[];
+  if(LIVE_MONTHLY['Apr']&&LIVE_MONTHLY['Apr'].days>=28){APR_DAILY=[...LIVE_MONTHLY['Apr'].daily];APR_TOTAL=LIVE_MONTHLY['Apr'].total;lv.push('Apr ('+LIVE_MONTHLY['Apr'].days+'d)');}
+  else{APR_DAILY=[...FALLBACK_APR_DAILY];APR_TOTAL=FALLBACK_APR_TOTAL;fb.push('Apr');}
+  const cm=new Date().getMonth();MAY_ACTUAL_DAILY=[];
+  MONTH_NAMES.forEach((mo,idx)=>{if(idx<4)return;const lm=LIVE_MONTHLY[mo];if(lm&&lm.days>=1&&idx<=cm){if(mo==='May'){MAY_ACTUAL_DAILY=[...lm.daily];lv.push(mo+' ('+lm.days+'d)');}}else if(idx<=cm&&mo==='May')fb.push(mo);});
+  if(!MAY_ACTUAL_DAILY.length){MAY_ACTUAL_DAILY=[...FALLBACK_MAY_DAILY];if(!fb.includes('May'))fb.push('May');}
   MAY_ACTUAL_DAYS=MAY_ACTUAL_DAILY.length;
-
-  // Compute recent baseline FIRST — everything else uses it
   computeRecentBaseline();
-  const preP1Days=APR_DAILY.slice(0,P1_LIVE_APR_IDX);
-  if(preP1Days.length>=10){
-    const preAvg=preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length;
-    const originalBase=1070;
-    const scale=preAvg/originalBase;
-    Object.keys(STATE_DATA).forEach(st=>{
-      if(STATE_DATA[st].group==='existing'){
-        STATE_DATA[st].dailyContrib=Math.round(ORIGINAL_EXISTING_CONTRIB[st]*scale);
-      }
-    });
-  }
-
-  // Recalibrate P1_K from actual ramp data
-  const preAvgEst=preP1Days.length>=5?preP1Days.reduce((a,b)=>a+b,0)/preP1Days.length:1070;
-  const p1ActualDays=[];
-  for(let i=P1_LIVE_APR_IDX;i<APR_DAILY.length;i++){
-    const p1Rev=Math.max(0,APR_DAILY[i]-preAvgEst);
-    p1ActualDays.push({day:i-P1_LIVE_APR_IDX,rev:p1Rev});
-  }
-  MAY_ACTUAL_DAILY.forEach((rev,i)=>{
-    const p1Rev=Math.max(0,rev-preAvgEst);
-    p1ActualDays.push({day:APR_DAILY.length-P1_LIVE_APR_IDX+i,rev:p1Rev});
-  });
-  const p1FullTarget=Object.keys(STATE_DATA)
-    .filter(s=>STATE_DATA[s].group==='phase1'&&activeStates.includes(s))
-    .reduce((sum,s)=>sum+STATE_DATA[s].dailyContrib,0);
-  if(p1ActualDays.length>=3&&p1FullTarget>0){
-    const validPts=p1ActualDays.filter(d=>d.day>1&&d.rev>0);
-    if(validPts.length>=2){
-      const kEst=validPts.map(({day,rev})=>{const frac=Math.min(0.99,rev/p1FullTarget);return frac>0?-Math.log(1-frac)/day:P1_K;});
-      const kMean=kEst.reduce((a,b)=>a+b,0)/kEst.length;
-      if(kMean>0.01&&kMean<0.5){P1_K=kMean;console.log('[P1_K recal]',P1_K.toFixed(4));}
-    }
-  }
-
-  // Update status UI
+  const pre=APR_DAILY.slice(0,P1_LIVE_APR_IDX);
+  if(pre.length>=10){const pa=pre.reduce((a,b)=>a+b,0)/pre.length;const sc=pa/1070;Object.keys(STATE_DATA).forEach(st=>{if(STATE_DATA[st].group==='existing')STATE_DATA[st].dailyContrib=Math.round(ORIGINAL_EXISTING_CONTRIB[st]*sc);});}
   const ts=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-  const liveEl=document.getElementById('live-months'),fbEl=document.getElementById('live-fallback'),tsEl=document.getElementById('live-ts');
-  if(liveEl)liveEl.textContent=liveMonths.length?'Live: '+liveMonths.join(' · '):'';
-  if(fbEl)fbEl.textContent=fallbackMonths.length?'· Fallback: '+fallbackMonths.join(', '):'';
-  if(tsEl)tsEl.textContent='Updated '+ts;
-
-  const badge=document.getElementById('h-badge'),lastLiveMo=liveMonths[liveMonths.length-1];
-  if(badge&&lastLiveMo){badge.textContent=lastLiveMo+' actuals loaded';badge.className='badge badge-green';}
-
+  const lEl=document.getElementById('live-months'),fbEl=document.getElementById('live-fallback'),tsEl=document.getElementById('live-ts');
+  if(lEl)lEl.textContent=lv.length?'Live: '+lv.join(' · '):'';if(fbEl)fbEl.textContent=fb.length?'· Fallback: '+fb.join(', '):'';if(tsEl)tsEl.textContent='Updated '+ts;
+  const badge=document.getElementById('h-badge'),last=lv[lv.length-1];
+  if(badge&&last){badge.textContent=last+' loaded';badge.className='badge badge-green';}
   const sub=document.getElementById('subtitle');
-  if(sub){
-    const aprAvg=APR_TOTAL>0?Math.round(APR_TOTAL/APR_DAILY.length):0;
-    const mayTotal=MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);
-    const mayAvg=MAY_ACTUAL_DAILY.length?Math.round(mayTotal/MAY_ACTUAL_DAILY.length):0;
-    const pctVsApr=aprAvg>0?Math.round((mayAvg-aprAvg)/aprAvg*100):0;
-    sub.textContent=[
-      'Apr 1–'+APR_DAILY.length+' ($'+APR_TOTAL.toLocaleString()+' · $'+aprAvg.toLocaleString()+'/day)',
-      MAY_ACTUAL_DAILY.length?'May 1–'+MAY_ACTUAL_DAYS+' ($'+mayTotal.toLocaleString()+' · $'+mayAvg.toLocaleString()+'/day · '+(pctVsApr>=0?'+':'')+pctVsApr+'% vs Apr)':'',
-      RECENT_BASELINE?'Projections anchored to last-30-day avg: $'+Math.round(RECENT_BASELINE).toLocaleString()+'/day':''
-    ].filter(Boolean).join(' · ');
-  }
-
-  const tn=document.getElementById('totals-note'),lastActualMo=[...liveMonths].pop()||'Apr';
-  if(tn)tn.textContent='actual Jan–'+lastActualMo.split(' ')[0]+' · partial current month · projected remainder';
-
-  setLiveStatus(liveDataLoaded?'live':'err',liveDataLoaded?'Live · '+(liveMonths.length?liveMonths.join(', '):'connected'):'Using fallback data');
+  if(sub){const aa=APR_TOTAL>0?Math.round(APR_TOTAL/APR_DAILY.length):0;const mt=MAY_ACTUAL_DAILY.reduce((a,b)=>a+b,0);const ma=MAY_ACTUAL_DAILY.length?Math.round(mt/MAY_ACTUAL_DAILY.length):0;const pct=aa>0?Math.round((ma-aa)/aa*100):0;sub.textContent=['Apr $'+APR_TOTAL.toLocaleString()+' · $'+aa.toLocaleString()+'/day',MAY_ACTUAL_DAILY.length?'May $'+mt.toLocaleString()+' · $'+ma.toLocaleString()+'/day ('+(pct>=0?'+':'')+pct+'% vs Apr)':'',RECENT_BASELINE?'Baseline $'+Math.round(RECENT_BASELINE).toLocaleString()+'/day · Goal $'+GOAL_DAILY.toLocaleString()+'/day':''].filter(Boolean).join(' · ');}
+  setLiveStatus(liveDataLoaded?'live':'err',liveDataLoaded?'Live · '+(lv.length?lv.join(', '):'connected'):'Using fallback');
 }
+function setLiveStatus(s,m){const d=document.getElementById('live-dot'),l=document.getElementById('live-label');if(d){d.className='';d.classList.add(s==='live'?'live':s==='err'?'err':'loading');}if(l)l.textContent=m;}
 
-function setLiveStatus(state,msg){
-  const dot=document.getElementById('live-dot'),lbl=document.getElementById('live-label');
-  if(dot){dot.className='';dot.classList.add(state==='live'?'live':state==='err'?'err':'loading');}
-  if(lbl)lbl.textContent=msg;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STATE / PHASE DATA
-// ─────────────────────────────────────────────────────────────────────────────
-const STATE_DATA = {
-  IN:{group:"existing",pop:6.9,dailyContrib:98,locked:true},
-  TX:{group:"existing",pop:31,dailyContrib:344,locked:true},
-  NC:{group:"existing",pop:10.8,dailyContrib:229,locked:true},
-  TN:{group:"existing",pop:7.2,dailyContrib:62,locked:true},
-  AZ:{group:"existing",pop:7.6,dailyContrib:173,locked:true},
-  OR:{group:"existing",pop:4.3,dailyContrib:129,locked:true},
+const STATE_DATA={
+  IN:{group:"existing",pop:6.9,dailyContrib:98,locked:true},TX:{group:"existing",pop:31,dailyContrib:344,locked:true},
+  NC:{group:"existing",pop:10.8,dailyContrib:229,locked:true},TN:{group:"existing",pop:7.2,dailyContrib:62,locked:true},
+  AZ:{group:"existing",pop:7.6,dailyContrib:173,locked:true},OR:{group:"existing",pop:4.3,dailyContrib:129,locked:true},
   WA:{group:"existing",pop:7.9,dailyContrib:35,locked:true},
-  PA:{group:"phase1",pop:13,dailyContrib:290,locked:false,note:"Live Apr 26"},
-  OH:{group:"phase1",pop:11.9,dailyContrib:265,locked:false},
-  MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},
-  IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},
+  PA:{group:"phase1",pop:13,dailyContrib:290,locked:false},OH:{group:"phase1",pop:11.9,dailyContrib:265,locked:false},
+  MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},
   AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},
-  CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},
-  GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
-  NV:{group:"phase2",pop:3.2,dailyContrib:95,locked:false,note:"Worst urologist supply in US + Vegas transplant city — high per-capita conversion"},
-  FL:{group:"phase2",pop:22.6,dailyContrib:280,locked:false,note:"High across all 4 conditions — largest compact state"},
+  CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
+  MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false},SC:{group:"phase2",pop:5.3,dailyContrib:80,locked:false}
 };
-
-const ORIGINAL_EXISTING_CONTRIB = Object.fromEntries(
-  Object.entries(STATE_DATA).filter(([,v])=>v.group==='existing').map(([k,v])=>[k,v.dailyContrib])
-);
-// FIX #1: store original P1 targets for recalibration reference
-const ORIGINAL_P1_CONTRIB = Object.fromEntries(
-  Object.entries(STATE_DATA).filter(([,v])=>v.group==='phase1').map(([k,v])=>[k,v.dailyContrib])
-);
-
-// IMLC Compact states — verified list (source: IMLC official)
-const COMPACT_STATES = new Set([
-  'AL','AZ','AR','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS',
-  'KY','LA','ME','MD','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM',
-  'NC','ND','OH','OK','PA','SD','TN','TX','UT','VT','WA','WV','WI','WY',
-  'DC' // District of Columbia also on compact list
-]);
-const ALL_STATES = {
-  AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},FL:{pop:22.6},HI:{pop:1.5},IA:{pop:3.2},
-  ID:{pop:1.9},KS:{pop:2.9},KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},MS:{pop:3.0},
-  MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},NM:{pop:2.1},NV:{pop:3.2},NY:{pop:19.6},NJ:{pop:9.3},
-  OK:{pop:4.0},RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},WI:{pop:5.9},WV:{pop:1.8},
-  WY:{pop:0.6},MN:{pop:5.8}
-};
-const PHASE_META = {
-  existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},
-  phase1:  {label:"Phase 1", color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},
-  phase2:  {label:"Phase 2", color:"#f59e0b",states:["FL","GA","CO","NV"]}
-};
-const GRP_COLORS = {existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
-const GRP_LABELS = {existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 — FL·GA·CO·NV"};
-const TZ = {ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
-const TZ_META = {PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
-let showTZ = false;
-const FIPS = {"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
-const SMALL = new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
-const ALL_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
+const ORIGINAL_EXISTING_CONTRIB=Object.fromEntries(Object.entries(STATE_DATA).filter(([,v])=>v.group==='existing').map(([k,v])=>[k,v.dailyContrib]));
+const COMPACT_STATES=new Set(['AL','AZ','AR','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NC','ND','OH','OK','PA','SD','TN','TX','UT','VT','WA','WV','WI','WY','DC']);
+const ALL_STATES={AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},FL:{pop:22.6},HI:{pop:1.5},IA:{pop:3.2},ID:{pop:1.9},KS:{pop:2.9},KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},MS:{pop:3.0},MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},NM:{pop:2.1},NV:{pop:3.2},NY:{pop:19.6},NJ:{pop:9.3},OK:{pop:4.0},RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},WI:{pop:5.9},WV:{pop:1.8},WY:{pop:0.6},MN:{pop:5.8}};
+const PHASE_META={existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},phase2:{label:"Phase 2",color:"#f59e0b",states:["CO","GA","MO","SC"]}};
+const GRP_COLORS={existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
+const GRP_LABELS={existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — CO·GA·MO·SC"};
+const TZ={ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
+const TZ_META={PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
+let showTZ=false;
+const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
+const SMALL=new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
+const ALL_MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function canBeActual(mi){return mi<=new Date().getMonth();}
-
-let activeStates = Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
+let activeStates=Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
 let hoveredIdx=null,chartData=[],fullYearData=[],usTopoData=null;
-
 function sRand(s){const x=Math.sin(s+1)*43758.5453;return x-Math.floor(x);}
 function fmtK(v){if(v>=1e6)return"$"+(v/1e6).toFixed(2)+"M";if(v>=1000)return"$"+(v/1000).toFixed(1)+"k";return"$"+Math.round(v);}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DATA GENERATION
-// ─────────────────────────────────────────────────────────────────────────────
-function generateData() {
-  const now=new Date(),curMoIdx=now.getMonth(),curDay=now.getDate(),curYear=now.getFullYear();
-  const DAYS_IN_MO=[31,28,31,30,31,30,31,31,30,31,30,31];
+function generateData(){
+  const now=new Date(),cmi=now.getMonth(),cd=now.getDate(),cy=now.getFullYear();
+  const DIM=[31,28,31,30,31,30,31,31,30,31,30,31];
   const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
   const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  const p23=activeStates.filter(s=>STATE_DATA[s]?.group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  const existEstPreP1=APR_DAILY.slice(0,P1_LIVE_APR_IDX).length>=5?APR_DAILY.slice(0,P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0)/APR_DAILY.slice(0,P1_LIVE_APR_IDX).length:base;
-  const p1LaunchDate=new Date(2026,3,26);
-  const p23LaunchDate=new Date(curYear,curMoIdx,curDay);
-  function p1Frac(date){const d=(date-p1LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d));}
-  function p23Frac(date){const d=(date-p23LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-0.055*d));}
-  function actualArr(moName,moIdx12){
-    if(LIVE_MONTHLY[moName]?.daily?.length>0)return LIVE_MONTHLY[moName].daily;
-    if(moIdx12===3)return APR_DAILY;
-    if(moIdx12===4)return MAY_ACTUAL_DAILY;
-    return[];
-  }
+  const p2=activeStates.filter(s=>STATE_DATA[s]?.group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const ee=APR_DAILY.slice(0,P1_LIVE_APR_IDX).length>=5?APR_DAILY.slice(0,P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0)/APR_DAILY.slice(0,P1_LIVE_APR_IDX).length:base;
+  const p1L=new Date(2026,3,26),p2L=new Date(cy,cmi,cd);
+  const p1F=d=>{const x=(d-p1L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-P1_K*x));};
+  const p2F=d=>{const x=(d-p2L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-0.028*x));};
+  function arr(mo,mi){if(LIVE_MONTHLY[mo]?.daily?.length>0)return LIVE_MONTHLY[mo].daily;if(mi===3)return APR_DAILY;if(mi===4)return MAY_ACTUAL_DAILY;return[];}
   const data=[];let di=0;
-  for(let offset=-3;offset<=3;offset++){
-    const mi=curMoIdx+offset,moIdx12=((mi%12)+12)%12,yr=mi<0?curYear-1:(mi>11?curYear+1:curYear);
-    const mo=ALL_MONTHS[moIdx12],dim=DAYS_IN_MO[moIdx12],arr=actualArr(mo,moIdx12);
-    const isPast=offset<0,isCur=offset===0;
+  for(let off=-3;off<=3;off++){
+    const mi=cmi+off,mi12=((mi%12)+12)%12,yr=mi<0?cy-1:(mi>11?cy+1:cy);
+    const mo=ALL_MONTHS[mi12],dim=DIM[mi12],a=arr(mo,mi12),hasSheet=a.length>0;
     for(let d=0;d<dim;d++){
-      const date=new Date(yr,moIdx12,d+1),isActualDay=isPast||(isCur&&d<curDay-1);
-      // FIX #4: flag estimated (seeded) vs sheet-backed actuals
-      const hasSheetData = arr.length > 0;
-      if(isActualDay){
-        // FIX: seeded fallback must include Phase 1 contribution for post-Apr-26 days.
-        // Old code used base * sc (~$850) — correct should be (base + p1 * p1Frac) * sc (~$2,200).
-        const v=arr[d]!==undefined?arr[d]:(()=>{
-          const sc=0.60+(offset+3)*0.13,n=(sRand(di)-.5)*.40;
-          const p1f=p1Frac(date);
-          const seedTotal=(base+p1*p1f)*sc*(1+n); // include Phase 1 ramp
-          return Math.round(Math.max(80,seedTotal));
-        })();
-        const p1f=p1Frac(date);
-        const rawP1=moIdx12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-existEstPreP1):Math.round(p1*p1f);
-        const eV=Math.max(0,v-rawP1);
-        data.push({month:mo,value:v,type:"actual",eV,p1V:rawP1,p2V:0,p3V:0,estimated:!hasSheetData});
-      }else{
-        // PROJECT from post-P1 baseline. Slight upward trend: +1.5%/month reflects
-        // organic growth as Phase 1 continues maturing. Phase 2 added on top.
-        const n=(sRand(di+400)-.5)*.18;
-        const baseline = RECENT_BASELINE || (base + p1);
-        const monthsAhead = Math.max(0, offset);
-        const trendFactor = 1 + 0.015 * monthsAhead; // +1.5% per month
-        const p23f=p23Frac(date);
-        const p23V=Math.round(p23*p23f*(1+n*.6));
-        const baseV=Math.round(baseline*trendFactor*(1+n));
-        const eV=Math.round(baseV*RECENT_EXIST_FRAC);
-        const p1V=Math.max(0,baseV-eV);
-        data.push({month:mo,value:baseV+p23V,eV,p1V,p2V:p23V,p3V:0,type:"proj"});
-      }
+      const date=new Date(yr,mi12,d+1),isAct=off<0||(off===0&&d<cd-1);
+      if(isAct){const v=a[d]!==undefined?a[d]:(()=>{const sc=0.60+(off+3)*0.13,n=(sRand(di)-.5)*.40;return Math.round(Math.max(80,(base+p1*p1F(date))*sc*(1+n)));})();
+        const p1Active=p1>0;
+        const pf=p1F(date);
+        // Only assign P1 slice when Phase 1 is toggled on and date is after launch
+        const rP1=p1Active?(mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.round(p1*pf)):0;
+        data.push({month:mo,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:!hasSheet});}
+      else{const n=(sRand(di+400)-.5)*.18,bl=RECENT_BASELINE||(base+p1),tf=1+0.015*Math.max(0,off);
+        const p2v=Math.round(p2*p2F(date)*(1+n*.6));
+        const bv=Math.round(bl*tf*(1+n));
+        // Only show P1 blue slice if Phase 1 is actually toggled on
+        const p1Active=p1>0;
+        const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
+        const p1V=p1Active?Math.max(0,bv-eV):0;
+        data.push({month:mo,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
       di++;
     }
   }
   return data;
 }
 
-function generateFullYearData() {
-  const now=new Date(),curMoIdx=now.getMonth(),curDay=now.getDate(),curYear=now.getFullYear();
-  const DAYS_IN_MO=[31,28,31,30,31,30,31,31,30,31,30,31];
+function generateFullYearData(){
+  const now=new Date(),cmi=now.getMonth(),cd=now.getDate(),cy=now.getFullYear();
+  const DIM=[31,28,31,30,31,30,31,31,30,31,30,31];
   const base=["IN","TX","NC","TN","AZ","OR","WA"].reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
   const p1=activeStates.filter(s=>STATE_DATA[s]?.group==="phase1").reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  const p23=activeStates.filter(s=>STATE_DATA[s]?.group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
-  const existEstPreP1=APR_DAILY.slice(0,P1_LIVE_APR_IDX).length>=5?APR_DAILY.slice(0,P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0)/APR_DAILY.slice(0,P1_LIVE_APR_IDX).length:base;
-  const p1LaunchDate=new Date(2026,3,26);
-  const p23LaunchDate=new Date(curYear,curMoIdx,curDay);
-  function p1Frac(date){const d=(date-p1LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-P1_K*d));}
-  function p23Frac(date){const d=(date-p23LaunchDate)/86400000;return d<=0?0:Math.min(1,1-Math.exp(-0.055*d));}
-  function actualArr(moName,moIdx12){
-    if(LIVE_MONTHLY[moName]?.daily?.length>0)return LIVE_MONTHLY[moName].daily;
-    if(moIdx12===3)return APR_DAILY;
-    if(moIdx12===4)return MAY_ACTUAL_DAILY;
-    return[];
-  }
+  const p2=activeStates.filter(s=>STATE_DATA[s]?.group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const ee=APR_DAILY.slice(0,P1_LIVE_APR_IDX).length>=5?APR_DAILY.slice(0,P1_LIVE_APR_IDX).reduce((a,b)=>a+b,0)/APR_DAILY.slice(0,P1_LIVE_APR_IDX).length:base;
+  const p1L=new Date(2026,3,26),p2L=new Date(cy,cmi,cd);
+  const p1F=d=>{const x=(d-p1L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-P1_K*x));};
+  const p2F=d=>{const x=(d-p2L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-0.028*x));};
+  function arr(mo,mi){if(LIVE_MONTHLY[mo]?.daily?.length>0)return LIVE_MONTHLY[mo].daily;if(mi===3)return APR_DAILY;if(mi===4)return MAY_ACTUAL_DAILY;return[];}
   const data=[];let di=1000;
-  for(let moIdx12=0;moIdx12<=11;moIdx12++){
-    const mo=ALL_MONTHS[moIdx12],dim=DAYS_IN_MO[moIdx12],arr=actualArr(mo,moIdx12);
-    const isPast=moIdx12<curMoIdx,isCur=moIdx12===curMoIdx;
+  for(let mi12=0;mi12<=11;mi12++){
+    const mo=ALL_MONTHS[mi12],dim=DIM[mi12],a=arr(mo,mi12);
     for(let d=0;d<dim;d++){
-      const date=new Date(curYear,moIdx12,d+1),isActualDay=isPast||(isCur&&d<curDay-1);
-      if(isActualDay){
-        // FIX: seeded fallback includes Phase 1 ramp (same fix as generateData)
-        const v=arr[d]!==undefined?arr[d]:(()=>{
-          const sc=0.55+moIdx12*0.06,n=(sRand(di)-.5)*.40;
-          const p1f=p1Frac(date);
-          const seedTotal=(base+p1*p1f)*sc*(1+n);
-          return Math.round(Math.max(80,seedTotal));
-        })();
-        const p1f=p1Frac(date);
-        const rawP1=moIdx12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-existEstPreP1):Math.round(p1*p1f);
-        const eV=Math.max(0,v-rawP1);
-        data.push({month:mo,value:v,type:"actual",eV,p1V:rawP1,p2V:0,p3V:0});
-      }else{
-        const n=(sRand(di+600)-.5)*.18;
-        const baseline = RECENT_BASELINE || (base + p1);
-        const monthsAhead = Math.max(0, moIdx12 - curMoIdx);
-        const trendFactor = 1 + 0.015 * monthsAhead;
-        const p23f=p23Frac(date);
-        const p23V=Math.round(p23*p23f*(1+n*.6));
-        const baseV=Math.round(baseline*trendFactor*(1+n));
-        const eV=Math.round(baseV*RECENT_EXIST_FRAC);
-        const p1V=Math.max(0,baseV-eV);
-        data.push({month:mo,value:baseV+p23V,eV,p1V,p2V:p23V,p3V:0,type:"proj"});
-      }
+      const date=new Date(cy,mi12,d+1),isAct=mi12<cmi||(mi12===cmi&&d<cd-1);
+      if(isAct){const v=a[d]!==undefined?a[d]:(()=>{const sc=0.55+mi12*0.06,n=(sRand(di)-.5)*.40;return Math.round(Math.max(80,(base+p1*p1F(date))*sc*(1+n)));})();const pf=p1F(date),rP1=mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.round(p1*pf);data.push({month:mo,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0});}
+      else{const n=(sRand(di+600)-.5)*.18,bl=RECENT_BASELINE||(base+p1),tf=1+0.015*Math.max(0,mi12-cmi);
+        const p2v=Math.round(p2*p2F(date)*(1+n*.6));
+        const bv=Math.round(bl*tf*(1+n));
+        const p1Active=p1>0;
+        const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
+        const p1V=p1Active?Math.max(0,bv-eV):0;
+        data.push({month:mo,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
       di++;
     }
   }
   return data;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2027 FULL YEAR PROJECTION
-// Fully ramped — every month uses 100% of the trend baseline.
-// Phase 2 shown as additive scenario (fully ramped by Jan 2027 if launched today).
-// ─────────────────────────────────────────────────────────────────────────────
-let show2027P2 = true; // default to showing Phase 2 scenario
-
-function toggle2027P2() {
-  show2027P2 = !show2027P2;
-  const btn = document.getElementById('p2-toggle-2027');
-  if (btn) {
-    btn.textContent = show2027P2 ? 'ON' : 'OFF';
-    btn.style.borderColor   = show2027P2 ? '#f59e0b' : '#30363d';
-    btn.style.background    = show2027P2 ? 'rgba(245,158,11,.12)' : 'transparent';
-    btn.style.color         = show2027P2 ? '#f59e0b' : '#6e7681';
-  }
-  render2027Card();
-}
-
-function generate2027Projection() {
-  const now       = new Date();
-  const curYear   = now.getFullYear();
-  const curMoIdx  = now.getMonth();
-  const DAYS_IN_MO = [31,28,31,30,31,30,31,31,30,31,30,31];
-
-  const baseline = RECENT_BASELINE || 2050;
-
-  // Phase 2 full set (all 4 states regardless of what's toggled)
-  const p2Full = Object.keys(STATE_DATA)
-    .filter(s => STATE_DATA[s].group === 'phase2')
-    .reduce((sum, s) => sum + STATE_DATA[s].dailyContrib, 0);
-
-  // Phase 2 launches today — by Jan 2027 (~8 months) it's fully ramped (k=0.055)
-  const p2LaunchDate = new Date(curYear, curMoIdx, now.getDate());
-  function p2Frac(date) {
-    const d = (date - p2LaunchDate) / 86400000;
-    return d <= 0 ? 0 : Math.min(1, 1 - Math.exp(-0.055 * d));
-  }
-
-  // Months ahead from current month to each 2027 month
-  const todayMoBase = curYear * 12 + curMoIdx;
-
-  return ALL_MONTHS.map((mo, mi) => {
-    const midMonth    = new Date(2027, mi, 15);
-    const monthsAhead = (2027 * 12 + mi) - todayMoBase;
-    const trendFactor = 1 + 0.015 * monthsAhead;
-    const dim         = DAYS_IN_MO[mi];
-
-    const baseDaily = Math.round(baseline * trendFactor);
-    const p2Daily   = Math.round(p2Full * p2Frac(midMonth));
-    const baseMonthly = baseDaily * dim;
-    const p2Monthly   = p2Daily * dim;
-
-    return { mo, mi, dim, baseDaily, p2Daily, baseMonthly, p2Monthly,
-             totalMonthly: baseMonthly + p2Monthly };
-  });
-}
-
-function render2027Card() {
-  const months = generate2027Projection();
-  const showP2  = show2027P2;
-
-  const annualBase  = months.reduce((s, m) => s + m.baseMonthly, 0);
-  const annualP2    = months.reduce((s, m) => s + m.p2Monthly, 0);
-  const annualTotal = annualBase + (showP2 ? annualP2 : 0);
-  const avgBase     = Math.round(annualBase / 365);
-  const avgP2       = Math.round(annualP2 / 365);
-  const avgTotal    = Math.round(annualTotal / 365);
-
-  // Headline numbers
-  const fmtM = v => v >= 1e6 ? '$' + (v/1e6).toFixed(2) + 'M' : '$' + Math.round(v/1000).toFixed(1) + 'k';
-  document.getElementById('y27-base-total').textContent  = fmtM(annualBase);
-  document.getElementById('y27-base-daily').textContent  = '$' + avgBase.toLocaleString() + '/day avg';
-  document.getElementById('y27-p2-add').textContent      = showP2 ? '+' + fmtM(annualP2) : '—';
-  document.getElementById('y27-p2-daily').textContent    = showP2
-    ? '+$' + avgP2.toLocaleString() + '/day · FL·GA·CO·NV'
-    : 'toggle ON to model · FL·GA·CO·NV';
-  document.getElementById('y27-total').textContent       = fmtM(annualTotal);
-  document.getElementById('y27-total-daily').textContent = '$' + avgTotal.toLocaleString() + '/day avg';
-
-  // Monthly grid
-  const grid = document.getElementById('grid-2027');
-  if (grid) {
-    grid.innerHTML = months.map(m => {
-      const total = m.baseMonthly + (showP2 ? m.p2Monthly : 0);
-      return `<div style="padding:10px 12px;border-right:1px solid #21262d;border-bottom:1px solid #21262d;${m.mi%6===5?'border-right:none':''}"
-        ><div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${m.mo}</div
-        ><div style="font-size:14px;font-weight:700;color:#e879f9">${fmtM(total)}</div
-        >${showP2 && m.p2Monthly > 0
-          ? `<div style="font-size:9px;color:#6e7681;margin-top:2px">base ${fmtM(m.baseMonthly)} <span style="color:#f59e0b">+${fmtM(m.p2Monthly)}</span></div>`
-          : `<div style="font-size:9px;color:#484f58;margin-top:2px">$${m.baseDaily.toLocaleString()}/day</div>`
-        }</div>`;
-    }).join('');
-  }
-
-  // Draw mini chart
-  toggle2027P2Btn();
-}
-
-function toggle2027P2Btn() {
-  const btn = document.getElementById('p2-toggle-2027');
-  if (!btn) return;
-  btn.textContent     = show2027P2 ? 'ON' : 'OFF';
-  btn.style.borderColor = show2027P2 ? '#f59e0b' : '#30363d';
-  btn.style.background  = show2027P2 ? 'rgba(245,158,11,.12)' : 'transparent';
-  btn.style.color       = show2027P2 ? '#f59e0b' : '#6e7681';
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STATS
-// ─────────────────────────────────────────────────────────────────────────────
 function updateStats(){
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
   document.getElementById("stat-states").textContent=activeStates.length;
   document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
   const recent=chartData.filter(d=>d.type==="actual"&&!d.estimated).slice(-7);
   const ca=recent.length?Math.round(recent.reduce((s,d)=>s+d.value,0)/recent.length):0;
-  document.getElementById("stat-current").textContent="$"+ca.toLocaleString();
-  const decDays=fullYearData.filter(d=>d.month==="Dec"&&d.type==="proj");
-  const pa=decDays.length?Math.round(decDays.reduce((s,d)=>s+d.value,0)/decDays.length):0;
-  document.getElementById("stat-proj").textContent=pa?"$"+pa.toLocaleString():"—";
-  const dd=decDays[Math.floor(decDays.length/2)]||{};
-  document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2+3",v:dd.p2V||0,c:"#f59e0b"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
+  const sc=document.getElementById("stat-current");
+  if(sc){sc.textContent="$"+ca.toLocaleString();sc.style.color=ca>=GOAL_DAILY?"#22c55e":ca>=GOAL_DAILY*.8?"#f59e0b":"#f9fafb";}
+  const dec=fullYearData.filter(d=>d.month==="Dec"&&d.type==="proj");
+  const pa=dec.length?Math.round(dec.reduce((s,d)=>s+d.value,0)/dec.length):0;
+  const sp=document.getElementById("stat-proj");
+  if(sp){sp.textContent=pa?"$"+pa.toLocaleString():"—";sp.style.color=pa>=GOAL_DAILY?"#22c55e":pa>=GOAL_DAILY*.8?"#f59e0b":"#e879f9";}
+  const dd=dec[Math.floor(dec.length/2)]||{};
+  document.getElementById("stat-proj-breakdown").innerHTML=[{l:"Existing",v:dd.eV||0,c:"#4ade80"},{l:"Phase 1",v:dd.p1V||0,c:"#60a5fa"},{l:"Phase 2",v:dd.p2V||0,c:"#f59e0b"}].filter(r=>r.v>0).map(r=>`<div style="display:flex;justify-content:space-between;gap:8px"><span style="color:#6e7681">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join("");
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MONTHLY TOTALS — FULL JAN–DEC 2026
-// ─────────────────────────────────────────────────────────────────────────────
 function renderMonthlyTotals(){
   const now=new Date(),curMo=ALL_MONTHS[now.getMonth()];
-  const mt={},mtp={};
-  ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
+  const mt={},mtp={};ALL_MONTHS.forEach(m=>{mt[m]=0;mtp[m]="actual";});
   fullYearData.forEach(d=>{mt[d.month]+=d.value;if(d.type==="proj")mtp[d.month]="proj";});
-  const hasBoth=m=>fullYearData.some(d=>d.month===m&&d.type==="actual")&&fullYearData.some(d=>d.month===m&&d.type==="proj");
-  ALL_MONTHS.forEach(m=>{if(hasBoth(m))mtp[m]="partial";});
-
-  // Override with state CSV-derived revenue (FIX #3: uses blended rate)
-  Object.entries(STATE_CSV_MONTHLY_REV).forEach(([mo,rev])=>{
-    if(rev>0){mt[mo]=rev;mtp[mo]=hasBoth(mo)?"partial":"actual";}
-  });
-
-  // Override Apr with daily sheet if better
-  const aprSheetTotal=LIVE_MONTHLY['Apr']?.total||APR_TOTAL;
-  if(aprSheetTotal>(STATE_CSV_MONTHLY_REV['Apr']||0))mt['Apr']=aprSheetTotal;
-  mtp['Apr']='actual';
-
-  // VERIFIED ACTUALS: always win over any computed/estimated value
-  Object.entries(VERIFIED_MONTHLY_TOTALS).forEach(([mo, val]) => {
-    mt[mo]  = val;
-    mtp[mo] = 'actual';
-  });
-
-  const csvActualMonths=Object.keys(STATE_CSV_MONTHLY_REV).filter(m=>STATE_CSV_MONTHLY_REV[m]>0);
-  // YTD: verified months + any CSV months not already verified + partial current month
-  const verifiedMonths = Object.keys(VERIFIED_MONTHLY_TOTALS);
-  const allActualMonths = [...new Set([...verifiedMonths, ...csvActualMonths])];
-  const actualYTD = allActualMonths.length > 0
-    ? allActualMonths.reduce((s, m) => s + (mt[m] || 0), 0)
-    : fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value,0);
-  const projTotal=fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value,0);
-  const fullYearEst=actualYTD+projTotal;
-
+  const hb=m=>fullYearData.some(d=>d.month===m&&d.type==="actual")&&fullYearData.some(d=>d.month===m&&d.type==="proj");
+  ALL_MONTHS.forEach(m=>{if(hb(m))mtp[m]="partial";});
+  Object.entries(STATE_CSV_MONTHLY_REV).forEach(([mo,rev])=>{if(rev>0){mt[mo]=rev;mtp[mo]=hb(mo)?"partial":"actual";}});
+  const as=LIVE_MONTHLY['Apr']?.total||APR_TOTAL;if(as>(STATE_CSV_MONTHLY_REV['Apr']||0))mt['Apr']=as;mtp['Apr']='actual';
+  Object.entries(VERIFIED_MONTHLY_TOTALS).forEach(([mo,val])=>{mt[mo]=val;mtp[mo]='actual';});
+  const vm=Object.keys(VERIFIED_MONTHLY_TOTALS),cm=Object.keys(STATE_CSV_MONTHLY_REV).filter(m=>STATE_CSV_MONTHLY_REV[m]>0);
+  const aam=[...new Set([...vm,...cm])];
+  const ytd=aam.length>0?aam.reduce((s,m)=>s+(mt[m]||0),0):fullYearData.filter(d=>d.type==="actual").reduce((s,d)=>s+d.value,0);
+  const pt=fullYearData.filter(d=>d.type==="proj").reduce((s,d)=>s+d.value,0);
   document.getElementById("monthly-grid").innerHTML=ALL_MONTHS.map(m=>{
-    const tp=mtp[m],color=tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa",dimColor=tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e",label=tp==="actual"?"actual":tp==="partial"?"partial":"projected";
-    return`<div class="month-cell"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${color}">${fmtK(mt[m])}</div><div class="month-cell-type" style="color:${dimColor}">${label}</div></div>`;
+    const tp=mtp[m],color=tp==="actual"?"#4ade80":tp==="partial"?"#f59e0b":"#60a5fa",dc=tp==="actual"?"#2a6644":tp==="partial"?"#7a5a1a":"#2a4a6e",label=tp==="actual"?"actual":tp==="partial"?"partial":"proj";
+    const atG=mt[m]>=GOAL_MONTHLY&&tp!=="proj";
+    const pct=tp==="proj"?Math.round(mt[m]/GOAL_MONTHLY*100):null;
+    return`<div class="month-cell${atG?' at-goal':''}"><div class="month-cell-name">${m}</div><div class="month-cell-val" style="color:${atG?"#22c55e":color}">${fmtK(mt[m])}</div>${pct!==null?`<div class="month-cell-sub" style="color:${pct>=100?'#22c55e':pct>=80?'#f59e0b':'#484f58'}">${pct}% of $60k</div>`:""}<div class="month-cell-type" style="color:${dc}">${label}</div></div>`;
   }).join("");
-
-  document.getElementById("annual-row").innerHTML=
-    `<span class="annual-label">2026 Full Year</span>
-     <div class="annual-vals">
-       <div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(actualYTD).toLocaleString()}</span></div>
-       <div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(projTotal).toLocaleString()}</span></div>
-       <div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(fullYearEst).toLocaleString()}</span></div>
-     </div>`;
-
-  const tn=document.getElementById('totals-note');
-  if(tn)tn.textContent=`verified Jan–Apr · ${csvActualMonths.filter(m=>!verifiedMonths.includes(m)).length?'state sheet '+csvActualMonths.filter(m=>!verifiedMonths.includes(m)).join(', ')+' · ':''}projected Jun–Dec`;
+  document.getElementById("annual-row").innerHTML=`<span class="annual-label">2026 Full Year</span><div class="annual-vals"><div class="annual-item"><span class="annual-item-label">actual YTD (thru ${curMo} ${now.getDate()})</span><span class="annual-item-val" style="color:#4ade80">$${Math.round(ytd).toLocaleString()}</span></div><div class="annual-item"><span class="annual-item-label">projected remainder</span><span class="annual-item-val" style="color:#60a5fa">$${Math.round(pt).toLocaleString()}</span></div><div class="annual-item" style="padding-left:16px;border-left:1px solid #30363d"><span class="annual-item-label">full year estimate</span><span class="annual-item-val" style="color:#e879f9">$${Math.round(ytd+pt).toLocaleString()}</span></div></div>`;
+  const tn=document.getElementById('totals-note');if(tn)tn.textContent=`verified Jan–Apr · goal $${GOAL_MONTHLY.toLocaleString()}/mo ·  projected ${curMo}–Dec`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PHASES / STATES UI
-// ─────────────────────────────────────────────────────────────────────────────
-function renderPhases(){
-  const wrap=document.getElementById("phases-view");wrap.innerHTML="";
-  Object.entries(PHASE_META).forEach(([key,meta])=>{
-    const isLocked=key==="existing",allOn=meta.states.every(s=>activeStates.includes(s));
-    const contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);
-    const card=document.createElement("div");card.className="phase-card"+(isLocked?" locked":"");
-    card.style.borderColor=allOn?meta.color:"#30363d";card.style.background=allOn?meta.color+"11":"#161b22";
-    card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${isLocked?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${allOn?100:0}%;background:${meta.color}"></div></div>`;
-    if(!isLocked)card.onclick=()=>togglePhase(key);
-    wrap.appendChild(card);
-  });
-}
-function renderStates(){
-  const wrap=document.getElementById("states-view");wrap.innerHTML="";
-  Object.entries(PHASE_META).forEach(([key,meta])=>{
-    const grp=document.createElement("div");grp.className="state-group";grp.innerHTML=`<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;
-    const btns=document.createElement("div");btns.className="state-btns";
-    meta.states.forEach(st=>{
-      const isOn=activeStates.includes(st),isLocked=STATE_DATA[st]?.locked;
-      const btn=document.createElement("button");btn.className="state-btn"+(isLocked?" locked":"");
-      btn.style.borderColor=isOn?meta.color:"#30363d";btn.style.background=isOn?meta.color+"1a":"transparent";btn.style.color=isOn?meta.color:"#484f58";
-      btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;
-      if(!isLocked)btn.onclick=()=>toggleState(st);btns.appendChild(btn);
-    });
-    grp.appendChild(btns);wrap.appendChild(grp);
-  });
-}
-function togglePhase(key){const states=PHASE_META[key].states,allOn=states.every(s=>activeStates.includes(s));activeStates=allOn?activeStates.filter(s=>!states.includes(s)):[...new Set([...activeStates,...states])];refresh();renderSparks();}
+function renderPhases(){const w=document.getElementById("phases-view");w.innerHTML="";Object.entries(PHASE_META).forEach(([key,meta])=>{const lk=key==="existing",on=meta.states.every(s=>activeStates.includes(s)),contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);const card=document.createElement("div");card.className="phase-card"+(lk?" locked":"");card.style.borderColor=on?meta.color:"#30363d";card.style.background=on?meta.color+"11":"#161b22";card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${lk?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${on?100:0}%;background:${meta.color}"></div></div>`;if(!lk)card.onclick=()=>togglePhase(key);w.appendChild(card);});}
+function renderStates(){const w=document.getElementById("states-view");w.innerHTML="";Object.entries(PHASE_META).forEach(([key,meta])=>{const g=document.createElement("div");g.className="state-group";g.innerHTML=`<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;const b=document.createElement("div");b.className="state-btns";meta.states.forEach(st=>{const on=activeStates.includes(st),lk=STATE_DATA[st]?.locked;const btn=document.createElement("button");btn.className="state-btn"+(lk?" locked":"");btn.style.borderColor=on?meta.color:"#30363d";btn.style.background=on?meta.color+"1a":"transparent";btn.style.color=on?meta.color:"#484f58";btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;if(!lk)btn.onclick=()=>toggleState(st);b.appendChild(btn);});g.appendChild(b);w.appendChild(g);});}
+function togglePhase(key){const s=PHASE_META[key].states,on=s.every(st=>activeStates.includes(st));activeStates=on?activeStates.filter(st=>!s.includes(st)):[...new Set([...activeStates,...s])];refresh();renderSparks();}
 function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();renderSparks();}
 function setView(v){document.getElementById("phases-view").style.display=v==="phases"?"flex":"none";document.getElementById("states-view").style.display=v==="states"?"block":"none";document.getElementById("btn-phases").className="view-btn"+(v==="phases"?" active":"");document.getElementById("btn-states").className="view-btn"+(v==="states"?" active":"");}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CHART DRAWING
-// ─────────────────────────────────────────────────────────────────────────────
-const PAD={top:44,right:16,bottom:44,left:58};
+// ── CHART ─────────────────────────────────────────────────────────────────────
+const PAD={top:48,right:16,bottom:44,left:58};
+function chartH(){return Math.max(220,Math.min(380,window.innerHeight*.35));}
+
 function draw(){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap");
-  const W=wrap.offsetWidth,H=300,dpr=window.devicePixelRatio||1;
+  const W=wrap.offsetWidth,H=chartH(),dpr=window.devicePixelRatio||1;
   canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+"px";canvas.style.height=H+"px";
   const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
-  const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom,maxY=Math.max(...chartData.map(d=>d.value))*1.18;
+  const cW=W-PAD.left-PAD.right,cH=H-PAD.top-PAD.bottom;
+  const maxY=Math.max(...chartData.map(d=>d.value),GOAL_DAILY)*1.20;
   ctx.fillStyle="#0d1117";ctx.fillRect(0,0,W,H);
-  [0,.25,.5,.75,1].forEach(t=>{const v=Math.round(maxY*t),y=PAD.top+cH-t*cH;ctx.strokeStyle=t===0?"#30363d":"#161b22";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(W-PAD.right,y);ctx.stroke();ctx.fillStyle="#484f58";ctx.font="10px monospace";ctx.textAlign="right";ctx.fillText(v>=1000?`$${(v/1000).toFixed(1)}k`:`$${v}`,PAD.left-6,y+3.5);});
+
+  // Y-axis — smart formatter: never produces duplicate labels
+  const fmtY = v => {
+    if (v >= 1000) {
+      const k = v / 1000;
+      // Use 1 decimal if needed to distinguish ticks
+      return '$' + (k === Math.round(k) ? k.toFixed(0) : k.toFixed(1)) + 'k';
+    }
+    return '$' + v;
+  };
+  // Compute nice round tick values instead of raw % of maxY
+  const rawStep = maxY / 4;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const niceStep = Math.ceil(rawStep / magnitude) * magnitude;
+  const ticks = [0, 1, 2, 3, 4].map(i => i * niceStep).filter(v => v <= maxY * 1.05);
+  ticks.forEach(v => {
+    const y = PAD.top + cH - (v / maxY) * cH;
+    ctx.strokeStyle = v === 0 ? "#30363d" : "#161b22";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(W - PAD.right, y); ctx.stroke();
+    ctx.fillStyle = "#484f58"; ctx.font = "10px monospace"; ctx.textAlign = "right";
+    ctx.fillText(fmtY(v), PAD.left - 4, y + 3.5);
+  });
+
+  // $2,000/day GOAL LINE — dashed green
+  const goalY=PAD.top+cH-(GOAL_DAILY/maxY)*cH;
+  ctx.save();
+  ctx.strokeStyle="#22c55e";ctx.lineWidth=1.5;ctx.setLineDash([7,4]);ctx.globalAlpha=0.55;
+  ctx.beginPath();ctx.moveTo(PAD.left,goalY);ctx.lineTo(W-PAD.right,goalY);ctx.stroke();
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+  ctx.fillStyle="#22c55e";ctx.font="bold 8px monospace";ctx.textAlign="right";ctx.globalAlpha=0.7;
+  ctx.fillText("$2k/day",W-PAD.right-4,goalY-4);
+  ctx.globalAlpha=1;ctx.restore();
 
   // Phase 2 marker
-  const p23Idx=chartData.findIndex(d=>d.p2V>0),p2Active=activeStates.some(s=>STATE_DATA[s]?.group==='phase2');
-  if(p2Active&&p23Idx>=0){const lx=PAD.left+(p23Idx/chartData.length)*cW;ctx.strokeStyle='#f59e0b88';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(lx,PAD.top+14);ctx.lineTo(lx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,158,11,0.05)';ctx.fillRect(lx,PAD.top,(W-PAD.right)-lx,cH);ctx.fillStyle='#f59e0baa';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.fillText('▲ P2 today',lx,PAD.top+10);}
-
-  // P1 live marker
-  const p1LiveIdx=chartData.findIndex(d=>d.p1V>0);
-  if(p1LiveIdx>0){const glx=PAD.left+(p1LiveIdx/chartData.length)*cW;ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(glx,PAD.top+18);ctx.lineTo(glx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1 live",glx,PAD.top+14);}
-
+  const p2Idx=chartData.findIndex(d=>d.p2V>0),p2On=activeStates.some(s=>STATE_DATA[s]?.group==='phase2');
+  if(p2On&&p2Idx>=0){const lx=PAD.left+(p2Idx/chartData.length)*cW;ctx.strokeStyle='#f59e0b88';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(lx,PAD.top+14);ctx.lineTo(lx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,158,11,0.05)';ctx.fillRect(lx,PAD.top,(W-PAD.right)-lx,cH);ctx.fillStyle='#f59e0baa';ctx.font='bold 8px monospace';ctx.textAlign='center';ctx.fillText('▲ P2',lx,PAD.top+10);}
+  // P1 marker
+  const p1Idx=chartData.findIndex(d=>d.p1V>0);
+  if(p1Idx>0){const gx=PAD.left+(p1Idx/chartData.length)*cW;ctx.strokeStyle="#60a5fa55";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(gx,PAD.top+18);ctx.lineTo(gx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#60a5fa99";ctx.font="bold 8px monospace";ctx.textAlign="center";ctx.fillText("▲ P1",gx,PAD.top+14);}
   // NOW marker
-  const ti=chartData.findIndex(d=>d.type==="proj");
-  if(ti>0){const tx=PAD.left+(ti/chartData.length)*cW;ctx.strokeStyle="#ffffff30";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(tx,PAD.top);ctx.lineTo(tx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#ffffff55";ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText("NOW",tx,PAD.top-4);}
+  const ni=chartData.findIndex(d=>d.type==="proj");
+  if(ni>0){const tx=PAD.left+(ni/chartData.length)*cW;ctx.strokeStyle="#ffffff60";ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(tx,PAD.top);ctx.lineTo(tx,PAD.top+cH);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle="#ffffffaa";ctx.font="bold 9px monospace";ctx.textAlign="center";ctx.fillText("NOW",tx,PAD.top-5);}
 
+  // Bars
   const bW=Math.max(1.2,(cW/chartData.length)-.4);
   chartData.forEach((d,i)=>{
-    const x=PAD.left+(i/chartData.length)*cW,al=i===hoveredIdx?"ff":"bb";
+    const x=PAD.left+(i/chartData.length)*cW,al=i===hoveredIdx?"ff":"cc";
     if(d.type==="actual"){
-      // FIX #4: hatched/dimmer bars for seeded (estimated) months (Jan-Mar before daily sheet)
-      const alpha=d.estimated?"55":al;
-      if(d.p1V>0){
-        let sy=PAD.top+cH;
-        [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+alpha;ctx.fillRect(x,sy,bW,sh);});
-      }else{
-        ctx.fillStyle="#4ade80"+alpha;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);
-      }
+      const alpha=d.estimated?"44":al;
+      // Only paint P1 blue if Phase 1 is toggled on AND there's actual P1 revenue
+      const showP1Slice = d.p1V > 0 && activeStates.some(s => STATE_DATA[s]?.group === 'phase1');
+      if(showP1Slice){let sy=PAD.top+cH;[{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+alpha;ctx.fillRect(x,sy,bW,sh);});}
+      else{ctx.fillStyle="#4ade80"+alpha;ctx.fillRect(x,PAD.top+cH-(d.value/maxY)*cH,bW,(d.value/maxY)*cH);}
     }else{
+      // Projected: striped to visually signal uncertainty
       let sy=PAD.top+cH;
-      [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"},{v:d.p2V,c:"#f59e0b"},{v:d.p3V,c:"#e879f9"}].forEach(({v,c})=>{if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;ctx.fillStyle=c+al;ctx.fillRect(x,sy,bW,sh);});
+      [{v:d.eV,c:"#4ade80"},{v:d.p1V,c:"#60a5fa"},{v:d.p2V,c:"#f59e0b"},{v:d.p3V,c:"#e879f9"}].forEach(({v,c})=>{
+        if(!v||v<=0)return;const sh=(v/maxY)*cH;sy-=sh;
+        ctx.fillStyle=c+"55";ctx.fillRect(x,sy,bW,sh);
+        ctx.save();ctx.beginPath();ctx.rect(x,sy,bW,sh);ctx.clip();
+        ctx.strokeStyle=c+"30";ctx.lineWidth=1;
+        for(let s=-sh;s<bW+sh;s+=4){ctx.beginPath();ctx.moveTo(x+s,sy+sh);ctx.lineTo(x+s+sh,sy);ctx.stroke();}
+        ctx.restore();
+      });
     }
   });
 
-  // 7-day moving avg (only over sheet-backed actuals)
+  // Rolling avg — amber, solid over actuals, dashed continuation into projected
   ctx.strokeStyle="#fb923c";ctx.lineWidth=2;ctx.beginPath();let started=false;
-  chartData.forEach((d,i)=>{
-    if(d.type!=="actual"||d.estimated)return;
-    const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual"&&!x.estimated);
-    const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;
-    const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;
-    if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
+  chartData.forEach((d,i)=>{if(d.type!=="actual"||d.estimated)return;const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual"&&!x.estimated);const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);});ctx.stroke();
+  // Dashed continuation
+  if(started&&ni>0){
+    const la=chartData.filter((d,i)=>i<ni&&d.type==="actual"&&!d.estimated);
+    if(la.length>=3){const lastAvg=la.slice(-7).reduce((a,d)=>a+d.value,0)/Math.min(7,la.length);const lx=PAD.left+((ni-1)/chartData.length)*cW+bW/2,ly=PAD.top+cH-(lastAvg/maxY)*cH;const pp=chartData.slice(ni).filter(d=>d.type==="proj");if(pp.length){ctx.strokeStyle="#fb923c44";ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(lx,ly);pp.forEach((d,k)=>{const idx=ni+k;const x=PAD.left+(idx/chartData.length)*cW+bW/2,y=PAD.top+cH-(d.value/maxY)*cH;ctx.lineTo(x,y);});ctx.stroke();ctx.setLineDash([]);}}}
 
   // Month labels
   let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
@@ -967,572 +549,207 @@ function showTooltip(e){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
   hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
-  // FIX #4: label estimated bars clearly in tooltip
-  const typeLabel=d.type==="actual"?(d.estimated?"Estimated (no sheet data)":"Actual"):"Projected";
-  document.getElementById("tt-date").textContent=`${d.month} · ${typeLabel}`;
+  document.getElementById("tt-date").textContent=`${d.month} · ${d.type==="actual"?(d.estimated?"Estimated":"Actual"):"Projected"}`;
   document.getElementById("tt-val").style.color=d.type==="actual"?(d.estimated?"#6e7681":"#4ade80"):"#e6edf3";
-  document.getElementById("tt-val").textContent="$"+d.value.toLocaleString();
-  const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2+3",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
-  const bhtml=rows.length>1?rows.map(r=>`<div class="tt-row"><span class="tt-row-label">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join(""):"";
-  document.getElementById("tt-breakdown").innerHTML=bhtml;document.getElementById("tt-breakdown").style.display=bhtml?"block":"none";
-  tt.style.left=Math.min(x+10,wrap.offsetWidth-190)+"px";tt.style.top="20px";tt.style.display="block";draw();
+  document.getElementById("tt-val").textContent="$"+d.value.toLocaleString()+(d.type==="proj"?" proj":"");
+  const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
+  const bh=rows.length>1?rows.map(r=>`<div class="tt-row"><span class="tt-row-label">${r.l}</span><span style="color:${r.c};font-weight:600">$${r.v.toLocaleString()}</span></div>`).join(""):"";
+  document.getElementById("tt-breakdown").innerHTML=bh;document.getElementById("tt-breakdown").style.display=bh?"block":"none";
+  const ml=Math.max(0,wrap.offsetWidth-200);tt.style.left=Math.min(x+10,ml)+"px";tt.style.top="20px";tt.style.display="block";draw();
 }
 function hideTooltip(){hoveredIdx=null;document.getElementById("tooltip").style.display="none";draw();}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAP
-// ─────────────────────────────────────────────────────────────────────────────
-function updateTZBar(){
-  const bar=document.getElementById("tz-bar");if(!bar)return;
-  const now=new Date();
-  bar.innerHTML=["PT","MT","CST","ET"].map((k,idx,arr)=>{const m=TZ_META[k],t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ})),h=t.getHours(),mn=t.getMinutes(),am=h<12?"AM":"PM",hh=h%12||12;return`<div style="flex:1;padding:8px 10px;background:${m.color}15;border-right:${idx===arr.length-1?"none":"1px solid #0d1117"};text-align:center;"><div style="font-size:9px;color:${m.color};letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px;font-weight:700;">${m.abbr}</div><div style="font-size:14px;font-weight:700;color:#e6edf3;">${hh}:${mn.toString().padStart(2,"0")} ${am}</div><div style="font-size:8px;color:#484f58;margin-top:1px;">${m.label}</div></div>`;}).join("");
-}
+// ── MAP ───────────────────────────────────────────────────────────────────────
+function updateTZBar(){const bar=document.getElementById("tz-bar");if(!bar)return;const now=new Date();bar.innerHTML=["PT","MT","CST","ET"].map((k,idx,arr)=>{const m=TZ_META[k],t=new Date(now.toLocaleString("en-US",{timeZone:m.ianatZ})),h=t.getHours(),mn=t.getMinutes(),am=h<12?"AM":"PM",hh=h%12||12;return`<div style="flex:1;padding:6px 8px;background:${m.color}15;border-right:${idx===arr.length-1?"none":"1px solid #0d1117"};text-align:center;min-width:0;overflow:hidden"><div style="font-size:8px;color:${m.color};letter-spacing:1px;text-transform:uppercase;font-weight:700">${m.abbr}</div><div style="font-size:clamp(11px,2.5vw,14px);font-weight:700;color:#e6edf3">${hh}:${mn.toString().padStart(2,"0")} ${am}</div><div style="font-size:8px;color:#484f58">${m.label}</div></div>`;}).join("");}
+
 function drawMap(){
   if(!usTopoData)return;updateTZBar();
   const svgEl=document.getElementById("us-map");if(!svgEl)return;
   const tt=document.getElementById("map-tt");
-  const W=svgEl.parentElement.clientWidth-40,H=Math.round(W*.61);
+  const W=Math.max(200,svgEl.parentElement.clientWidth-32),H=Math.round(W*.61);
   const proj=d3.geoAlbersUsa().fitSize([W,H],topojson.feature(usTopoData,usTopoData.objects.states));
   const path=d3.geoPath().projection(proj);
   d3.select(svgEl).selectAll("*").remove();
-  d3.select(svgEl).attr("viewBox",`0 0 ${W} ${H}`).attr("width",W).attr("height",H);
+  d3.select(svgEl).attr("viewBox",`0 0 ${W} ${H}`).attr("width","100%").attr("height","auto");
   const svg=d3.select(svgEl);
   svg.append("rect").attr("width",W).attr("height",H).attr("fill","#080c12");
   const features=topojson.feature(usTopoData,usTopoData.objects.states).features;
   if(showTZ){features.forEach(feat=>{const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],tz=TZ[st],tm=tz?TZ_META[tz]:null;if(!tm)return;svg.append("path").attr("d",path(feat)).attr("fill",tm.color+"25").attr("stroke",tm.color+"40").attr("stroke-width",.4).attr("pointer-events","none");});}
   features.forEach(feat=>{
-    const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],sd=STATE_DATA[st],grp=sd?sd.group:null,isOn=sd?activeStates.includes(st):false,isLocked=sd?sd.locked:false,color=grp?GRP_COLORS[grp]:null;
+    const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips],sd=STATE_DATA[st],grp=sd?sd.group:null,isOn=sd?activeStates.includes(st):false,isLk=sd?sd.locked:false,color=grp?GRP_COLORS[grp]:null;
     const g=svg.append("g").style("cursor","pointer");
     g.append("path").attr("d",path(feat)).attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7).attr("stroke-linejoin","round");
-    if(grp){const c=path.centroid(feat);if(c&&!isNaN(c[0]))g.append("text").attr("x",c[0]).attr("y",c[1]+1).attr("text-anchor","middle").attr("dominant-baseline","middle").attr("font-family","monospace").attr("font-size",SMALL.has(st)?7:9).attr("font-weight","700").attr("fill",isOn?color:color+"55").attr("pointer-events","none").text(st);}
-    g.on("mouseenter",function(e){
-      g.select("path").attr("fill",isOn?color+"55":(grp?color+"25":"#1a2535")).attr("stroke-width",isOn?2.2:(grp?1.2:.8));
-      const lbl=grp?GRP_LABELS[grp]:"Not in projection";
-      const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLocked?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLocked?"":" — click to add"}</div>`:`<div style="color:#484f58;font-size:11px;margin-bottom:4px;">Not in plan</div>`;
-      const stTZ=TZ[st],stTZM=stTZ?TZ_META[stTZ]:null;
-      const tzNow=stTZM?new Date().toLocaleTimeString("en-US",{timeZone:stTZM.ianatZ,hour:"numeric",minute:"2-digit"}):null;
-      const detailRows=sd?`<div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Population</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:16px;"><span style="color:#6e7681">Proj daily (ramped)</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:"";
-      tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${st||"?"} — ${lbl}</div>${status}`+(stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600;">${tzNow}</span></div>`:"")+( detailRows?`<div style="border-top:1px solid #21262d;padding-top:4px;">${detailRows}</div>`:"");
-      tt.style.display="block";
-    }).on("mousemove",e=>{tt.style.left=(e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";}).on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);}).on("click",()=>{if(sd&&!isLocked)toggleState(st);});
+    if(grp){const c=path.centroid(feat);if(c&&!isNaN(c[0]))g.append("text").attr("x",c[0]).attr("y",c[1]+1).attr("text-anchor","middle").attr("dominant-baseline","middle").attr("font-family","monospace").attr("font-size",SMALL.has(st)?6:8).attr("font-weight","700").attr("fill",isOn?color:color+"55").attr("pointer-events","none").text(st);}
+    g.on("mouseenter",function(e){g.select("path").attr("fill",isOn?color+"55":(grp?color+"25":"#1a2535")).attr("stroke-width",isOn?2.2:(grp?1.2:.8));const lbl=grp?GRP_LABELS[grp]:"Not in projection";const status=isOn?`<div style="color:${color};font-weight:700;font-size:12px;margin-bottom:4px;">✓ Active${isLk?" 🔒":""}</div>`:grp?`<div style="color:#484f58;font-size:12px;margin-bottom:4px;">○ Inactive${isLk?"":" — click to add"}</div>`:`<div style="color:#484f58;font-size:11px;margin-bottom:4px;">Not in plan</div>`;const stTZ=TZ[st],stTZM=stTZ?TZ_META[stTZ]:null;const tzNow=stTZM?new Date().toLocaleTimeString("en-US",{timeZone:stTZM.ianatZ,hour:"numeric",minute:"2-digit"}):null;const dR=sd?`<div style="display:flex;justify-content:space-between;gap:12px"><span style="color:#6e7681">Pop</span><span style="color:#e6edf3">${sd.pop}M</span></div><div style="display:flex;justify-content:space-between;gap:12px"><span style="color:#6e7681">Proj daily</span><span style="color:${color};font-weight:700">+$${sd.dailyContrib}/day</span></div>`:"";tt.innerHTML=`<div style="color:#6e7681;font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">${st||"?"} — ${lbl}</div>${status}`+(stTZM?`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:9px;padding:1px 7px;border-radius:10px;background:${stTZM.color}22;border:1px solid ${stTZM.color}55;color:${stTZM.color}">${stTZM.label} (${stTZM.abbr})</span><span style="font-size:10px;color:#e6edf3;font-weight:600">${tzNow}</span></div>`:"")+( dR?`<div style="border-top:1px solid #21262d;padding-top:4px">${dR}</div>`:"");tt.style.display="block";}).on("mousemove",e=>{const vw=window.innerWidth;tt.style.left=(e.clientX+14+220>vw?e.clientX-170:e.clientX+14)+"px";tt.style.top=(e.clientY-10)+"px";}).on("mouseleave",function(){tt.style.display="none";g.select("path").attr("fill",isOn?color+"32":(grp?color+"0e":"#0d1520")).attr("stroke",isOn?color:(grp?color+"55":"#182535")).attr("stroke-width",isOn?1.5:.7);}).on("click",()=>{if(sd&&!isLk)toggleState(st);});
   });
   svg.append("path").datum(topojson.mesh(usTopoData,usTopoData.objects.states,(a,b)=>a!==b)).attr("fill","none").attr("stroke","#080c12").attr("stroke-width",".5").attr("d",path).attr("pointer-events","none");
-
-  const ALL_POPS=Object.assign(Object.fromEntries(Object.entries(STATE_DATA).map(([st,d])=>[st,d.pop])),Object.fromEntries(Object.entries(ALL_STATES).map(([st,d])=>[st,d.pop])));
-  const maxPop=Math.max(...Object.values(ALL_POPS)),maxR=W*0.042;
+  // Population bubbles
+  const ALL_POPS=Object.assign(Object.fromEntries(Object.entries(STATE_DATA).map(([s,d])=>[s,d.pop])),Object.fromEntries(Object.entries(ALL_STATES).map(([s,d])=>[s,d.pop])));
+  const maxPop=Math.max(...Object.values(ALL_POPS)),maxR=W*0.038;
   features.forEach(feat=>{
     const fips=feat.id.toString().padStart(2,"0"),st=FIPS[fips];if(!st)return;
     const pop=ALL_POPS[st];if(!pop)return;
     const centroid=path.centroid(feat);if(!centroid||isNaN(centroid[0]))return;
     const sd=STATE_DATA[st],isOn=sd?activeStates.includes(st):false,grp=sd?sd.group:null,color=grp?GRP_COLORS[grp]:null,isP2=grp==="phase2",isCompact=COMPACT_STATES.has(st)&&!sd;
     if(!sd&&!isCompact)return;
-    const r=Math.max(3,maxR*Math.sqrt(pop/maxPop)),b=svg.append("g").attr("pointer-events","none");
-    if(isOn){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill",color).attr("opacity",.15);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke",color).attr("stroke-width",1.4).attr("opacity",.60);}
-    else if(isP2){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill",color).attr("opacity",.07);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke",color).attr("stroke-width",1).attr("stroke-dasharray","4,3").attr("opacity",.42);}
-    else if(isCompact){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","#2dd4bf").attr("opacity",.05);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke","#2dd4bf").attr("stroke-width",.8).attr("stroke-dasharray","2,3").attr("opacity",.28);}
-    else{b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","#334155").attr("opacity",.06);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke","#4a5568").attr("stroke-width",.8).attr("opacity",.30);}
+    const r=Math.max(2.5,maxR*Math.sqrt(pop/maxPop)),b=svg.append("g").attr("pointer-events","none");
+    if(isOn){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill",color).attr("opacity",.14);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke",color).attr("stroke-width",1.3).attr("opacity",.58);}
+    else if(isP2){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill",color).attr("opacity",.07);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke",color).attr("stroke-width",1).attr("stroke-dasharray","4,3").attr("opacity",.40);}
+    else if(isCompact){b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","#2dd4bf").attr("opacity",.05);b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke","#2dd4bf").attr("stroke-width",.7).attr("stroke-dasharray","2,3").attr("opacity",.26);}
+    else{b.append("circle").attr("cx",centroid[0]).attr("cy",centroid[1]).attr("r",r).attr("fill","none").attr("stroke","#4a5568").attr("stroke-width",.7).attr("opacity",.26);}
   });
-
   const leg=document.getElementById("map-legend");if(leg)buildMapLegend(leg,maxR,maxPop);
 }
 
 function buildMapLegend(leg,maxR,maxPop){
-  const parts=[];
-  Object.entries(GRP_LABELS).forEach(([k,v])=>{const c=GRP_COLORS[k],isP2=k==='phase2',dash=isP2?'stroke-dasharray="3,2"':'',sw=isP2?'1':'1.5';parts.push('<div style="display:flex;align-items:center;gap:6px;"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="'+c+'22" stroke="'+c+'" stroke-width="'+sw+'" '+dash+'/></svg><span style="font-size:9px;color:#6e7681;font-family:monospace">'+v+'</span></div>');});
-  parts.push('<div style="display:flex;align-items:center;gap:6px;"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#2dd4bf" stroke-width=".8" stroke-dasharray="2,3" opacity=".7"/></svg><span style="font-size:9px;color:#2dd4bf99;font-family:monospace">IMLC compact — reachable via compact license</span></div>');
-  const scaleRow=[5,15,30].map(pop=>{const r=Math.max(4,Math.round(maxR*Math.sqrt(pop/maxPop))),d=r*2+4;return'<div style="display:flex;align-items:center;gap:4px;"><svg width="'+d+'" height="'+d+'" style="overflow:visible"><circle cx="'+(r+2)+'" cy="'+(r+2)+'" r="'+r+'" fill="none" stroke="#6e7681" stroke-width=".8" opacity=".5"/></svg><span style="font-size:9px;color:#484f58;font-family:monospace">'+pop+'M</span></div>';}).join('');
-  parts.push('<div style="display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:8px;border-top:1px solid #21262d;flex-wrap:wrap;"><span style="font-size:9px;color:#484f58;font-family:monospace">Pop:</span>'+scaleRow+'</div>');
-  leg.innerHTML=parts.join('');
+  const p=[];
+  Object.entries(GRP_LABELS).forEach(([k,v])=>{const c=GRP_COLORS[k],ip=k==='phase2',d=ip?'stroke-dasharray="3,2"':'',sw=ip?'1':'1.5';p.push('<div style="display:flex;align-items:center;gap:6px"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="'+c+'22" stroke="'+c+'" stroke-width="'+sw+'" '+d+'/>'+'<'+'/svg><span style="font-size:9px;color:#6e7681;font-family:monospace">'+v+'<'+'/span><'+'/div>');});
+  p.push('<div style="display:flex;align-items:center;gap:6px"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="none" stroke="#2dd4bf" stroke-width=".7" stroke-dasharray="2,3" opacity=".7"/>'+'<'+'/svg><span style="font-size:9px;color:#2dd4bf88;font-family:monospace">IMLC compact<'+'/span><'+'/div>');
+  const sr=[5,15,30].map(pop=>{const r=Math.max(3,Math.round(maxR*Math.sqrt(pop/maxPop))),d=r*2+4;return'<div style="display:flex;align-items:center;gap:3px"><svg width="'+d+'" height="'+d+'" style="overflow:visible"><circle cx="'+(r+2)+'" cy="'+(r+2)+'" r="'+r+'" fill="none" stroke="#6e7681" stroke-width=".7" opacity=".5"/>'+'<'+'/svg><span style="font-size:9px;color:#484f58;font-family:monospace">'+pop+'M<'+'/span><'+'/div>';}).join('');
+  p.push('<div style="display:flex;align-items:center;gap:8px;margin-top:6px;padding-top:6px;border-top:1px solid #21262d;flex-wrap:wrap"><span style="font-size:9px;color:#484f58">Pop:</span>'+sr+'<'+'/div>');
+  leg.innerHTML=p.join('');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// REFRESH — master entry point
-// ─────────────────────────────────────────────────────────────────────────────
-function refresh(){
-  chartData    = generateData();
-  fullYearData = generateFullYearData();
-  updateStats();
-  renderPhases();
-  renderStates();
-  draw();
-  renderMonthlyTotals();
-  drawMap();
-  render2027Card();
+// ── 2027 ─────────────────────────────────────────────────────────────────────
+let show2027P2=false;
+function toggle2027P2(){show2027P2=!show2027P2;render2027Card();}
+function render2027Card(){
+  const now=new Date(),cy=now.getFullYear(),cmi=now.getMonth();
+  const DIM=[31,28,31,30,31,30,31,31,30,31,30,31];
+  const bl=RECENT_BASELINE||2050;
+  const p2F=Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].group==='phase2').reduce((s,st)=>s+STATE_DATA[st].dailyContrib,0);
+  const p2L=new Date(cy,cmi,now.getDate());
+  const p2f=d=>{const x=(d-p2L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-0.028*x));};
+  const tb=cy*12+cmi;
+  const months=ALL_MONTHS.map((mo,mi)=>{const mid=new Date(2027,mi,15),ma=2027*12+mi-tb,tf=1+0.015*ma,dim=DIM[mi];const bd=Math.round(bl*tf),p2d=Math.round(p2F*p2f(mid));return{mo,mi,dim,baseDaily:bd,p2Daily:p2d,baseMonthly:bd*dim,p2Monthly:p2d*dim};});
+  const ab=months.reduce((s,m)=>s+m.baseMonthly,0),ap2=months.reduce((s,m)=>s+m.p2Monthly,0),at=ab+(show2027P2?ap2:0);
+  const fmtM=v=>v>=1e6?'$'+(v/1e6).toFixed(2)+'M':'$'+Math.round(v/1000).toFixed(1)+'k';
+  document.getElementById('y27-base-total').textContent=fmtM(ab);document.getElementById('y27-base-daily').textContent='$'+Math.round(ab/365).toLocaleString()+'/day avg';
+  document.getElementById('y27-p2-add').textContent=show2027P2?'+'+fmtM(ap2):'—';document.getElementById('y27-p2-daily').textContent=show2027P2?'+$'+Math.round(ap2/365).toLocaleString()+'/day':'toggle ON · CO·GA·MO·SC';
+  document.getElementById('y27-total').textContent=fmtM(at);document.getElementById('y27-total-daily').textContent='$'+Math.round(at/365).toLocaleString()+'/day avg';
+  const btn=document.getElementById('p2-toggle-2027');if(btn){btn.textContent=show2027P2?'ON':'OFF';btn.style.borderColor=show2027P2?'#f59e0b':'#30363d';btn.style.background=show2027P2?'rgba(245,158,11,.12)':'transparent';btn.style.color=show2027P2?'#f59e0b':'#6e7681';}
+  const grid=document.getElementById('grid-2027');if(grid){grid.innerHTML=months.map((m,i)=>{const tot=m.baseMonthly+(show2027P2?m.p2Monthly:0),atG=tot>=GOAL_MONTHLY;return`<div style="padding:clamp(6px,1.5vw,10px) clamp(4px,1.2vw,12px);border-right:1px solid #21262d;border-bottom:1px solid #21262d;${i%6===5?'border-right:none':''}${i>=6?'border-bottom:none':''}min-width:0;overflow:hidden"><div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${m.mo}</div><div style="font-size:clamp(11px,2vw,14px);font-weight:700;color:${atG?'#22c55e':'#e879f9'}">${fmtM(tot)}</div><div style="font-size:9px;color:${atG?'#166534':'#484f58'};margin-top:2px">${atG?'✓ on goal':'$'+m.baseDaily.toLocaleString()+'/d'}</div></div>`;}).join('');}
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MANUAL REFRESH
-// ─────────────────────────────────────────────────────────────────────────────
-async function manualRefresh(){
-  setLiveStatus('loading','Refreshing…');
-  bootFromCache();
-  const[liveOk,stateOk]=await Promise.all([loadLiveData(false),loadStateMonthlyDirect()]);
-  if(liveOk)applyLiveData();
-  refresh();
-}
+// ── REFRESH ───────────────────────────────────────────────────────────────────
+function refresh(){chartData=generateData();fullYearData=generateFullYearData();updateStats();renderPhases();renderStates();draw();renderMonthlyTotals();drawMap();render2027Card();}
+async function manualRefresh(){setLiveStatus('loading','Refreshing…');bootFromCache();const[l,s]=await Promise.all([loadLiveData(false),loadStateMonthlyDirect()]);if(l)applyLiveData();refresh();}
+function debugTabs(){try{const raw=localStorage.getItem('tmd_c');if(!raw){alert('No cache — open Dashboard first.');return;}const json=JSON.parse(raw),tabs=Object.keys(json);const MN=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];alert('Cache tabs:\n\n'+tabs.map(t=>{const h=json[t].split('\n')[0],hh=h.split(',').map(x=>x.trim().toLowerCase().replace(/[^a-z]/g,'').slice(0,3)),mc=hh.filter(x=>MN.includes(x)).length;return`"${t}" — ${json[t].split('\n').length-1} rows, ${mc} month cols`;}).join('\n'));}catch(e){alert('Cache error: '+e.message);}}
 
-function debugTabs(){
-  try{
-    const raw=localStorage.getItem('tmd_c');
-    if(!raw){alert('No cache found — open the Dashboard first.');return;}
-    const json=JSON.parse(raw),tabs=Object.keys(json);
-    const MO_NAMES=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-    const lines=tabs.map(t=>{const csv=json[t],firstRow=csv.split('\n')[0],headers=firstRow.split(',').map(h=>h.trim().toLowerCase().replace(/[^a-z]/g,'').slice(0,3)),moCount=headers.filter(h=>MO_NAMES.includes(h)).length,rowCount=csv.split('\n').length-1;return`"${t}" — ${rowCount} rows, ${moCount} month cols`;});
-    alert('Tabs in cache:\n\n'+lines.join('\n')+'\n\nThe state tab needs state abbreviations (TX, NC…) in column A and month names in row 1.');
-  }catch(e){alert('Error reading cache: '+e.message);}
-}
-
-window.addEventListener('error',e=>{const box=document.getElementById('err-box');if(box){box.style.display='block';box.textContent='⚠ JS Error: '+e.message+' (line '+e.lineno+')';}console.error(e);});
+window.addEventListener('error',e=>{const b=document.getElementById('err-box');if(b){b.style.display='block';b.textContent='⚠ '+e.message+' (line '+e.lineno+')';}});
 document.getElementById("chart").addEventListener("mousemove",showTooltip);
 document.getElementById("chart").addEventListener("mouseleave",hideTooltip);
 window.addEventListener("resize",()=>{draw();drawMap();});
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STATE MONTHLY HEATMAP DATA
-// ─────────────────────────────────────────────────────────────────────────────
-let STATE_MONTHLY = {};
-
-const FALLBACK_STATE_ENC = {
-  //       Jan   Feb   Mar   Apr   May
-  TX:  [    0,    1,  784,  818, 1442,  0,  0,  0,  0,  0,  0,  0],
-  NC:  [    0,  313,  591,  556,  718,  0,  0,  0,  0,  0,  0,  0],
-  AZ:  [  453,  437,  583,  416,  546,  0,  0,  0,  0,  0,  0,  0],
-  OR:  [  323,  311,  299,  312,  342,  0,  0,  0,  0,  0,  0,  0],
-  IN:  [    0,  197,  284,  241,  320,  0,  0,  0,  0,  0,  0,  0],
-  TN:  [    0,  105,  199,  147,  232,  0,  0,  0,  0,  0,  0,  0],
-  WA:  [    0,    0,   61,   86,  116,  0,  0,  0,  0,  0,  0,  0],
-  // Phase 1 — live Apr 26
-  OH:  [    0,    0,    0,   14,  388,  0,  0,  0,  0,  0,  0,  0],
-  IL:  [    0,    0,    0,    8,  300,  0,  0,  0,  0,  0,  0,  0],
-  MI:  [    0,    0,    0,    6,  252,  0,  0,  0,  0,  0,  0,  0],
-  PA:  [    0,    0,    0,    0,  276,  0,  0,  0,  0,  0,  0,  0],
-  AL:  [    0,    0,    0,   50,  257,  0,  0,  0,  0,  0,  0,  0],
-  // Phase 2 — not yet live
-  CO:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
-  GA:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
-  NV:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
-  FL:  [    0,    0,    0,    0,    0,  0,  0,  0,  0,  0,  0,  0],
+// ── STATE MONTHLY ─────────────────────────────────────────────────────────────
+let STATE_MONTHLY={};
+const FALLBACK_STATE_ENC={
+  TX:[0,1,784,818,1442,0,0,0,0,0,0,0],NC:[0,313,591,556,718,0,0,0,0,0,0,0],
+  AZ:[453,437,583,416,546,0,0,0,0,0,0,0],OR:[323,311,299,312,342,0,0,0,0,0,0,0],
+  IN:[0,197,284,241,320,0,0,0,0,0,0,0],TN:[0,105,199,147,232,0,0,0,0,0,0,0],
+  WA:[0,0,61,86,116,0,0,0,0,0,0,0],OH:[0,0,0,14,388,0,0,0,0,0,0,0],
+  IL:[0,0,0,8,300,0,0,0,0,0,0,0],MI:[0,0,0,6,252,0,0,0,0,0,0,0],
+  PA:[0,0,0,0,276,0,0,0,0,0,0,0],AL:[0,0,0,50,257,0,0,0,0,0,0,0],
+  CO:[0,0,0,0,0,0,0,0,0,0,0,0],GA:[0,0,0,0,0,0,0,0,0,0,0,0],
+  MO:[0,0,0,0,0,0,0,0,0,0,0,0],SC:[0,0,0,0,0,0,0,0,0,0,0,0]
 };
-const FALLBACK_ACTUAL_THRU = 4; // Jan–May are real actuals
-
-function applyFallback(){
-  Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{
-    if(!STATE_MONTHLY[st])return;
-    arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]={v,actual:v>0};});
-  });
-}
-
-function applyStateCells(parsed){
-  if(!parsed)return;
-  Object.entries(parsed).forEach(([st,months])=>{
-    if(!STATE_MONTHLY[st])return;
-    months.forEach((cell,mi)=>{
-      if(cell?.actual&&canBeActual(mi)&&mi>FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]=cell;
-    });
-  });
-}
-
-function debugStateCsv(csv){
-  const lines=csv.trim().split('\n').slice(0,3);
-  console.log('[State CSV raw lines]');
-  lines.forEach((l,i)=>console.log(`  row ${i}:`,l.substring(0,120)));
-  const txVals=(STATE_MONTHLY['TX']||[]).map((c,mi)=>`${ALL_MONTHS[mi]}:${c?.v??'?'}${c?.actual?'✓':''}`).join(' ');
-  console.log('[TX STATE_MONTHLY]',txVals);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FIX #1: RECALIBRATE BOTH EXISTING AND PHASE 1 TARGETS FROM ACTUALS
-// Previously only existing states were recalibrated; P1 targets were never
-// updated even when actual OH/IL/MI/PA/AL data was available.
-// ─────────────────────────────────────────────────────────────────────────────
-function recalibrateFromMonthlyActuals(){
-  // Only recalibrate existing states — used for blended rate and tooltip proportions.
-  // Phase 1 targets are no longer used to drive projections (projections use 30-day actual avg).
-  Object.keys(STATE_DATA).forEach(st=>{
-    if(STATE_DATA[st].group!=='existing')return;
-    const actuals=(STATE_MONTHLY[st]||[]).filter(c=>c?.actual&&c.v>0);
-    if(actuals.length<1)return;
-    const avgMonthly=actuals.reduce((s,c)=>s+c.v,0)/actuals.length;
-    STATE_DATA[st].dailyContrib=Math.round(avgMonthly/30*RATES.rh);
-    ORIGINAL_EXISTING_CONTRIB[st]=STATE_DATA[st].dailyContrib;
-  });
-  // Recompute baseline after any STATE_DATA changes
-  computeRecentBaseline();
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FIX #3: COMPUTE STATE CSV REVENUE WITH BLENDED RATE (RH + TD/MDL)
-// Previously used RATES.rh alone ($12/enc), which understated total revenue
-// vs the chart (which includes TD $23-28 and MDL $25-28 per encounter).
-// Now uses the ratio derived from actual LIVE_MONTHLY data where available.
-// ─────────────────────────────────────────────────────────────────────────────
-function computeStateCsvRevenue(){
-  STATE_CSV_MONTHLY_REV={};
-  // FIX #3: get blended multiplier from actual daily sheet data
-  const blendedRate=computeBlendedRHRate();
-  ALL_MONTHS.forEach((mo,mi)=>{
-    let totalEnc=0,hasActual=false;
-    Object.values(STATE_MONTHLY).forEach(cells=>{
-      const cell=cells[mi];
-      if(cell?.actual){totalEnc+=cell.v;hasActual=true;}
-    });
-    if(hasActual)STATE_CSV_MONTHLY_REV[mo]=Math.round(totalEnc*RATES.rh*blendedRate);
-  });
-  console.log('[computeStateCsvRevenue] blendedRate='+computeBlendedRHRate().toFixed(2),
-    'months:',Object.entries(STATE_CSV_MONTHLY_REV).map(([m,v])=>`${m}:$${v.toLocaleString()}`).join(', '));
-}
-
-function buildStateMonthlySeed(){
-  const result={};
-  const curMonth=new Date().getMonth();
-  Object.keys(STATE_DATA).forEach((st,si)=>{
-    const fallback=FALLBACK_STATE_ENC[st]||Array(12).fill(0);
-    const isP1=STATE_DATA[st].group==='phase1',isP2=STATE_DATA[st].group==='phase2';
-    const aprAnchor=fallback[3]||STATE_DATA[st].dailyContrib/RATES.rh*30;
-    const curMo=new Date().getMonth();
-    result[st]=Array.from({length:12},(_,mi)=>{
-      const noise=0.82+sRand(si*100+mi)*0.36;
-      if(isP1){if(mi<3)return{v:0,actual:false};if(mi===3)return{v:fallback[3]||0,actual:false};const daysSinceLive=(mi-3)*30+5,frac=Math.min(1,1-Math.exp(-P1_K*daysSinceLive)),target=STATE_DATA[st].dailyContrib/RATES.rh*30;return{v:Math.round(target*frac*noise),actual:false};}
-      if(isP2){if(mi<curMo)return{v:0,actual:false};const daysSinceLaunch=(mi-curMo)*30,frac=Math.min(1,1-Math.exp(-0.055*daysSinceLaunch)),target=STATE_DATA[st].dailyContrib/RATES.rh*30;return{v:Math.round(target*frac*noise),actual:false};}
-      const trend=mi<3?(0.72+mi*0.10):(1.0+(mi-3)*0.035);
-      return{v:Math.round(aprAnchor*trend*noise),actual:false};
-    });
-  });
-  return result;
-}
-
-function parseStateMonthlyCsv(csv){
-  if(!csv||!csv.trim())return null;
-  const rawLines=csv.trim().split('\n'),isTsv=rawLines[0].includes('\t');
-  const lines=rawLines.map(line=>{const cols=isTsv?line.split('\t'):line.split(',');return cols.map(c=>c.replace(/^"|"$/g,'').trim());});
-  const MO_NAMES=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-  const SKIP_WORDS=['total','sum','avg','ytd','grand','revenue','notes','comment'];
-  let headerRowIdx=-1,stateColIdx=-1;
-  const moIdx={};
-  for(let ri=0;ri<Math.min(lines.length,5);ri++){
-    const row=lines[ri],candidateMoIdx={};
-    row.forEach((h,ci)=>{if(!h)return;const lower=h.toLowerCase();if(SKIP_WORDS.some(w=>lower.includes(w)))return;const norm=lower.replace(/[^a-z]/g,'').slice(0,3);if(MO_NAMES.includes(norm))candidateMoIdx[ci]=MO_NAMES.indexOf(norm);});
-    if(Object.keys(candidateMoIdx).length>=2){headerRowIdx=ri;Object.assign(moIdx,candidateMoIdx);break;}
-  }
-  if(headerRowIdx<0){console.warn('[State CSV] No header row found');return null;}
-  const dataRows=lines.slice(headerRowIdx+1).filter(r=>r.some(c=>c));
-  if(!dataRows.length)return null;
-  const firstMonthCi=Math.min(...Object.keys(moIdx).map(Number));
-  stateColIdx=Math.max(0,firstMonthCi-1);
-  console.log(`[State CSV] header:${headerRowIdx} stateCol:${stateColIdx} months:`,moIdx);
-  const result={};
-  dataRows.forEach(cols=>{
-    const st=(cols[stateColIdx]||'').toUpperCase().replace(/\s+/g,'');
-    if(!st||!STATE_DATA[st])return;
-    if(!result[st])result[st]=Array.from({length:12},()=>null);
-    Object.entries(moIdx).forEach(([ci,mi])=>{
-      const cell=(cols[+ci]||'').replace(/[$,\s]/g,'');
-      if(!cell||cell==='-'||cell.toLowerCase()==='n/a'||cell==='')return;
-      const v=parseInt(cell);
-      if(!isNaN(v)&&v>=0)result[st][mi]={v,actual:true};
-    });
-  });
-  console.log('[State CSV] parsed:',Object.keys(result).join(', '));
-  return Object.keys(result).length?result:null;
-}
-
-function applyStateMonthlyFromSheet(json){
-  const STATE_ABBRS=new Set(Object.keys(STATE_DATA));
-  const PRIORITY_HINTS=['volume','state','tally','monthly enc','by state','encounters'];
-  function scoreStateTable(parsed){if(!parsed)return 0;return Object.keys(parsed).filter(st=>STATE_ABBRS.has(st)&&parsed[st].some(c=>c&&c.actual&&c.v>0)).length;}
-  let bestParsed=null,bestScore=0,bestTab=null;
-  for(const[tabName,csv]of Object.entries(json)){
-    const n=tabName.toLowerCase(),isPriority=PRIORITY_HINTS.some(h=>n.includes(h));
-    if(!isPriority)continue;
-    const parsed=parseStateMonthlyCsv(csv),score=scoreStateTable(parsed);
-    if(score>bestScore){bestScore=score;bestParsed=parsed;bestTab=tabName;}
-  }
-  if(!bestParsed||bestScore===0){
-    for(const[tabName,csv]of Object.entries(json)){
-      const parsed=parseStateMonthlyCsv(csv),score=scoreStateTable(parsed);
-      if(score>bestScore){bestScore=score;bestParsed=parsed;bestTab=tabName;}
-    }
-  }
-  if(!bestParsed||bestScore===0){
-    Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{if(!STATE_MONTHLY[st])return;arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU&&v>=0)STATE_MONTHLY[st][mi]={v,actual:true};});});
-    return false;
-  }
-  applyStateCells(bestParsed);
-  return true;
-}
-
-let hmMode='enc';
+const FALLBACK_ACTUAL_THRU=4;
+function applyFallback(){Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{if(!STATE_MONTHLY[st])return;arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]={v,actual:v>0};});});}
+function applyStateCells(parsed){if(!parsed)return;Object.entries(parsed).forEach(([st,months])=>{if(!STATE_MONTHLY[st])return;months.forEach((cell,mi)=>{if(cell?.actual&&canBeActual(mi)&&mi>FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]=cell;});});}
+function debugStateCsv(csv){csv.trim().split('\n').slice(0,3).forEach((l,i)=>console.log(`[CSV row ${i}]:`,l.substring(0,120)));const tx=(STATE_MONTHLY['TX']||[]).map((c,mi)=>`${ALL_MONTHS[mi]}:${c?.v??'?'}${c?.actual?'✓':''}`).join(' ');console.log('[TX]',tx);}
+function recalibrateFromMonthlyActuals(){Object.keys(STATE_DATA).forEach(st=>{if(STATE_DATA[st].group!=='existing')return;const ac=(STATE_MONTHLY[st]||[]).filter(c=>c?.actual&&c.v>0);if(!ac.length)return;const avg=ac.reduce((s,c)=>s+c.v,0)/ac.length;STATE_DATA[st].dailyContrib=Math.round(avg/30*RATES.rh);ORIGINAL_EXISTING_CONTRIB[st]=STATE_DATA[st].dailyContrib;});computeRecentBaseline();}
+function computeStateCsvRevenue(){STATE_CSV_MONTHLY_REV={};const br=computeBlendedRHRate();ALL_MONTHS.forEach((mo,mi)=>{let tot=0,has=false;Object.values(STATE_MONTHLY).forEach(cells=>{const c=cells[mi];if(c?.actual){tot+=c.v;has=true;}});if(has)STATE_CSV_MONTHLY_REV[mo]=Math.round(tot*RATES.rh*br);});}
+function buildStateMonthlySeed(){const result={},cm=new Date().getMonth();Object.keys(STATE_DATA).forEach((st,si)=>{const fb=FALLBACK_STATE_ENC[st]||Array(12).fill(0),isP1=STATE_DATA[st].group==='phase1',isP2=STATE_DATA[st].group==='phase2';const anch=fb[3]||STATE_DATA[st].dailyContrib/RATES.rh*30;result[st]=Array.from({length:12},(_,mi)=>{const noise=0.82+sRand(si*100+mi)*0.36;if(isP1){if(mi<3)return{v:0,actual:false};if(mi===3)return{v:fb[3]||0,actual:false};const d=(mi-3)*30+5,f=Math.min(1,1-Math.exp(-P1_K*d)),t=STATE_DATA[st].dailyContrib/RATES.rh*30;return{v:Math.round(t*f*noise),actual:false};}if(isP2){if(mi<cm)return{v:0,actual:false};const d=(mi-cm)*30,f=Math.min(1,1-Math.exp(-0.028*d)),t=STATE_DATA[st].dailyContrib/RATES.rh*30;return{v:Math.round(t*f*noise),actual:false};}const trend=mi<3?(0.72+mi*0.10):(1.0+(mi-3)*0.035);return{v:Math.round(anch*trend*noise),actual:false};});});return result;}
+function parseStateMonthlyCsv(csv){if(!csv||!csv.trim())return null;const rl=csv.trim().split('\n'),isTsv=rl[0].includes('\t');const lines=rl.map(line=>{const c=isTsv?line.split('\t'):line.split(',');return c.map(x=>x.replace(/^"|"$/g,'').trim());});const MN=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'],SK=['total','sum','avg','ytd','grand','revenue','notes','comment'];let hR=-1;const mIdx={};for(let ri=0;ri<Math.min(lines.length,5);ri++){const row=lines[ri],cand={};row.forEach((h,ci)=>{if(!h)return;const lo=h.toLowerCase();if(SK.some(w=>lo.includes(w)))return;const norm=lo.replace(/[^a-z]/g,'').slice(0,3);if(MN.includes(norm))cand[ci]=MN.indexOf(norm);});if(Object.keys(cand).length>=2){hR=ri;Object.assign(mIdx,cand);break;}}if(hR<0)return null;const dr=lines.slice(hR+1).filter(r=>r.some(c=>c));if(!dr.length)return null;const fc=Math.min(...Object.keys(mIdx).map(Number)),sc=Math.max(0,fc-1);const result={};dr.forEach(cols=>{const st=(cols[sc]||'').toUpperCase().replace(/\s+/g,'');if(!st||!STATE_DATA[st])return;if(!result[st])result[st]=Array.from({length:12},()=>null);Object.entries(mIdx).forEach(([ci,mi])=>{const cell=(cols[+ci]||'').replace(/[$,\s]/g,'');if(!cell||cell==='-'||cell.toLowerCase()==='n/a')return;const v=parseInt(cell);if(!isNaN(v)&&v>=0)result[st][mi]={v,actual:true};});});return Object.keys(result).length?result:null;}
+function applyStateMonthlyFromSheet(json){const SA=new Set(Object.keys(STATE_DATA)),PH=['volume','state','tally','monthly enc','by state','encounters'];function score(p){if(!p)return 0;return Object.keys(p).filter(st=>SA.has(st)&&p[st].some(c=>c&&c.actual&&c.v>0)).length;}let best=null,bs=0,bt=null;for(const[t,csv]of Object.entries(json)){if(!PH.some(h=>t.toLowerCase().includes(h)))continue;const p=parseStateMonthlyCsv(csv),s=score(p);if(s>bs){bs=s;best=p;bt=t;}}if(!best||bs===0){for(const[t,csv]of Object.entries(json)){const p=parseStateMonthlyCsv(csv),s=score(p);if(s>bs){bs=s;best=p;bt=t;}}}if(!best||bs===0){Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{if(!STATE_MONTHLY[st])return;arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU&&v>=0)STATE_MONTHLY[st][mi]={v,actual:true};});});return false;}applyStateCells(best);const months=[...new Set(Object.values(best).flatMap(ms=>ms.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))].join(', ');const el=document.getElementById('live-months');if(el){el.textContent=`● "${bt}" · ${bs} states · ${months}`;el.style.color='#4ade80';}return true;}
 
 function renderSparks(){
-  const grid=document.getElementById('hm-spark-grid');
-  if(!grid||!Object.keys(STATE_MONTHLY).length)return;
-  const latestActualVal=st=>{const cells=STATE_MONTHLY[st]||[];let best={v:0,mi:-1};cells.forEach((c,mi)=>{if(c?.actual&&c.v>0)best={v:c.v,mi};});return best.v;};
-  const states=Object.keys(STATE_DATA).filter(st=>activeStates.includes(st)).sort((a,b)=>latestActualVal(b)-latestActualVal(a));
+  const grid=document.getElementById('hm-spark-grid');if(!grid||!Object.keys(STATE_MONTHLY).length)return;
+  const lav=st=>{const c=STATE_MONTHLY[st]||[];let b={v:0,mi:-1};c.forEach((x,mi)=>{if(x?.actual&&x.v>0)b={v:x.v,mi};});return b.v;};
+  const states=Object.keys(STATE_DATA).filter(st=>activeStates.includes(st)).sort((a,b)=>lav(b)-lav(a));
   if(!states.length){grid.innerHTML='';return;}
-  const hasAnyActuals=states.some(st=>(STATE_MONTHLY[st]||[]).some(c=>c?.actual&&c.v>0));
-  if(!hasAnyActuals){grid.innerHTML=`<div style="grid-column:1/-1;padding:20px;background:#161b22;border:1px solid #242d3f;border-radius:10px;text-align:center"><div style="font-size:12px;color:#64748b;margin-bottom:10px">No state encounter data loaded yet</div><div style="font-size:11px;color:#484f58;margin-bottom:14px;line-height:1.7">Go to your <strong style="color:#94a3b8">"state by state"</strong> tab in Google Sheets<br>Select all cells (Ctrl+A) → Copy (Ctrl+C) → click the button below</div><button onclick="openPasteModal()" style="padding:8px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">⬆ Paste State Data</button></div>`;return;}
+  const hasAny=states.some(st=>(STATE_MONTHLY[st]||[]).some(c=>c?.actual&&c.v>0));
+  if(!hasAny){grid.innerHTML=`<div style="grid-column:1/-1;padding:20px;background:#161b22;border:1px solid #242d3f;border-radius:10px;text-align:center"><div style="font-size:12px;color:#64748b;margin-bottom:10px">No state encounter data loaded</div><div style="font-size:11px;color:#484f58;margin-bottom:14px;line-height:1.7">Open your <strong style="color:#94a3b8">"state by state"</strong> tab → Ctrl+A → Ctrl+C</div><button onclick="openPasteModal()" style="padding:8px 20px;border-radius:6px;font-size:11px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer;font-weight:600">⬆ Paste State Data</button></div>`;return;}
   let html='';
   states.forEach(st=>{
     const sc=GRP_COLORS[STATE_DATA[st].group]||'#4ade80',cells=STATE_MONTHLY[st]||Array(12).fill({v:0,actual:false}),vals=cells.map(c=>c?.v||0);
-    let latestActual={v:0,mi:-1};cells.forEach((c,mi)=>{if(c?.actual&&c.v>0&&mi>latestActual.mi)latestActual={v:c.v,mi};});
-    const actualCount=cells.filter(c=>c?.actual).length,prevVal=latestActual.mi>0?(cells[latestActual.mi-1]?.v||0):0,momPct=(prevVal&&latestActual.mi>0)?Math.round((latestActual.v-prevVal)/prevVal*100):null;
-    const mx=Math.max(...vals,1),W=160,H=52;
+    let la={v:0,mi:-1};cells.forEach((c,mi)=>{if(c?.actual&&c.v>0&&mi>la.mi)la={v:c.v,mi};});
+    const ac=cells.filter(c=>c?.actual).length,pv=la.mi>0?(cells[la.mi-1]?.v||0):0,mom=(pv&&la.mi>0)?Math.round((la.v-pv)/pv*100):null;
+    const tot=cells.reduce((s,c)=>s+(c?.actual?c.v:0),0),mx=Math.max(...vals,1),W=160,H=52;
     const pts=cells.map((c,i)=>({x:parseFloat(((i/11)*(W-8)+4).toFixed(1)),y:parseFloat((H-4-((c?.v||0)/mx)*(H-10)).toFixed(1)),actual:c?.actual||false,v:c?.v||0}));
-    let lastActIdx=-1;pts.forEach((p,i)=>{if(p.actual)lastActIdx=i;});
-    const actPts=pts.filter(p=>p.actual).map(p=>`${p.x},${p.y}`).join(' '),projPts=lastActIdx>=0?pts.slice(lastActIdx).map(p=>`${p.x},${p.y}`).join(' '):pts.map(p=>`${p.x},${p.y}`).join(' '),areaAct=lastActIdx>=0?`${pts[0].x},${H} `+pts.slice(0,lastActIdx+1).map(p=>`${p.x},${p.y}`).join(' ')+` ${pts[lastActIdx].x},${H}`:'';
-    const moLabels=ALL_MONTHS.map((mo,i)=>{if(i%2!==0)return'';const x=((i/11)*(W-8)+4).toFixed(1),isAct=cells[i]?.actual;return`<text x="${x}" y="${H+11}" text-anchor="middle" font-size="8" fill="${isAct?'#64748b':'#2d3a50'}" font-family="monospace">${mo}</text>`;}).join('');
-    const dotEl=lastActIdx>=0?`<circle cx="${pts[lastActIdx].x}" cy="${pts[lastActIdx].y}" r="3.5" fill="${sc}" stroke="#161b22" stroke-width="1.5"/>`:'';
-    const latestLabel=latestActual.mi>=0?ALL_MONTHS[latestActual.mi]+' actual':'no actuals yet';
-    const totalActual=cells.reduce((s,c)=>s+(c?.actual?c.v:0),0);
-    html+=`<div style="background:#161b22;border:1px solid #242d3f;border-radius:10px;padding:14px 16px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-        <div>
-          <div style="font-size:11px;font-weight:600;color:#94a3b8;margin-bottom:3px"><span style="display:inline-block;width:7px;height:7px;border-radius:2px;background:${sc};margin-right:6px;vertical-align:1px"></span>${st}<span style="font-size:9px;color:#484f58;margin-left:4px;font-weight:400">${PHASE_META[STATE_DATA[st].group]?.label||''}</span></div>
-          <div style="font-size:24px;font-weight:800;color:#e2e8f0;letter-spacing:-.02em;line-height:1">${latestActual.v>0?latestActual.v.toLocaleString():'—'}</div>
-          <div style="font-size:10px;color:#64748b;margin-top:2px">${latestLabel}</div>
+    let lai=-1;pts.forEach((p,i)=>{if(p.actual)lai=i;});
+    const ap=pts.filter(p=>p.actual).map(p=>`${p.x},${p.y}`).join(' '),pp=lai>=0?pts.slice(lai).map(p=>`${p.x},${p.y}`).join(' '):pts.map(p=>`${p.x},${p.y}`).join(' '),area=lai>=0?`${pts[0].x},${H} `+pts.slice(0,lai+1).map(p=>`${p.x},${p.y}`).join(' ')+` ${pts[lai].x},${H}`:'';
+    const ml=ALL_MONTHS.map((mo,i)=>{if(i%2!==0)return'';const x=((i/11)*(W-8)+4).toFixed(1),iA=cells[i]?.actual;return`<text x="${x}" y="${H+11}" text-anchor="middle" font-size="8" fill="${iA?'#64748b':'#2d3a50'}" font-family="monospace">${mo}</text>`;}).join('');
+    const dot=lai>=0?`<circle cx="${pts[lai].x}" cy="${pts[lai].y}" r="3.5" fill="${sc}" stroke="#161b22" stroke-width="1.5"/>`:'';
+    html+=`<div style="background:#161b22;border:1px solid #242d3f;border-radius:10px;padding:clamp(10px,2vw,14px) clamp(10px,2vw,16px)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div style="min-width:0;overflow:hidden">
+          <div style="font-size:10px;font-weight:600;color:#94a3b8;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span style="display:inline-block;width:6px;height:6px;border-radius:2px;background:${sc};margin-right:5px;vertical-align:1px"></span>${st}<span style="font-size:9px;color:#484f58;margin-left:4px">${PHASE_META[STATE_DATA[st].group]?.label||''}</span></div>
+          <div style="font-size:clamp(18px,4vw,24px);font-weight:800;color:#e2e8f0;letter-spacing:-.02em;line-height:1">${la.v>0?la.v.toLocaleString():'—'}</div>
+          <div style="font-size:9px;color:#64748b;margin-top:2px">${la.mi>=0?ALL_MONTHS[la.mi]+' actual':'—'}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0;padding-left:8px">
-          ${momPct!==null?`<div style="font-size:15px;font-weight:700;color:${momPct>=0?'#2dd4a0':'#f87171'}">${momPct>=0?'+':''}${momPct}%</div><div style="font-size:9px;color:#484f58">vs ${ALL_MONTHS[latestActual.mi-1]}</div>`:'<div style="font-size:10px;color:#484f58">—</div>'}
-          <div style="margin-top:6px;font-size:10px;color:#484f58">${actualCount} mo actual</div>
-          <div style="font-size:10px;color:#484f58">total ${totalActual.toLocaleString()}</div>
+        <div style="text-align:right;flex-shrink:0;padding-left:6px">
+          ${mom!==null?`<div style="font-size:clamp(12px,2.5vw,15px);font-weight:700;color:${mom>=0?'#2dd4a0':'#f87171'}">${mom>=0?'+':''}${mom}%</div><div style="font-size:9px;color:#484f58">vs ${ALL_MONTHS[la.mi-1]}</div>`:''}
+          <div style="margin-top:4px;font-size:9px;color:#484f58">${ac}mo · ${tot.toLocaleString()}</div>
         </div>
       </div>
       <svg viewBox="0 0 ${W} ${H+14}" width="100%" style="display:block;overflow:visible;margin-top:2px">
-        ${areaAct?`<polygon points="${areaAct}" fill="${sc}" opacity=".07"/>`:''}
-        ${projPts.split(' ').length>2?`<polyline points="${projPts}" fill="none" stroke="${sc}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".32"/>`:''}
-        ${actPts.split(' ').length>2?`<polyline points="${actPts}" fill="none" stroke="${sc}" stroke-width="2.2"/>`:''}
-        ${dotEl}
-        ${moLabels}
+        ${area?`<polygon points="${area}" fill="${sc}" opacity=".07"/>`:''}
+        ${pp.split(' ').length>2?`<polyline points="${pp}" fill="none" stroke="${sc}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".32"/>`:''}
+        ${ap.split(' ').length>2?`<polyline points="${ap}" fill="none" stroke="${sc}" stroke-width="2.2"/>`:''}
+        ${dot}${ml}
       </svg>
     </div>`;
   });
   grid.innerHTML=html;
 }
 
-function openPasteModal(){document.getElementById('paste-modal').style.display='flex';document.getElementById('paste-input').value='';document.getElementById('paste-error').style.display='none';document.getElementById('paste-preview').style.display='none';setTimeout(()=>document.getElementById('paste-input').focus(),50);}
+function openPasteModal(){document.getElementById('paste-modal').style.display='flex';document.getElementById('paste-input').value='';document.getElementById('paste-error').style.display='none';document.getElementById('paste-preview').style.display='none';}
 function closePasteModal(){document.getElementById('paste-modal').style.display='none';}
-
 function importPastedData(){
   const raw=document.getElementById('paste-input').value.trim();
-  if(!raw){showPasteError('Nothing pasted — copy the sheet cells first.');return;}
+  if(!raw){document.getElementById('paste-error').textContent='Nothing pasted.';document.getElementById('paste-error').style.display='block';return;}
   const parsed=parseStateMonthlyCsv(raw);
-  if(!parsed||Object.keys(parsed).length===0){showPasteError('Could not find state data.\n\nExpected: row 1 has month names (Jan, Feb…), column A has state abbreviations (TX, NC…). Totals columns are automatically ignored.\n\nMake sure you selected ALL cells in the tab (Ctrl+A) before copying.');return;}
-  const stateCount=Object.keys(parsed).length,months=[...new Set(Object.values(parsed).flatMap(mos=>mos.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];
-  if(months.length===0){showPasteError('Found '+stateCount+' states but no numeric values. Check that encounter counts are in the month columns (not just in a Totals column).');return;}
-  STATE_MONTHLY=buildStateMonthlySeed();
-  applyFallback();
-  applyStateCells(parsed);
-  recalibrateFromMonthlyActuals(); // FIX #1: now also recalibrates P1 targets
-  computeStateCsvRevenue();        // FIX #3: now uses blended rate
-  saveStateCache(raw);
-  // FIX #2: re-generate full year data with updated targets before rendering totals
-  fullYearData=generateFullYearData();
-  renderMonthlyTotals();           // FIX #2: called AFTER computeStateCsvRevenue
-  renderSparks();
-  closePasteModal();
-  const note=document.getElementById('spark-data-note');
-  if(note){note.textContent=`· ${stateCount} states · ${months.join(', ')} imported`;note.style.color='#4ade80';}
+  if(!parsed||!Object.keys(parsed).length){document.getElementById('paste-error').textContent='Could not parse — check row 1 has month names and col A has state abbreviations.';document.getElementById('paste-error').style.display='block';return;}
+  const months=[...new Set(Object.values(parsed).flatMap(ms=>ms.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];
+  if(!months.length){document.getElementById('paste-error').textContent='Found states but no numeric values.';document.getElementById('paste-error').style.display='block';return;}
+  STATE_MONTHLY=buildStateMonthlySeed();applyFallback();applyStateCells(parsed);recalibrateFromMonthlyActuals();computeStateCsvRevenue();saveStateCache(raw);
+  fullYearData=generateFullYearData();renderMonthlyTotals();renderSparks();closePasteModal();
+  const note=document.getElementById('spark-data-note');if(note){note.textContent=`· ${Object.keys(parsed).length} states · ${months.join(', ')} imported`;note.style.color='#4ade80';}
 }
-
-function showPasteError(msg){const el=document.getElementById('paste-error');el.textContent=msg;el.style.display='block';document.getElementById('paste-preview').style.display='none';}
 document.getElementById('paste-modal').addEventListener('click',e=>{if(e.target===document.getElementById('paste-modal'))closePasteModal();});
 
-// Daily import modal
 let currentDailyTab='Apr';
-function openDailyImportModal(){document.getElementById('daily-modal').style.display='flex';document.getElementById('daily-input').value='';document.getElementById('daily-error').style.display='none';document.getElementById('daily-preview').style.display='none';setDailyTab('May');setTimeout(()=>document.getElementById('daily-input').focus(),50);}
+function openDailyImportModal(){document.getElementById('daily-modal').style.display='flex';document.getElementById('daily-input').value='';document.getElementById('daily-error').style.display='none';document.getElementById('daily-preview').style.display='none';setDailyTab('May');}
 function closeDailyModal(){document.getElementById('daily-modal').style.display='none';}
 function setDailyTab(mo){currentDailyTab=mo;['Apr','May','Jun'].forEach(m=>{const b=document.getElementById('dtab-'+m);if(!b)return;const on=m===mo;b.style.borderColor=on?'#4ade80':'#30363d';b.style.background=on?'rgba(74,222,128,.12)':'transparent';b.style.color=on?'#4ade80':'#6e7681';});}
-
-function importDailyData(){
-  const raw=document.getElementById('daily-input').value.trim();
-  if(!raw){document.getElementById('daily-error').textContent='Nothing pasted.';document.getElementById('daily-error').style.display='block';return;}
-  const csv=raw.split('\n').map(l=>l.split('\t').join(',')).join('\n');
-  const parsed=parseSheetCSV(csv,currentDailyTab);
-  if(!parsed){document.getElementById('daily-error').textContent='Could not parse. Make sure row 1 has date headers (e.g. 4/1, 4/2…) and row labels like RO, TD1, MDL.';document.getElementById('daily-error').style.display='block';return;}
-  const daily=parsed.rhRev.map((v,i)=>v+(parsed.tdRev[i]||0)+(parsed.mdlRev[i]||0));
-  const total=daily.reduce((a,b)=>a+b,0);
-  LIVE_MONTHLY[currentDailyTab]={
-    daily,total,days:daily.length,
-    rhEncTotal:parsed.rh.reduce((a,b)=>a+b,0),
-    rhDailyArr:parsed.rh,
-    tdDailyArr:parsed.td,   // FIX #3: store for blended rate
-    mdlDailyArr:parsed.mdl, // FIX #3: store for blended rate
-    year:2026,month:parsed.month
-  };
-  applyLiveData();
-  liveDataLoaded=true;
-  // FIX #2: recompute revenue BEFORE rendering totals
-  computeStateCsvRevenue();
-  refresh(); // refresh() now calls renderMonthlyTotals() at end
-  const prev=document.getElementById('daily-preview');
-  prev.textContent=`✓ ${currentDailyTab}: ${daily.length} days · $${total.toLocaleString()} total · $${Math.round(total/daily.length).toLocaleString()}/day avg`;
-  prev.style.display='block';
-  document.getElementById('daily-error').style.display='none';
-  setLiveStatus('live',currentDailyTab+' imported · '+daily.length+' days');
-  setTimeout(closeDailyModal,1200);
-}
+function importDailyData(){const raw=document.getElementById('daily-input').value.trim();if(!raw){document.getElementById('daily-error').textContent='Nothing pasted.';document.getElementById('daily-error').style.display='block';return;}const csv=raw.split('\n').map(l=>l.split('\t').join(',')).join('\n');const parsed=parseSheetCSV(csv,currentDailyTab);if(!parsed){document.getElementById('daily-error').textContent='Could not parse — check row 1 has date headers (4/1, 4/2…) and row labels like RO, TD1, MDL.';document.getElementById('daily-error').style.display='block';return;}const daily=parsed.rhRev.map((v,i)=>v+(parsed.tdRev[i]||0)+(parsed.mdlRev[i]||0)),total=daily.reduce((a,b)=>a+b,0);LIVE_MONTHLY[currentDailyTab]={daily,total,days:daily.length,rhEncTotal:parsed.rh.reduce((a,b)=>a+b,0),rhDailyArr:parsed.rh,year:2026,month:parsed.month};applyLiveData();liveDataLoaded=true;computeStateCsvRevenue();refresh();const p=document.getElementById('daily-preview');p.textContent=`✓ ${currentDailyTab}: ${daily.length}d · $${total.toLocaleString()} · $${Math.round(total/daily.length).toLocaleString()}/day`;p.style.display='block';document.getElementById('daily-error').style.display='none';setLiveStatus('live',currentDailyTab+' imported');setTimeout(closeDailyModal,1200);}
 document.getElementById('daily-modal').addEventListener('click',e=>{if(e.target===document.getElementById('daily-modal'))closeDailyModal();});
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FIX #3: computeStateCsvRevenue moved above and uses computeBlendedRHRate()
-// ─────────────────────────────────────────────────────────────────────────────
-
-// STATE CSV CACHE
 const LS_STATE_KEY='tmd_state_monthly',LS_STATE_TIME='tmd_state_time';
 function saveStateCache(raw){try{localStorage.setItem(LS_STATE_KEY,raw);localStorage.setItem(LS_STATE_TIME,Date.now().toString());}catch(e){}}
 function readStateCache(){try{const raw=localStorage.getItem(LS_STATE_KEY),ts=localStorage.getItem(LS_STATE_TIME);if(!raw||!ts)return null;return{raw,ageMin:Math.round((Date.now()-+ts)/60000)};}catch(e){return null;}}
+async function loadStateMonthlyDirect(){try{const r=await fetch(STATE_CSV_URL+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const csv=await r.text();if(!csv||csv.trim().length<10)throw new Error('empty');const parsed=parseStateMonthlyCsv(csv);if(!parsed||!Object.keys(parsed).length)throw new Error('no rows');STATE_MONTHLY=buildStateMonthlySeed();applyFallback();applyStateCells(parsed);debugStateCsv(csv);recalibrateFromMonthlyActuals();computeStateCsvRevenue();saveStateCache(csv);const months=[...new Set(Object.values(parsed).flatMap(ms=>ms.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];const el=document.getElementById('live-months');if(el){el.textContent=`● State: ${Object.keys(parsed).length} states · ${months.join(', ')}`;el.style.color='#4ade80';}return true;}catch(e){console.warn('State CSV:',e.message);const sc=readStateCache();if(sc){const p=parseStateMonthlyCsv(sc.raw);if(p){STATE_MONTHLY=buildStateMonthlySeed();applyFallback();applyStateCells(p);recalibrateFromMonthlyActuals();computeStateCsvRevenue();const el=document.getElementById('live-months');if(el){el.textContent=`● State cached · ${sc.ageMin}m ago`;el.style.color='#f59e0b';}return true;}}return false;}}
 
-async function loadStateMonthlyDirect(){
-  try{
-    const r=await fetch(STATE_CSV_URL+'&_='+Date.now(),{cache:'no-store'});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const csv=await r.text();
-    if(!csv||csv.trim().length<10)throw new Error('empty');
-    const parsed=parseStateMonthlyCsv(csv);
-    if(!parsed||Object.keys(parsed).length===0)throw new Error('no state rows found');
-    STATE_MONTHLY=buildStateMonthlySeed();
-    applyFallback();
-    applyStateCells(parsed);
-    debugStateCsv(csv);
-    recalibrateFromMonthlyActuals(); // FIX #1: recalibrates P1 too
-    computeStateCsvRevenue();        // FIX #3: blended rate
-    saveStateCache(csv);
-    const months=[...new Set(Object.values(parsed).flatMap(mos=>mos.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];
-    const liveMonthsEl=document.getElementById('live-months');
-    if(liveMonthsEl){liveMonthsEl.textContent=`● State sheet: ${Object.keys(parsed).length} states · ${months.join(', ')}`;liveMonthsEl.style.color='#4ade80';}
-    console.log(`[State CSV] ${Object.keys(parsed).length} states · ${months.join(', ')}`);
-    return true;
-  }catch(e){
-    console.warn('State CSV fetch failed:',e.message);
-    const sc=readStateCache();
-    if(sc){
-      const parsed=parseStateMonthlyCsv(sc.raw);
-      if(parsed){
-        STATE_MONTHLY=buildStateMonthlySeed();
-        applyFallback();
-        applyStateCells(parsed);
-        recalibrateFromMonthlyActuals(); // FIX #1
-        computeStateCsvRevenue();        // FIX #3
-        const liveMonthsEl=document.getElementById('live-months');
-        if(liveMonthsEl){liveMonthsEl.textContent=`● State sheet cached · ${sc.ageMin}m ago`;liveMonthsEl.style.color='#f59e0b';}
-        return true;
-      }
-    }
-    return false;
-  }
-}
+function initSparks(){STATE_MONTHLY=buildStateMonthlySeed();applyFallback();try{const r=localStorage.getItem(LS_STATE_KEY);if(r&&(r.startsWith('[object')||r.startsWith('{'))){localStorage.removeItem(LS_STATE_KEY);localStorage.removeItem(LS_STATE_TIME);}}catch(e){}const sc=readStateCache();if(sc){const p=parseStateMonthlyCsv(sc.raw);if(p){applyStateCells(p);recalibrateFromMonthlyActuals();computeStateCsvRevenue();}}renderSparks();loadStateMonthlyDirect().then(ok=>{if(ok){computeStateCsvRevenue();fullYearData=generateFullYearData();renderMonthlyTotals();renderSparks();refresh();}});}
 
-function initSparks(){
-  STATE_MONTHLY=buildStateMonthlySeed();
-  applyFallback();
-  // Clear stale cache
-  try{const raw=localStorage.getItem(LS_STATE_KEY);if(raw&&(raw.startsWith('[object')||raw.startsWith('{'))){{localStorage.removeItem(LS_STATE_KEY);localStorage.removeItem(LS_STATE_TIME);console.log('[State CSV] Cleared stale cache');}}}catch(e){}
-  const sc=readStateCache();
-  if(sc){
-    const parsed=parseStateMonthlyCsv(sc.raw);
-    if(parsed){
-      applyStateCells(parsed);
-      recalibrateFromMonthlyActuals(); // FIX #1
-      computeStateCsvRevenue();        // FIX #3
-    }
-  }
-  renderSparks();
-  loadStateMonthlyDirect().then(ok=>{
-    if(ok){
-      computeStateCsvRevenue(); // FIX #3: ensure blended rate applied before totals
-      // FIX #2: regenerate full year THEN render totals
-      fullYearData=generateFullYearData();
-      renderMonthlyTotals();
-      renderSparks();
-      refresh();
-    }
-  });
-}
+try{const hit=bootFromCache();computeRecentBaseline();refresh();setView("phases");if(!hit){setLiveStatus('err','No cache — use ⬆ Import buttons');document.getElementById('h-badge').textContent='fallback data';document.getElementById('h-badge').className='badge badge-yellow';document.getElementById('subtitle').textContent='Showing model estimates — use ⬆ Import Daily or ⬆ Import State Data to load real data.';}}catch(e){const b=document.getElementById('err-box');if(b){b.style.display='block';b.textContent='⚠ Init error: '+e.message;}console.error(e);}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────────────────────────────────────
-try{
-  const cacheHit=bootFromCache();
-  computeRecentBaseline(); // seed baseline from fallback arrays before first render
-  refresh();
-  setView("phases");
-  if(!cacheHit){
-    setLiveStatus('err','No cached data — use ⬆ Import Daily or ⬆ Import May Data buttons');
-    document.getElementById('h-badge').textContent='fallback data';
-    document.getElementById('h-badge').className='badge badge-yellow';
-    document.getElementById('subtitle').textContent='Showing model estimates. To load real data: use the ⬆ Import Daily button (paste your monthly sheet tab) and ⬆ Import May Data (paste the state tally tab).';
-  }
-}catch(e){const box=document.getElementById('err-box');if(box){box.style.display='block';box.textContent='⚠ Init error: '+e.message+'\n'+e.stack;}console.error('Init failed:',e);}
-
-fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json")
-  .then(r=>r.json()).catch(()=>null)
-  .then(topoData=>{usTopoData=topoData;drawMap();});
-
+fetch("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(r=>r.json()).catch(()=>null).then(d=>{usTopoData=d;drawMap();});
 loadLiveData(false).then(ok=>{if(ok){applyLiveData();refresh();}});
 loadStateMonthlyDirect().then(ok=>{if(ok)renderSparks();});
-
-setInterval(async()=>{
-  const[liveOk,stateOk]=await Promise.all([loadLiveData(true),loadStateMonthlyDirect()]);
-  if(liveOk){applyLiveData();refresh();}
-  else if(stateOk){renderSparks();}
-},5*60*1000);
+setInterval(async()=>{const[l,s]=await Promise.all([loadLiveData(true),loadStateMonthlyDirect()]);if(l){applyLiveData();refresh();}else if(s)renderSparks();},5*60*1000);
 </script>
-
-<!-- ─────────────────────────────────────────────────────────────────────────
-  FIX #2: The refresh() wrapper patches STATE_MONTHLY + re-runs computeStateCsvRevenue
-  BEFORE calling renderMonthlyTotals() — fixing the one-cycle stale bug.
-  The key change: computeStateCsvRevenue() now runs inside the wrapper, then
-  fullYearData is regenerated (so updated P1 targets feed projections), then
-  renderMonthlyTotals() reads the fresh STATE_CSV_MONTHLY_REV.
-──────────────────────────────────────────────────────────────────────────── -->
 <div id="hm-tt" style="display:none;position:fixed;background:rgba(13,17,23,.97);border:1px solid #30363d;border-radius:8px;padding:8px 12px;font-size:11px;font-family:monospace;pointer-events:none;z-index:9999;min-width:130px;box-shadow:0 4px 20px rgba(0,0,0,.7)"></div>
-
 <script>
 initSparks();
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FIX #2: Correct refresh() wrapper
-// OLD: _origRefresh() called renderMonthlyTotals() BEFORE computeStateCsvRevenue()
-// ran in the wrapper — so monthly totals always showed the previous cycle's values.
-// NEW: wrapper rebuilds STATE_MONTHLY, runs computeStateCsvRevenue (FIX #3 blended
-// rate applied), regenerates fullYearData with updated P1 targets (FIX #1), then
-// calls renderMonthlyTotals() explicitly to get fresh values in the same cycle.
-// ─────────────────────────────────────────────────────────────────────────────
-const _coreRefresh = refresh; // the base refresh() defined above
-window.refresh = function(){
-  // 1. Rebuild state monthly seed with latest P1 targets (FIX #1 already recalibrated)
-  STATE_MONTHLY = buildStateMonthlySeed();
-  applyFallback(); // always protect Jan-May actuals
-
-  // 2. Layer any cached CSV on top
-  const sc = readStateCache();
-  if(sc){
-    const parsed = parseStateMonthlyCsv(sc.raw);
-    if(parsed){
-      applyStateCells(parsed);
-      recalibrateFromMonthlyActuals(); // FIX #1: updates P1 dailyContrib targets
-    }
-  }
-
-  // 3. Recompute blended revenue BEFORE chart/totals render (FIX #3)
-  computeStateCsvRevenue();
-
-  // 4. Regenerate chart + full-year data now that targets are fresh (FIX #1 effect)
-  chartData    = generateData();
-  fullYearData = generateFullYearData();
-
-  // 5. Render everything — monthly totals now reads current-cycle STATE_CSV_MONTHLY_REV
-  updateStats();
-  renderPhases();
-  renderStates();
-  draw();
-  renderMonthlyTotals(); // FIX #2: called here with fresh data, not inside _coreRefresh
-  drawMap();
-  renderSparks();
-  render2027Card();
+const _cr=refresh;
+window.refresh=function(){
+  STATE_MONTHLY=buildStateMonthlySeed();applyFallback();
+  const sc=readStateCache();if(sc){const p=parseStateMonthlyCsv(sc.raw);if(p){applyStateCells(p);recalibrateFromMonthlyActuals();}}
+  computeStateCsvRevenue();chartData=generateData();fullYearData=generateFullYearData();
+  updateStats();renderPhases();renderStates();draw();renderMonthlyTotals();drawMap();renderSparks();render2027Card();
 };
 </script>
-
 </body>
 </html>
