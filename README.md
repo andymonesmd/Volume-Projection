@@ -108,12 +108,11 @@
 <div id="live-status">
   <span id="live-dot" class="loading"></span>
   <span id="live-label" style="color:#6e7681">Connecting…</span>
-  <button onclick="manualRefresh()" title="Refresh data" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;transition:all .15s;line-height:1" onmouseover="this.style.borderColor='#4ade80';this.style.color='#4ade80'" onmouseout="this.style.borderColor='#30363d';this.style.color='#6e7681'">↻ Refresh</button>
+  <button onclick="manualRefresh()" title="Refresh data" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#4ade80';this.style.color='#4ade80'" onmouseout="this.style.borderColor='#30363d';this.style.color='#6e7681'">↻ Refresh</button>
   <span id="live-ts" style="color:#484f58;font-size:9px"></span>
-  <span style="color:#30363d">·</span>
-  <span id="live-months"></span>
-  <span id="live-fallback"></span>
   <span style="flex:1;min-width:0"></span>
+  <span id="live-months" style="display:none"></span>
+  <span id="live-fallback" style="display:none"></span>
   <button onclick="openDailyImportModal()" title="Import daily sheet data" style="padding:3px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#60a5fa';this.style.color='#60a5fa'" onmouseout="this.style.borderColor='#30363d';this.style.color='#6e7681'">⬆ Daily</button>
   <button onclick="openPasteModal()" title="Import state monthly data" style="padding:3px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#60a5fa';this.style.color='#60a5fa'" onmouseout="this.style.borderColor='#30363d';this.style.color='#6e7681'">⬆ States</button>
 </div>
