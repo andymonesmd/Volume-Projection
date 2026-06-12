@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -258,7 +258,7 @@ const GOAL_MONTHLY = 60000;
 // ── CONFIG ────────────────────────────────────────────────────────────────────
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVT-Xukwe3rxiPAnaMGK8ywEVf0Tfnm9U6cTQo9Ts6DX3DOoGQNcgvHj2pnCAO0_N3/exec";
 const RATES = { rh:12, td1:23, td2:28, mdl1:25, mdl2:28 };
-const STATE_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR58Y-q2wQtnGKkSraBWHu7xDfDTxIj6GqeWAYR3Qw_qsPBlK4T7flUPxw27BiHADcFxd1ME-e5g7ut/pub?gid=1484825929&single=true&output=csv";
+const STATE_CSV_URL = "https://docs.google.com/spreadsheets/d/1d0BpVfhVznyJS6olF2rm2P-iELZX8kOj9omG51_UMN8/pub?gid=1484825929&single=true&output=csv";
 
 const VERIFIED_MONTHLY_TOTALS = { Jan:8964, Feb:25512, Mar:31404, Apr:32352 };
 const FALLBACK_APR_DAILY = [396,576,540,576,672,1164,1764,2004,816,1656,720,1236,852,876,1044,840,528,708,720,1116,1380,1297,732,1340,1136,2208,1483,1609,1595,1656];
@@ -334,7 +334,7 @@ let showTZ=false;
 const FIPS={"01":"AL","02":"AK","04":"AZ","05":"AR","06":"CA","08":"CO","09":"CT","10":"DE","12":"FL","13":"GA","15":"HI","16":"ID","17":"IL","18":"IN","19":"IA","20":"KS","21":"KY","22":"LA","23":"ME","24":"MD","25":"MA","26":"MI","27":"MN","28":"MS","29":"MO","30":"MT","31":"NE","32":"NV","33":"NH","34":"NJ","35":"NM","36":"NY","37":"NC","38":"ND","39":"OH","40":"OK","41":"OR","42":"PA","44":"RI","45":"SC","46":"SD","47":"TN","48":"TX","49":"UT","50":"VT","51":"VA","53":"WA","54":"WV","55":"WI","56":"WY"};
 const SMALL=new Set(["RI","CT","DE","NJ","NH","VT","MD","MA"]);
 const ALL_MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-function canBeActual(mi){return mi<=new Date().getMonth();}
+function canBeActual(mi){return mi < new Date().getMonth();} // completed months only — never current partial month
 let activeStates=Object.keys(STATE_DATA).filter(s=>STATE_DATA[s].locked);
 let hoveredIdx=null,chartData=[],fullYearData=[],usTopoData=null;
 function sRand(s){const x=Math.sin(s+1)*43758.5453;return x-Math.floor(x);}
@@ -352,7 +352,7 @@ function generateData(){
   const p2F=d=>{const x=(d-p2L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-0.028*x));};
   function arr(mo,mi){if(LIVE_MONTHLY[mo]?.daily?.length>0)return LIVE_MONTHLY[mo].daily;if(mi===3)return APR_DAILY;if(mi===4)return MAY_ACTUAL_DAILY;return[];}
   const data=[];let di=0;
-  for(let off=-3;off<=3;off++){
+  for(let off=-2;off<=1;off++){
     const mi=cmi+off,mi12=((mi%12)+12)%12,yr=mi<0?cy-1:(mi>11?cy+1:cy);
     const mo=ALL_MONTHS[mi12],dim=DIM[mi12],a=arr(mo,mi12),hasSheet=a.length>0;
     for(let d=0;d<dim;d++){
@@ -532,14 +532,50 @@ function draw(){
     }
   });
 
-  // Rolling avg — amber, solid over actuals, dashed continuation into projected
-  ctx.strokeStyle="#fb923c";ctx.lineWidth=2;ctx.beginPath();let started=false;
-  chartData.forEach((d,i)=>{if(d.type!=="actual"||d.estimated)return;const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual"&&!x.estimated);const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;const x=PAD.left+(i/chartData.length)*cW+bW/2,y=PAD.top+cH-(avg/maxY)*cH;if(!started){ctx.moveTo(x,y);started=true;}else ctx.lineTo(x,y);});ctx.stroke();
-  // Dashed continuation
-  if(started&&ni>0){
-    const la=chartData.filter((d,i)=>i<ni&&d.type==="actual"&&!d.estimated);
-    if(la.length>=3){const lastAvg=la.slice(-7).reduce((a,d)=>a+d.value,0)/Math.min(7,la.length);const lx=PAD.left+((ni-1)/chartData.length)*cW+bW/2,ly=PAD.top+cH-(lastAvg/maxY)*cH;const pp=chartData.slice(ni).filter(d=>d.type==="proj");if(pp.length){ctx.strokeStyle="#fb923c44";ctx.lineWidth=1.5;ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(lx,ly);pp.forEach((d,k)=>{const idx=ni+k;const x=PAD.left+(idx/chartData.length)*cW+bW/2,y=PAD.top+cH-(d.value/maxY)*cH;ctx.lineTo(x,y);});ctx.stroke();ctx.setLineDash([]);}}}
+  // Rolling avg — pre-compute actual points only (stops at NOW, no projection continuation)
+  const avgPoints = [];
+  chartData.forEach((d,i)=>{
+    if(d.type!=="actual"||d.estimated)return;
+    const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual"&&!x.estimated);
+    const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;
+    avgPoints.push({x:PAD.left+(i/chartData.length)*cW+bW/2, y:PAD.top+cH-(avg/maxY)*cH});
+  });
 
+  if(window._avgAnim) cancelAnimationFrame(window._avgAnim);
+  if(avgPoints.length < 2) return;
+
+  const DURATION = 1400;
+  const startTime = performance.now();
+
+  function drawAvgFrame(ts) {
+    const elapsed = ts - startTime;
+    const progress = Math.min(1, elapsed / DURATION);
+    const t = 1 - Math.pow(1 - progress, 3); // ease out cubic
+
+    // How many points to draw based on progress
+    const visibleCount = Math.max(2, Math.ceil(t * avgPoints.length));
+    const pts = avgPoints.slice(0, visibleCount);
+
+    // Redraw just the avg line — use clipping so we only paint up to revealed point
+    const revealX = pts[pts.length - 1].x + 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, revealX, H);
+    ctx.clip();
+
+    ctx.strokeStyle = "#fb923c";
+    ctx.lineWidth = 2.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+
+    ctx.restore();
+
+    if(progress < 1) window._avgAnim = requestAnimationFrame(drawAvgFrame);
+  }
+
+  window._avgAnim = requestAnimationFrame(drawAvgFrame);
   // Month labels
   let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
 }
@@ -643,12 +679,12 @@ window.addEventListener("resize",()=>{draw();drawMap();});
 // ── STATE MONTHLY ─────────────────────────────────────────────────────────────
 let STATE_MONTHLY={};
 const FALLBACK_STATE_ENC={
-  TX:[0,1,784,818,1442,0,0,0,0,0,0,0],NC:[0,313,591,556,718,0,0,0,0,0,0,0],
-  AZ:[453,437,583,416,546,0,0,0,0,0,0,0],OR:[323,311,299,312,342,0,0,0,0,0,0,0],
-  IN:[0,197,284,241,320,0,0,0,0,0,0,0],TN:[0,105,199,147,232,0,0,0,0,0,0,0],
-  WA:[0,0,61,86,116,0,0,0,0,0,0,0],OH:[0,0,0,14,388,0,0,0,0,0,0,0],
-  IL:[0,0,0,8,300,0,0,0,0,0,0,0],MI:[0,0,0,6,252,0,0,0,0,0,0,0],
-  PA:[0,0,0,0,276,0,0,0,0,0,0,0],AL:[0,0,0,50,257,0,0,0,0,0,0,0],
+  TX:[0,1,784,818,1205,0,0,0,0,0,0,0],NC:[0,313,591,556,734,0,0,0,0,0,0,0],
+  AZ:[453,437,583,416,536,0,0,0,0,0,0,0],OR:[323,311,299,312,359,0,0,0,0,0,0,0],
+  IN:[0,197,284,241,319,0,0,0,0,0,0,0],TN:[0,105,199,147,248,0,0,0,0,0,0,0],
+  WA:[0,0,61,86,162,0,0,0,0,0,0,0],OH:[0,0,0,14,413,0,0,0,0,0,0,0],
+  IL:[0,0,0,8,352,0,0,0,0,0,0,0],MI:[0,0,0,6,260,0,0,0,0,0,0,0],
+  PA:[0,0,0,0,316,0,0,0,0,0,0,0],AL:[0,0,0,50,257,0,0,0,0,0,0,0],
   CO:[0,0,0,0,0,0,0,0,0,0,0,0],GA:[0,0,0,0,0,0,0,0,0,0,0,0],
   FL:[0,0,0,0,0,0,0,0,0,0,0,0],NV:[0,0,0,0,0,0,0,0,0,0,0,0]
 };
@@ -730,7 +766,7 @@ function saveStateCache(raw){try{localStorage.setItem(LS_STATE_KEY,raw);localSto
 function readStateCache(){try{const raw=localStorage.getItem(LS_STATE_KEY),ts=localStorage.getItem(LS_STATE_TIME);if(!raw||!ts)return null;return{raw,ageMin:Math.round((Date.now()-+ts)/60000)};}catch(e){return null;}}
 async function loadStateMonthlyDirect(){try{const r=await fetch(STATE_CSV_URL+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const csv=await r.text();if(!csv||csv.trim().length<10)throw new Error('empty');const parsed=parseStateMonthlyCsv(csv);if(!parsed||!Object.keys(parsed).length)throw new Error('no rows');STATE_MONTHLY=buildStateMonthlySeed();applyFallback();applyStateCells(parsed);debugStateCsv(csv);recalibrateFromMonthlyActuals();computeStateCsvRevenue();saveStateCache(csv);const months=[...new Set(Object.values(parsed).flatMap(ms=>ms.map((c,mi)=>c?.actual&&c.v>0?ALL_MONTHS[mi]:null).filter(Boolean)))];const el=document.getElementById('live-months');if(el){el.textContent=months.join(', ');el.style.color='#4ade80';}return true;}catch(e){console.warn('State CSV:',e.message);const sc=readStateCache();if(sc){const p=parseStateMonthlyCsv(sc.raw);if(p){STATE_MONTHLY=buildStateMonthlySeed();applyFallback();applyStateCells(p);recalibrateFromMonthlyActuals();computeStateCsvRevenue();const el=document.getElementById('live-months');if(el){el.textContent='';el.style.color='#f59e0b';}return true;}}return false;}}
 
-function initSparks(){STATE_MONTHLY=buildStateMonthlySeed();applyFallback();try{const r=localStorage.getItem(LS_STATE_KEY);if(r&&(r.startsWith('[object')||r.startsWith('{'))){localStorage.removeItem(LS_STATE_KEY);localStorage.removeItem(LS_STATE_TIME);}}catch(e){}const sc=readStateCache();if(sc){const p=parseStateMonthlyCsv(sc.raw);if(p){applyStateCells(p);recalibrateFromMonthlyActuals();computeStateCsvRevenue();}}renderSparks();loadStateMonthlyDirect().then(ok=>{if(ok){computeStateCsvRevenue();fullYearData=generateFullYearData();renderMonthlyTotals();renderSparks();refresh();}});}
+function initSparks(){STATE_MONTHLY=buildStateMonthlySeed();applyFallback();try{localStorage.removeItem(LS_STATE_KEY);localStorage.removeItem(LS_STATE_TIME);}catch(e){}const sc=readStateCache();if(sc){const p=parseStateMonthlyCsv(sc.raw);if(p){applyStateCells(p);recalibrateFromMonthlyActuals();computeStateCsvRevenue();}}renderSparks();loadStateMonthlyDirect().then(ok=>{if(ok){computeStateCsvRevenue();fullYearData=generateFullYearData();renderMonthlyTotals();renderSparks();refresh();}});}
 
 try{const hit=bootFromCache();computeRecentBaseline();refresh();setView("phases");if(!hit){setLiveStatus('err','No cache — use ⬆ Import buttons');document.getElementById('h-badge').textContent='fallback data';document.getElementById('h-badge').className='badge badge-yellow';document.getElementById('subtitle').textContent='Showing model estimates — use ⬆ Import Daily or ⬆ Import State Data to load real data.';}}catch(e){const b=document.getElementById('err-box');if(b){b.style.display='block';b.textContent='⚠ Init error: '+e.message;}console.error(e);}
 
