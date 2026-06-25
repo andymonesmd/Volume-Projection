@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -362,7 +363,7 @@ function generateData(){
         const pf=p1F(date);
         // Only assign P1 slice when Phase 1 is toggled on and date is after launch
         const rP1=p1Active?(mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.round(p1*pf)):0;
-        data.push({month:mo,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:!hasSheet&&off<-1});}
+        data.push({month:mo,day:d+1,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:!hasSheet&&off<-1});}
       else{const n=(sRand(di+400)-.5)*.18,bl=RECENT_BASELINE||(base+p1),tf=1+0.015*Math.max(0,off);
         const p2v=Math.round(p2*p2F(date)*(1+n*.6));
         const bv=Math.round(bl*tf*(1+n));
@@ -370,7 +371,7 @@ function generateData(){
         const p1Active=p1>0;
         const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
         const p1V=p1Active?Math.max(0,bv-eV):0;
-        data.push({month:mo,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
+        data.push({month:mo,day:d+1,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
       di++;
     }
   }
@@ -400,7 +401,7 @@ function generateFullYearData(){
         const p1Active=p1>0;
         const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
         const p1V=p1Active?Math.max(0,bv-eV):0;
-        data.push({month:mo,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
+        data.push({month:mo,day:d+1,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
       di++;
     }
   }
@@ -584,7 +585,7 @@ function showTooltip(e){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
   hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
-  document.getElementById("tt-date").textContent=`${d.month} · ${d.type==="actual"?(d.estimated?"Estimated":"Actual"):"Projected"}`;
+  document.getElementById("tt-date").textContent=`${d.month} ${d.day||""} · ${d.type==="actual"?(d.estimated?"Estimated":"Actual"):"Projected"}`;
   document.getElementById("tt-val").style.color=d.type==="actual"?(d.estimated?"#6e7681":"#4ade80"):"#e6edf3";
   document.getElementById("tt-val").textContent="$"+d.value.toLocaleString()+(d.type==="proj"?" proj":"");
   const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
