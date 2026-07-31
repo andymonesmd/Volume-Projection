@@ -147,6 +147,12 @@
 </div>
 <div class="footnote" id="footnote">RH $12 · TD phone $23 / video $28 · MDL $25 / $28 · Goal: $2,000/day · $60,000/month · Phase 1 live Apr 26 · projections anchor to post-P1 30-day actual avg</div>
 
+<div class="totals-wrap">
+  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58" id="totals-note">loading…</span></div>
+  <div class="monthly-grid" id="monthly-grid"></div>
+  <div class="annual-row" id="annual-row"></div>
+</div>
+
 <div style="margin-top:22px;margin-bottom:22px">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
     <div>
@@ -215,11 +221,6 @@
 </div>
 <div id="map-tt"></div>
 
-<div class="totals-wrap">
-  <div class="totals-header"><span class="totals-header-label">Monthly totals</span><span style="font-size:9px;color:#484f58" id="totals-note">loading…</span></div>
-  <div class="monthly-grid" id="monthly-grid"></div>
-  <div class="annual-row" id="annual-row"></div>
-</div>
 
 <div style="margin-top:14px;border:1px solid #21262d;border-radius:10px;overflow:hidden" id="proj-2027-wrap">
   <div style="padding:10px 14px;border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
