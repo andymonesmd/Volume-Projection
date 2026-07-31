@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -239,7 +239,7 @@
     <div style="padding:clamp(10px,2vw,16px) clamp(10px,2vw,18px);border-right:1px solid #21262d;min-width:0">
       <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">+ Phase 2 add-on</div>
       <div style="font-size:clamp(18px,4vw,26px);font-weight:800;color:#f59e0b;letter-spacing:-.02em" id="y27-p2-add">—</div>
-      <div style="font-size:clamp(9px,1.8vw,10px);color:#484f58;margin-top:3px" id="y27-p2-daily">toggle ON · FL·GA·CO·NV</div>
+      <div style="font-size:clamp(9px,1.8vw,10px);color:#484f58;margin-top:3px" id="y27-p2-daily">toggle ON · FL·GA·CO·NV·LA·MO·WI</div>
     </div>
     <div style="padding:clamp(10px,2vw,16px) clamp(10px,2vw,18px);background:#161b22;min-width:0">
       <div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Total 2027</div>
@@ -320,14 +320,15 @@ const STATE_DATA={
   MI:{group:"phase1",pop:10.1,dailyContrib:210,locked:false},IL:{group:"phase1",pop:12.8,dailyContrib:285,locked:false},
   AL:{group:"phase1",pop:5.1,dailyContrib:100,locked:false},
   CO:{group:"phase2",pop:6,dailyContrib:110,locked:false},GA:{group:"phase2",pop:11,dailyContrib:170,locked:false},
-  FL:{group:"phase2",pop:22.6,dailyContrib:280,locked:false},NV:{group:"phase2",pop:3.2,dailyContrib:95,locked:false}
+  FL:{group:"phase2",pop:22.6,dailyContrib:280,locked:false},NV:{group:"phase2",pop:3.2,dailyContrib:95,locked:false},
+  LA:{group:"phase2",pop:4.6,dailyContrib:70,locked:false},MO:{group:"phase2",pop:6.2,dailyContrib:105,locked:false},WI:{group:"phase2",pop:5.9,dailyContrib:100,locked:false}
 };
 const ORIGINAL_EXISTING_CONTRIB=Object.fromEntries(Object.entries(STATE_DATA).filter(([,v])=>v.group==='existing').map(([k,v])=>[k,v.dailyContrib]));
 const COMPACT_STATES=new Set(['AL','AZ','AR','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NC','ND','OH','OK','PA','SD','TN','TX','UT','VT','WA','WV','WI','WY','DC']);
-const ALL_STATES={AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},HI:{pop:1.5},IA:{pop:3.2},ID:{pop:1.9},KS:{pop:2.9},KY:{pop:4.5},LA:{pop:4.6},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},MS:{pop:3.0},MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},NM:{pop:2.1},NY:{pop:19.6},NJ:{pop:9.3},OK:{pop:4.0},RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},WI:{pop:5.9},WV:{pop:1.8},WY:{pop:0.6},MN:{pop:5.8}};
-const PHASE_META={existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},phase2:{label:"Phase 2",color:"#f59e0b",states:["FL","GA","CO","NV"]}};
+const ALL_STATES={AK:{pop:0.7},AR:{pop:3.1},CA:{pop:39.0},CT:{pop:3.6},DE:{pop:1.0},HI:{pop:1.5},IA:{pop:3.2},ID:{pop:1.9},KS:{pop:2.9},KY:{pop:4.5},MA:{pop:7.0},MD:{pop:6.2},ME:{pop:1.4},MS:{pop:3.0},MT:{pop:1.1},ND:{pop:0.8},NE:{pop:2.0},NH:{pop:1.4},NM:{pop:2.1},NY:{pop:19.6},NJ:{pop:9.3},OK:{pop:4.0},RI:{pop:1.1},SD:{pop:0.9},UT:{pop:3.4},VA:{pop:8.7},VT:{pop:0.6},WV:{pop:1.8},WY:{pop:0.6},MN:{pop:5.8}};
+const PHASE_META={existing:{label:"Existing",color:"#4ade80",states:["IN","TX","NC","TN","AZ","OR","WA"]},phase1:{label:"Phase 1",color:"#60a5fa",states:["PA","OH","MI","IL","AL"]},phase2:{label:"Phase 2",color:"#f59e0b",states:["FL","GA","CO","NV","LA","MO","WI"]}};
 const GRP_COLORS={existing:"#4ade80",phase1:"#60a5fa",phase2:"#f59e0b"};
-const GRP_LABELS={existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — FL·GA·CO·NV"};
+const GRP_LABELS={existing:"Existing (active)",phase1:"Phase 1 — PA·OH·MI·IL·AL (live)",phase2:"Phase 2 scenario — FL·GA·CO·NV·LA·MO·WI"};
 const TZ={ME:"ET",NH:"ET",VT:"ET",MA:"ET",RI:"ET",CT:"ET",NY:"ET",NJ:"ET",DE:"ET",MD:"ET",PA:"ET",OH:"ET",WV:"ET",VA:"ET",NC:"ET",SC:"ET",GA:"ET",FL:"ET",MI:"ET",IN:"ET",KY:"ET",TN:"CST",AL:"CST",MN:"CST",WI:"CST",IL:"CST",MS:"CST",AR:"CST",LA:"CST",MO:"CST",IA:"CST",KS:"CST",OK:"CST",TX:"CST",ND:"CST",SD:"CST",NE:"CST",MT:"MT",WY:"MT",CO:"MT",UT:"MT",NM:"MT",AZ:"MT",ID:"MT",WA:"PT",OR:"PT",CA:"PT",NV:"PT",AK:"PT",HI:"PT"};
 const TZ_META={PT:{label:"Pacific",abbr:"PST",ianatZ:"America/Los_Angeles",color:"#f87171"},MT:{label:"Mountain",abbr:"MT",ianatZ:"America/Denver",color:"#f59e0b"},CST:{label:"Central",abbr:"CST",ianatZ:"America/Chicago",color:"#34d399"},ET:{label:"Eastern",abbr:"EST",ianatZ:"America/New_York",color:"#818cf8"}};
 let showTZ=false;
@@ -362,7 +363,7 @@ function generateData(){
         const pf=p1F(date);
         // Only assign P1 slice when Phase 1 is toggled on and date is after launch
         const rP1=p1Active?(mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.round(p1*pf)):0;
-        data.push({month:mo,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:!hasSheet});}
+        data.push({month:mo,day:d+1,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:!hasSheet&&off<-1});}
       else{const n=(sRand(di+400)-.5)*.18,bl=RECENT_BASELINE||(base+p1),tf=1+0.015*Math.max(0,off);
         const p2v=Math.round(p2*p2F(date)*(1+n*.6));
         const bv=Math.round(bl*tf*(1+n));
@@ -370,7 +371,7 @@ function generateData(){
         const p1Active=p1>0;
         const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
         const p1V=p1Active?Math.max(0,bv-eV):0;
-        data.push({month:mo,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
+        data.push({month:mo,day:d+1,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
       di++;
     }
   }
@@ -400,7 +401,7 @@ function generateFullYearData(){
         const p1Active=p1>0;
         const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
         const p1V=p1Active?Math.max(0,bv-eV):0;
-        data.push({month:mo,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
+        data.push({month:mo,day:d+1,value:bv+p2v,eV,p1V,p2V:p2v,p3V:0,type:"proj"});}
       di++;
     }
   }
@@ -446,7 +447,7 @@ function renderMonthlyTotals(){
   const tn=document.getElementById('totals-note');if(tn)tn.textContent=`verified Jan–Apr · goal $${GOAL_MONTHLY.toLocaleString()}/mo ·  projected ${curMo}–Dec`;
 }
 
-function renderPhases(){const w=document.getElementById("phases-view");w.innerHTML="";Object.entries(PHASE_META).forEach(([key,meta])=>{const lk=key==="existing",on=meta.states.every(s=>activeStates.includes(s)),contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);const card=document.createElement("div");card.className="phase-card"+(lk?" locked":"");card.style.borderColor=on?meta.color:"#30363d";card.style.background=on?meta.color+"11":"#161b22";card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${lk?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${on?100:0}%;background:${meta.color}"></div></div>`;if(!lk)card.onclick=()=>togglePhase(key);w.appendChild(card);});}
+function renderPhases(){const w=document.getElementById("phases-view");w.innerHTML="";Object.entries(PHASE_META).forEach(([key,meta])=>{const lk=key==="existing",on=meta.states.every(s=>activeStates.includes(s)),contrib=meta.states.reduce((s,st)=>s+(STATE_DATA[st]?.dailyContrib||0),0);const card=document.createElement("div");card.className="phase-card"+(lk?" locked":"");card.style.borderColor=on?meta.color:"#30363d";card.style.background=on?meta.color+"11":"#161b22";card.innerHTML=`<div class="phase-card-label" style="color:${meta.color}">${meta.label}${lk?" 🔒":key==="phase1"?" ✓ live":""}</div><div class="phase-card-states" style="font-size:9px">${meta.states.join(" · ")}</div><div class="phase-card-contrib">+$${contrib.toLocaleString()}<span style="font-size:9px;color:#6e7681">/day</span></div><div class="phase-progress"><div class="phase-progress-bar" style="width:${on?100:0}%;background:${meta.color}"></div></div>`;if(!lk)card.onclick=()=>togglePhase(key);w.appendChild(card);});}
 function renderStates(){const w=document.getElementById("states-view");w.innerHTML="";Object.entries(PHASE_META).forEach(([key,meta])=>{const g=document.createElement("div");g.className="state-group";g.innerHTML=`<div class="state-group-label" style="color:${meta.color}">${meta.label}</div>`;const b=document.createElement("div");b.className="state-btns";meta.states.forEach(st=>{const on=activeStates.includes(st),lk=STATE_DATA[st]?.locked;const btn=document.createElement("button");btn.className="state-btn"+(lk?" locked":"");btn.style.borderColor=on?meta.color:"#30363d";btn.style.background=on?meta.color+"1a":"transparent";btn.style.color=on?meta.color:"#484f58";btn.innerHTML=`${st}<span style="font-size:9px;opacity:.65;margin-left:4px">+$${STATE_DATA[st].dailyContrib}</span>`;if(!lk)btn.onclick=()=>toggleState(st);b.appendChild(btn);});g.appendChild(b);w.appendChild(g);});}
 function togglePhase(key){const s=PHASE_META[key].states,on=s.every(st=>activeStates.includes(st));activeStates=on?activeStates.filter(st=>!s.includes(st)):[...new Set([...activeStates,...s])];refresh();renderSparks();}
 function toggleState(st){if(STATE_DATA[st]?.locked)return;activeStates=activeStates.includes(st)?activeStates.filter(s=>s!==st):[...activeStates,st];refresh();renderSparks();}
@@ -584,7 +585,7 @@ function showTooltip(e){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
   hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
-  document.getElementById("tt-date").textContent=`${d.month} · ${d.type==="actual"?(d.estimated?"Estimated":"Actual"):"Projected"}`;
+  document.getElementById("tt-date").textContent=`${d.month} ${d.day||""} · ${d.type==="actual"?(d.estimated?"Estimated":"Actual"):"Projected"}`;
   document.getElementById("tt-val").style.color=d.type==="actual"?(d.estimated?"#6e7681":"#4ade80"):"#e6edf3";
   document.getElementById("tt-val").textContent="$"+d.value.toLocaleString()+(d.type==="proj"?" proj":"");
   const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
@@ -660,7 +661,7 @@ function render2027Card(){
   const ab=months.reduce((s,m)=>s+m.baseMonthly,0),ap2=months.reduce((s,m)=>s+m.p2Monthly,0),at=ab+(show2027P2?ap2:0);
   const fmtM=v=>v>=1e6?'$'+(v/1e6).toFixed(2)+'M':'$'+Math.round(v/1000).toFixed(1)+'k';
   document.getElementById('y27-base-total').textContent=fmtM(ab);document.getElementById('y27-base-daily').textContent='$'+Math.round(ab/365).toLocaleString()+'/day avg';
-  document.getElementById('y27-p2-add').textContent=show2027P2?'+'+fmtM(ap2):'—';document.getElementById('y27-p2-daily').textContent=show2027P2?'+$'+Math.round(ap2/365).toLocaleString()+'/day':'toggle ON · FL·GA·CO·NV';
+  document.getElementById('y27-p2-add').textContent=show2027P2?'+'+fmtM(ap2):'—';document.getElementById('y27-p2-daily').textContent=show2027P2?'+$'+Math.round(ap2/365).toLocaleString()+'/day':'toggle ON · FL·GA·CO·NV·LA·MO·WI';
   document.getElementById('y27-total').textContent=fmtM(at);document.getElementById('y27-total-daily').textContent='$'+Math.round(at/365).toLocaleString()+'/day avg';
   const btn=document.getElementById('p2-toggle-2027');if(btn){btn.textContent=show2027P2?'ON':'OFF';btn.style.borderColor=show2027P2?'#f59e0b':'#30363d';btn.style.background=show2027P2?'rgba(245,158,11,.12)':'transparent';btn.style.color=show2027P2?'#f59e0b':'#6e7681';}
   const grid=document.getElementById('grid-2027');if(grid){grid.innerHTML=months.map((m,i)=>{const tot=m.baseMonthly+(show2027P2?m.p2Monthly:0),atG=tot>=GOAL_MONTHLY;return`<div style="padding:clamp(6px,1.5vw,10px) clamp(4px,1.2vw,12px);border-right:1px solid #21262d;border-bottom:1px solid #21262d;${i%6===5?'border-right:none':''}${i>=6?'border-bottom:none':''}min-width:0;overflow:hidden"><div style="font-size:9px;color:#6e7681;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${m.mo}</div><div style="font-size:clamp(11px,2vw,14px);font-weight:700;color:${atG?'#22c55e':'#e879f9'}">${fmtM(tot)}</div><div style="font-size:9px;color:${atG?'#166534':'#484f58'};margin-top:2px">${atG?'✓ on goal':'$'+m.baseDaily.toLocaleString()+'/d'}</div></div>`;}).join('');}
@@ -686,7 +687,8 @@ const FALLBACK_STATE_ENC={
   IL:[0,0,0,8,352,0,0,0,0,0,0,0],MI:[0,0,0,6,260,0,0,0,0,0,0,0],
   PA:[0,0,0,0,316,0,0,0,0,0,0,0],AL:[0,0,0,50,257,0,0,0,0,0,0,0],
   CO:[0,0,0,0,0,0,0,0,0,0,0,0],GA:[0,0,0,0,0,0,0,0,0,0,0,0],
-  FL:[0,0,0,0,0,0,0,0,0,0,0,0],NV:[0,0,0,0,0,0,0,0,0,0,0,0]
+  FL:[0,0,0,0,0,0,0,0,0,0,0,0],NV:[0,0,0,0,0,0,0,0,0,0,0,0],
+  LA:[0,0,0,0,0,0,0,0,0,0,0,0],MO:[0,0,0,0,0,0,0,0,0,0,0,0],WI:[0,0,0,0,0,0,0,0,0,0,0,0]
 };
 const FALLBACK_ACTUAL_THRU=4;
 function applyFallback(){Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{if(!STATE_MONTHLY[st])return;arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]={v,actual:v>0};});});}
