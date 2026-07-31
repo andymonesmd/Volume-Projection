@@ -140,7 +140,8 @@
   <div class="legend-item"><div class="legend-dot" style="background:#4ade80"></div><span class="legend-label">Existing states (actual)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div><span class="legend-label">Phase 1: PA·OH·MI·IL·AL (live Apr 26)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div><span class="legend-label">Phase 2 scenario: FL·GA·CO·NV</span></div>
-  <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day moving avg</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div><span class="legend-label">7-day avg (actual)</span></div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f87171;opacity:.75"></div><span class="legend-label">7-day avg (projected, loops)</span></div>
   <div class="legend-item"><div class="legend-dot" style="background:#4ade8044;border:1px dashed #4ade80"></div><span class="legend-label">Estimated (no daily data)</span></div>
   <div class="legend-item"><div style="width:10px;height:2px;border-bottom:2px dashed #22c55e;margin-top:4px"></div><span class="legend-label" style="margin-left:5px">$2k/day goal</span></div>
 </div>
@@ -166,9 +167,10 @@
     <p style="font-size:11px;color:#64748b;margin-bottom:12px;line-height:1.6">Select all cells in a month tab (Ctrl+A), copy, paste here.</p>
     <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
       <span style="font-size:9px;color:#484f58;text-transform:uppercase;letter-spacing:.08em;align-self:center">Paste as:</span>
-      <button onclick="setDailyTab('Apr')" id="dtab-Apr" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer">Apr</button>
+      <button onclick="setDailyTab('Apr')" id="dtab-Apr" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Apr</button>
       <button onclick="setDailyTab('May')" id="dtab-May" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">May</button>
-      <button onclick="setDailyTab('Jun')" id="dtab-Jun" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Jun</button>
+      <button onclick="setDailyTab('Jun')" id="dtab-Jun" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #4ade80;background:rgba(74,222,128,.12);color:#4ade80;cursor:pointer">Jun</button>
+      <button onclick="setDailyTab('Jul')" id="dtab-Jul" style="padding:2px 10px;border-radius:4px;font-size:10px;font-family:monospace;border:1px solid #30363d;background:transparent;color:#6e7681;cursor:pointer">Jul</button>
     </div>
     <textarea id="daily-input" placeholder="Paste month tab here…" style="width:100%;height:160px;background:#0d1117;border:1px solid #30363d;border-radius:6px;color:#e2e8f0;font-family:monospace;font-size:11px;padding:10px;resize:vertical;outline:none;line-height:1.5"></textarea>
     <div id="daily-error" style="display:none;margin-top:8px;font-size:11px;color:#f87171"></div>
@@ -285,8 +287,30 @@ function parseRawText(text){const nm={};let json;try{json=JSON.parse(text);}catc
 async function loadLiveData(bg=false){try{const r=await fetch(APPS_SCRIPT_URL+'?_='+Date.now(),{cache:'no-store',redirect:'follow'});if(!r.ok)throw new Error('HTTP '+r.status);const text=await r.text();if(!text||text.trim().length<10)throw new Error('Empty');const nm=parseRawText(text);if(!Object.keys(nm).length)throw new Error('No sheets');saveCache(text);LIVE_MONTHLY=nm;liveDataLoaded=true;const ts=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});setLiveStatus('live','Live');document.getElementById('live-ts').textContent='Updated '+ts;return true;}catch(e){console.warn('Live fetch:',e.message);if(liveDataLoaded){const c=readCache();setLiveStatus('live','Cached · '+(c?c.ageMin+'m ago':'?'));}else setLiveStatus('err','Sheet blocked — use ⬆ Import');return liveDataLoaded;}}
 function bootFromCache(){try{const t=localStorage.getItem(LS_KEY),ts=localStorage.getItem(LS_TIME);if(!t||!ts)return false;const p=parseRawText(t);if(!Object.keys(p).length)return false;const age=Math.round((Date.now()-+ts)/60000);LIVE_MONTHLY=p;liveDataLoaded=true;setLiveStatus('live','Cached · '+age+'m ago');document.getElementById('live-ts').textContent='Cached '+age+'m ago';document.getElementById('live-months').textContent=Object.keys(p).join(', ');applyLiveData();return true;}catch(e){return false;}}
 
-let RECENT_BASELINE=null,RECENT_EXIST_FRAC=0.5;
-function computeRecentBaseline(){const p1=[...APR_DAILY.slice(P1_LIVE_APR_IDX),...MAY_ACTUAL_DAILY];if(!p1.length){RECENT_BASELINE=null;return null;}const r=p1.slice(-30);RECENT_BASELINE=r.reduce((a,b)=>a+b,0)/r.length;const pre=APR_DAILY.slice(0,P1_LIVE_APR_IDX);const ea=pre.length>=5?pre.reduce((a,b)=>a+b,0)/pre.length:1070;RECENT_EXIST_FRAC=Math.min(0.85,Math.max(0.1,ea/RECENT_BASELINE));return RECENT_BASELINE;}
+let RECENT_BASELINE=null,RECENT_EXIST_FRAC=0.72;
+function computeRecentBaseline(){
+  const p1=[...APR_DAILY.slice(P1_LIVE_APR_IDX),...MAY_ACTUAL_DAILY];
+  if(!p1.length){RECENT_BASELINE=null;return null;}
+  const r=p1.slice(-30);
+  RECENT_BASELINE=r.reduce((a,b)=>a+b,0)/r.length;
+
+  // Compute exist fraction from most recent month in FALLBACK_STATE_ENC
+  // This is far more accurate than the old pre-P1 April ratio
+  const existingStates=["IN","TX","NC","TN","AZ","OR","WA"];
+  const p1States=["PA","OH","MI","IL","AL"];
+  let latestMi=-1;
+  for(let mi=11;mi>=0;mi--){
+    const has=Object.keys(FALLBACK_STATE_ENC).some(st=>(FALLBACK_STATE_ENC[st]?.[mi]||0)>0);
+    if(has){latestMi=mi;break;}
+  }
+  if(latestMi>=0){
+    const existEnc=existingStates.reduce((s,st)=>s+(FALLBACK_STATE_ENC[st]?.[latestMi]||0),0);
+    const p1Enc=p1States.reduce((s,st)=>s+(FALLBACK_STATE_ENC[st]?.[latestMi]||0),0);
+    const total=existEnc+p1Enc;
+    if(total>0) RECENT_EXIST_FRAC=Math.min(0.90,Math.max(0.40,existEnc/total));
+  }
+  return RECENT_BASELINE;
+}
 function computeBlendedRHRate(){let tot=0,rh=0;Object.values(LIVE_MONTHLY).forEach(m=>{if(!m.daily||!m.rhDailyArr||!m.total)return;const r=m.rhDailyArr.reduce((a,b)=>a+b,0)*RATES.rh;if(r<=0)return;tot+=m.total;rh+=r;});return(rh>0&&tot>rh*0.5)?tot/rh:1.0;}
 
 function applyLiveData(){
@@ -353,21 +377,44 @@ function generateData(){
   const p2F=d=>{const x=(d-p2L)/86400000;return x<=0?0:Math.min(1,1-Math.exp(-0.028*x));};
   function arr(mo,mi){if(LIVE_MONTHLY[mo]?.daily?.length>0)return LIVE_MONTHLY[mo].daily;if(mi===3)return APR_DAILY;if(mi===4)return MAY_ACTUAL_DAILY;return[];}
   const data=[];let di=0;
-  for(let off=-2;off<=1;off++){
+  for(let off=-6;off<=6;off++){
     const mi=cmi+off,mi12=((mi%12)+12)%12,yr=mi<0?cy-1:(mi>11?cy+1:cy);
     const mo=ALL_MONTHS[mi12],dim=DIM[mi12],a=arr(mo,mi12),hasSheet=a.length>0;
     for(let d=0;d<dim;d++){
       const date=new Date(yr,mi12,d+1),isAct=off<0||(off===0&&d<cd-1);
-      if(isAct){const v=a[d]!==undefined?a[d]:(()=>{const sc=0.60+(off+3)*0.13,n=(sRand(di)-.5)*.40;return Math.round(Math.max(80,(base+p1*p1F(date))*sc*(1+n)));})();
+      if(isAct){const v=a[d]!==undefined?a[d]:(()=>{
+        // Use known monthly encounter total from FALLBACK_STATE_ENC if available
+        const knownEnc=Object.values(FALLBACK_STATE_ENC).reduce((s,arr)=>s+(arr[mi12]||0),0);
+        if(knownEnc>0){
+          const avgDaily=knownEnc*RATES.rh/DIM[mi12];
+          const n=(sRand(di)-.5)*.25; // tighter noise around known avg
+          return Math.round(Math.max(50,avgDaily*(1+n)));
+        }
+        const sc=0.60+(off+3)*0.13,n=(sRand(di)-.5)*.40;
+        return Math.round(Math.max(80,(base+p1*p1F(date))*sc*(1+n)));
+      })();
         const p1Active=p1>0;
-        const pf=p1F(date);
-        // Only assign P1 slice when Phase 1 is toggled on and date is after launch
-        const rP1=p1Active?(mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.round(p1*pf)):0;
-        data.push({month:mo,day:d+1,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:!hasSheet&&off<-1});}
+        // Use known state enc ratio from FALLBACK_STATE_ENC for accurate green/blue split
+        // Avoids p1*pf >> v problem in summer months (theoretical ramp > actual revenue)
+        const existingStKeys=["IN","TX","NC","TN","AZ","OR","WA"];
+        const p1StKeys=["PA","OH","MI","IL","AL"];
+        const existEncKnown=existingStKeys.reduce((s,st)=>s+(FALLBACK_STATE_ENC[st]?.[mi12]||0),0);
+        const p1EncKnown=p1StKeys.reduce((s,st)=>s+(FALLBACK_STATE_ENC[st]?.[mi12]||0),0);
+        const totalEncKnown=existEncKnown+p1EncKnown;
+        const rP1=p1Active?(
+          totalEncKnown>0
+            ? Math.round(v*(p1EncKnown/totalEncKnown))           // use real ratio
+            : mi12===3&&d>=P1_LIVE_APR_IDX
+              ? Math.max(0,v-ee)
+              : Math.min(Math.round(p1*p1F(date)), Math.round(v*0.5)) // cap at 50% if no data
+        ):0;
+        data.push({month:mo,day:d+1,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0,estimated:false});}
       else{const n=(sRand(di+400)-.5)*.18,bl=RECENT_BASELINE||(base+p1),tf=1+0.015*Math.max(0,off);
+        // Seasonal adjustment: de-season the baseline then re-apply target month factor
+        const curSeason=SEASONAL_IDX[cmi]||1, targetSeason=SEASONAL_IDX[mi12]||1;
+        const normBl=(bl/curSeason)*targetSeason;
         const p2v=Math.round(p2*p2F(date)*(1+n*.6));
-        const bv=Math.round(bl*tf*(1+n));
-        // Only show P1 blue slice if Phase 1 is actually toggled on
+        const bv=Math.round(normBl*tf*(1+n));
         const p1Active=p1>0;
         const eV=p1Active?Math.round(bv*RECENT_EXIST_FRAC):bv;
         const p1V=p1Active?Math.max(0,bv-eV):0;
@@ -394,7 +441,25 @@ function generateFullYearData(){
     const mo=ALL_MONTHS[mi12],dim=DIM[mi12],a=arr(mo,mi12);
     for(let d=0;d<dim;d++){
       const date=new Date(cy,mi12,d+1),isAct=mi12<cmi||(mi12===cmi&&d<cd-1);
-      if(isAct){const v=a[d]!==undefined?a[d]:(()=>{const sc=0.55+mi12*0.06,n=(sRand(di)-.5)*.40;return Math.round(Math.max(80,(base+p1*p1F(date))*sc*(1+n)));})();const pf=p1F(date),rP1=mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.round(p1*pf);data.push({month:mo,value:v,type:"actual",eV:Math.max(0,v-rP1),p1V:rP1,p2V:0,p3V:0});}
+      if(isAct){const v=a[d]!==undefined?a[d]:(()=>{
+        const knownEnc=Object.values(FALLBACK_STATE_ENC).reduce((s,arr)=>s+(arr[mi12]||0),0);
+        if(knownEnc>0){
+          const avgDaily=knownEnc*RATES.rh/DIM[mi12];
+          const n=(sRand(di)-.5)*.25;
+          return Math.round(Math.max(50,avgDaily*(1+n)));
+        }
+        const sc=0.55+mi12*0.06,n=(sRand(di)-.5)*.40;
+        return Math.round(Math.max(80,(base+p1*p1F(date))*sc*(1+n)));
+      })();
+        const existingStKeys2=["IN","TX","NC","TN","AZ","OR","WA"];
+        const p1StKeys2=["PA","OH","MI","IL","AL"];
+        const eEnc2=existingStKeys2.reduce((s,st)=>s+(FALLBACK_STATE_ENC[st]?.[mi12]||0),0);
+        const p1Enc2=p1StKeys2.reduce((s,st)=>s+(FALLBACK_STATE_ENC[st]?.[mi12]||0),0);
+        const totEnc2=eEnc2+p1Enc2;
+        const rP12=totEnc2>0
+          ? Math.round(v*(p1Enc2/totEnc2))
+          : mi12===3&&d>=P1_LIVE_APR_IDX?Math.max(0,v-ee):Math.min(Math.round(p1*p1F(date)),Math.round(v*0.5));
+        data.push({month:mo,value:v,type:"actual",eV:Math.max(0,v-rP12),p1V:rP12,p2V:0,p3V:0});}
       else{const n=(sRand(di+600)-.5)*.18,bl=RECENT_BASELINE||(base+p1),tf=1+0.015*Math.max(0,mi12-cmi);
         const p2v=Math.round(p2*p2F(date)*(1+n*.6));
         const bv=Math.round(bl*tf*(1+n));
@@ -412,7 +477,7 @@ function updateStats(){
   const tp=activeStates.reduce((s,st)=>s+(STATE_DATA[st]?.pop||0),0);
   document.getElementById("stat-states").textContent=activeStates.length;
   document.getElementById("stat-pop").textContent=tp.toFixed(1)+"M";
-  const recent=chartData.filter(d=>d.type==="actual"&&!d.estimated).slice(-7);
+  const recent=chartData.filter(d=>d.type==="actual").slice(-7);
   const ca=recent.length?Math.round(recent.reduce((s,d)=>s+d.value,0)/recent.length):0;
   const sc=document.getElementById("stat-current");
   if(sc){sc.textContent="$"+ca.toLocaleString();sc.style.color=ca>=GOAL_DAILY?"#22c55e":ca>=GOAL_DAILY*.8?"#f59e0b":"#f9fafb";}
@@ -534,49 +599,95 @@ function draw(){
   });
 
   // Rolling avg — pre-compute actual points only (stops at NOW, no projection continuation)
+  // Actual avg points (amber, animates once left→right)
   const avgPoints = [];
   chartData.forEach((d,i)=>{
-    if(d.type!=="actual"||d.estimated)return;
-    const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual"&&!x.estimated);
+    if(d.type!=="actual")return;
+    const sl=chartData.slice(Math.max(0,i-6),i+1).filter(x=>x.type==="actual");
     const avg=sl.reduce((a,s)=>a+s.value,0)/sl.length;
     avgPoints.push({x:PAD.left+(i/chartData.length)*cW+bW/2, y:PAD.top+cH-(avg/maxY)*cH});
   });
 
+  // Projected avg points (red, loops left→right after NOW)
+  // Blend last 7 actuals into projected values for smooth continuation
+  const projAvgPoints = [];
+  const allActuals = chartData.filter(d=>d.type==="actual");
+  const lastActualAvg = allActuals.length >= 1
+    ? allActuals.slice(-7).reduce((a,d)=>a+d.value,0) / Math.min(7, allActuals.length)
+    : 0;
+  const seedWindow = allActuals.slice(-6).map(d=>d.value);
+  let rollingWindow = [...seedWindow];
+  const projDays = chartData.filter(d=>d.type==="proj");
+  projDays.forEach((d,k)=>{
+    rollingWindow.push(d.value);
+    if(rollingWindow.length>7) rollingWindow.shift();
+    const rawAvg = rollingWindow.reduce((a,v)=>a+v,0)/rollingWindow.length;
+    // Blend from lastActualAvg into projected avg over first 14 days to avoid jump
+    const blendFactor = Math.min(1, k / 14);
+    const avg = lastActualAvg * (1 - blendFactor) + rawAvg * blendFactor;
+    const i = chartData.indexOf(d);
+    projAvgPoints.push({x:PAD.left+(i/chartData.length)*cW+bW/2, y:PAD.top+cH-(avg/maxY)*cH});
+  });
+
   if(window._avgAnim) cancelAnimationFrame(window._avgAnim);
+  if(window._projAnim){cancelAnimationFrame(window._projAnim);window._projAnim=null;}
   if(avgPoints.length < 2) return;
 
-  const DURATION = 1400;
-  const startTime = performance.now();
+  // ── Amber line: animates once over actuals ──────────────────────────────
+  const ACT_DURATION = 1600;
+  const actStart = performance.now();
 
-  function drawAvgFrame(ts) {
-    const elapsed = ts - startTime;
-    const progress = Math.min(1, elapsed / DURATION);
-    const t = 1 - Math.pow(1 - progress, 3); // ease out cubic
-
-    // How many points to draw based on progress
+  function drawActFrame(ts) {
+    const elapsed = ts - actStart;
+    const progress = Math.min(1, elapsed / ACT_DURATION);
+    const t = 1 - Math.pow(1 - progress, 3);
     const visibleCount = Math.max(2, Math.ceil(t * avgPoints.length));
     const pts = avgPoints.slice(0, visibleCount);
-
-    // Redraw just the avg line — use clipping so we only paint up to revealed point
     const revealX = pts[pts.length - 1].x + 2;
     ctx.save();
+    ctx.beginPath(); ctx.rect(0, 0, revealX, H); ctx.clip();
+    ctx.strokeStyle="#fb923c"; ctx.lineWidth=2.5; ctx.setLineDash([]);
     ctx.beginPath();
-    ctx.rect(0, 0, revealX, H);
-    ctx.clip();
-
-    ctx.strokeStyle = "#fb923c";
-    ctx.lineWidth = 2.5;
-    ctx.setLineDash([]);
-    ctx.beginPath();
-    pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
     ctx.stroke();
-
     ctx.restore();
-
-    if(progress < 1) window._avgAnim = requestAnimationFrame(drawAvgFrame);
+    if(progress < 1) window._avgAnim = requestAnimationFrame(drawActFrame);
   }
+  window._avgAnim = requestAnimationFrame(drawActFrame);
 
-  window._avgAnim = requestAnimationFrame(drawAvgFrame);
+  // ── Red line: loops repeatedly over projected zone ───────────────────────
+  if(projAvgPoints.length < 2) return;
+  const PROJ_DURATION = 2800; // ms per loop — slower sweep
+  const PAUSE = 500;          // ms pause before restart
+  let projLoopStart = performance.now() + ACT_DURATION; // start after amber finishes
+
+  function drawProjFrame(ts) {
+    if(ts < projLoopStart){ window._projAnim = requestAnimationFrame(drawProjFrame); return; }
+    const elapsed = ts - projLoopStart;
+    const cycle = elapsed % (PROJ_DURATION + PAUSE);
+    const progress = cycle < PROJ_DURATION ? Math.min(1, cycle / PROJ_DURATION) : 0;
+    const t = 1 - Math.pow(1 - progress, 2.5); // ease out
+
+    if(progress > 0){
+      const visibleCount = Math.max(2, Math.ceil(t * projAvgPoints.length));
+      const pts = projAvgPoints.slice(0, visibleCount);
+      const startX = projAvgPoints[0].x - 2;
+      const revealX = pts[pts.length-1].x + 2;
+
+      ctx.save();
+      ctx.beginPath(); ctx.rect(startX, 0, revealX - startX + 2, H); ctx.clip();
+      ctx.strokeStyle="#f87171"; ctx.lineWidth=2; ctx.setLineDash([5,3]);
+      ctx.globalAlpha=0.75;
+      ctx.beginPath();
+      pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+      ctx.stroke();
+      ctx.setLineDash([]); ctx.globalAlpha=1;
+      ctx.restore();
+    }
+
+    window._projAnim = requestAnimationFrame(drawProjFrame);
+  }
+  window._projAnim = requestAnimationFrame(drawProjFrame);
   // Month labels
   let lm="";chartData.forEach((d,i)=>{if(d.month!==lm){lm=d.month;const x=PAD.left+(i/chartData.length)*cW;ctx.fillStyle="#6e7681";ctx.font="10px monospace";ctx.textAlign="left";ctx.fillText(d.month,x+2,PAD.top+cH+16);ctx.strokeStyle="#21262d";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,PAD.top+cH);ctx.lineTo(x,PAD.top+cH+4);ctx.stroke();}});
 }
@@ -585,7 +696,7 @@ function showTooltip(e){
   const canvas=document.getElementById("chart"),wrap=document.getElementById("chart-wrap"),rect=canvas.getBoundingClientRect(),x=e.clientX-rect.left,cW=rect.width-PAD.left-PAD.right,idx=Math.round(((x-PAD.left)/cW)*chartData.length);
   if(idx<0||idx>=chartData.length){hideTooltip();return;}
   hoveredIdx=idx;const d=chartData[idx],tt=document.getElementById("tooltip");
-  document.getElementById("tt-date").textContent=`${d.month} ${d.day||""} · ${d.type==="actual"?(d.estimated?"Estimated":"Actual"):"Projected"}`;
+  document.getElementById("tt-date").textContent=`${d.month} ${d.day||""} · ${d.type==="actual"?("Actual"):"Projected"}`;
   document.getElementById("tt-val").style.color=d.type==="actual"?(d.estimated?"#6e7681":"#4ade80"):"#e6edf3";
   document.getElementById("tt-val").textContent="$"+d.value.toLocaleString()+(d.type==="proj"?" proj":"");
   const rows=[{l:"Existing",v:d.eV,c:"#4ade80"},{l:"Phase 1",v:d.p1V,c:"#60a5fa"},{l:"Phase 2",v:(d.p2V||0)+(d.p3V||0),c:"#f59e0b"}].filter(r=>r.v>0);
@@ -680,17 +791,46 @@ window.addEventListener("resize",()=>{draw();drawMap();});
 // ── STATE MONTHLY ─────────────────────────────────────────────────────────────
 let STATE_MONTHLY={};
 const FALLBACK_STATE_ENC={
-  TX:[0,1,784,818,1205,0,0,0,0,0,0,0],NC:[0,313,591,556,734,0,0,0,0,0,0,0],
-  AZ:[453,437,583,416,536,0,0,0,0,0,0,0],OR:[323,311,299,312,359,0,0,0,0,0,0,0],
-  IN:[0,197,284,241,319,0,0,0,0,0,0,0],TN:[0,105,199,147,248,0,0,0,0,0,0,0],
-  WA:[0,0,61,86,162,0,0,0,0,0,0,0],OH:[0,0,0,14,413,0,0,0,0,0,0,0],
-  IL:[0,0,0,8,352,0,0,0,0,0,0,0],MI:[0,0,0,6,260,0,0,0,0,0,0,0],
-  PA:[0,0,0,0,316,0,0,0,0,0,0,0],AL:[0,0,0,50,257,0,0,0,0,0,0,0],
-  CO:[0,0,0,0,0,0,0,0,0,0,0,0],GA:[0,0,0,0,0,0,0,0,0,0,0,0],
-  FL:[0,0,0,0,0,0,0,0,0,0,0,0],NV:[0,0,0,0,0,0,0,0,0,0,0,0],
-  LA:[0,0,0,0,0,0,0,0,0,0,0,0],MO:[0,0,0,0,0,0,0,0,0,0,0,0],WI:[0,0,0,0,0,0,0,0,0,0,0,0]
+  //         Jan  Feb  Mar  Apr   May  Jun  Jul
+  TX:  [  0,   1, 784, 818, 1205, 687, 210,  0,  0,  0,  0,  0],
+  NC:  [  0, 313, 591, 556,  734, 425, 159,  0,  0,  0,  0,  0],
+  AZ:  [453, 437, 583, 416,  536, 350, 169,  0,  0,  0,  0,  0],
+  OR:  [323, 311, 299, 312,  359, 283, 152,  0,  0,  0,  0,  0],
+  IN:  [  0, 197, 284, 241,  319, 191,  69,  0,  0,  0,  0,  0],
+  TN:  [  0, 105, 199, 147,  248, 128,  44,  0,  0,  0,  0,  0],
+  WA:  [  0,   0,  61,  86,  162,  92,  32,  0,  0,  0,  0,  0],
+  OH:  [  0,   0,   0,  14,  413, 238,  71,  0,  0,  0,  0,  0],
+  IL:  [  0,   0,   0,   8,  352, 208,  66,  0,  0,  0,  0,  0],
+  MI:  [  0,   0,   0,   6,  260, 140,  53,  0,  0,  0,  0,  0],
+  PA:  [  0,   0,   0,   0,  316, 163,  73,  0,  0,  0,  0,  0],
+  AL:  [  0,   0,   0,  50,  257, 131,  31,  0,  0,  0,  0,  0],
+  CO:  [  0,   0,   0,   0,    0,   0,   1,  0,  0,  0,  0,  0],
+  GA:  [  0,   0,   0,   0,    0,   0,   0,  0,  0,  0,  0,  0],
+  FL:  [  0,   0,   0,   0,    0,   0,   0,  0,  0,  0,  0,  0],
+  NV:  [  0,   0,   0,   0,    0,   0,   1,  0,  0,  0,  0,  0],
+  LA:  [  0,   0,   0,   0,    0,   0,   1,  0,  0,  0,  0,  0],
+  MO:  [  0,   0,   0,   0,    0,   0,   0,  0,  0,  0,  0,  0],
+  WI:  [  0,   0,   0,   0,    0,   0,   0,  0,  0,  0,  0,  0],
 };
-const FALLBACK_ACTUAL_THRU=4;
+const FALLBACK_ACTUAL_THRU=6; // Jan–Jul verified actuals
+
+// Seasonal volume index — normalized to 1.0 at peak (Apr/May)
+// Reflects observed summer dip (Jun-Aug) and fall recovery
+const SEASONAL_IDX = [
+  0.88, // Jan
+  0.92, // Feb
+  1.00, // Mar
+  1.05, // Apr
+  1.08, // May
+  0.82, // Jun — summer drop starts
+  0.68, // Jul — summer nadir
+  0.70, // Aug — still in summer, barely moves
+  0.85, // Sep — recovery begins
+  0.98, // Oct — back near normal
+  0.96, // Nov
+  0.90  // Dec
+];
+
 function applyFallback(){Object.entries(FALLBACK_STATE_ENC).forEach(([st,arr])=>{if(!STATE_MONTHLY[st])return;arr.forEach((v,mi)=>{if(mi<=FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]={v,actual:v>0};});});}
 function applyStateCells(parsed){if(!parsed)return;Object.entries(parsed).forEach(([st,months])=>{if(!STATE_MONTHLY[st])return;months.forEach((cell,mi)=>{if(cell?.actual&&canBeActual(mi)&&mi>FALLBACK_ACTUAL_THRU)STATE_MONTHLY[st][mi]=cell;});});}
 function debugStateCsv(csv){csv.trim().split('\n').slice(0,3).forEach((l,i)=>console.log(`[CSV row ${i}]:`,l.substring(0,120)));const tx=(STATE_MONTHLY['TX']||[]).map((c,mi)=>`${ALL_MONTHS[mi]}:${c?.v??'?'}${c?.actual?'✓':''}`).join(' ');console.log('[TX]',tx);}
@@ -759,7 +899,7 @@ document.getElementById('paste-modal').addEventListener('click',e=>{if(e.target=
 let currentDailyTab='Apr';
 function openDailyImportModal(){document.getElementById('daily-modal').style.display='flex';document.getElementById('daily-input').value='';document.getElementById('daily-error').style.display='none';document.getElementById('daily-preview').style.display='none';setDailyTab('May');}
 function closeDailyModal(){document.getElementById('daily-modal').style.display='none';}
-function setDailyTab(mo){currentDailyTab=mo;['Apr','May','Jun'].forEach(m=>{const b=document.getElementById('dtab-'+m);if(!b)return;const on=m===mo;b.style.borderColor=on?'#4ade80':'#30363d';b.style.background=on?'rgba(74,222,128,.12)':'transparent';b.style.color=on?'#4ade80':'#6e7681';});}
+function setDailyTab(mo){currentDailyTab=mo;['Apr','May','Jun','Jul'].forEach(m=>{const b=document.getElementById('dtab-'+m);if(!b)return;const on=m===mo;b.style.borderColor=on?'#4ade80':'#30363d';b.style.background=on?'rgba(74,222,128,.12)':'transparent';b.style.color=on?'#4ade80':'#6e7681';});}
 function importDailyData(){const raw=document.getElementById('daily-input').value.trim();if(!raw){document.getElementById('daily-error').textContent='Nothing pasted.';document.getElementById('daily-error').style.display='block';return;}const csv=raw.split('\n').map(l=>l.split('\t').join(',')).join('\n');const parsed=parseSheetCSV(csv,currentDailyTab);if(!parsed){document.getElementById('daily-error').textContent='Could not parse — check row 1 has date headers (4/1, 4/2…) and row labels like RO, TD1, MDL.';document.getElementById('daily-error').style.display='block';return;}const daily=parsed.rhRev.map((v,i)=>v+(parsed.tdRev[i]||0)+(parsed.mdlRev[i]||0)),total=daily.reduce((a,b)=>a+b,0);LIVE_MONTHLY[currentDailyTab]={daily,total,days:daily.length,rhEncTotal:parsed.rh.reduce((a,b)=>a+b,0),rhDailyArr:parsed.rh,year:2026,month:parsed.month};applyLiveData();liveDataLoaded=true;computeStateCsvRevenue();refresh();const p=document.getElementById('daily-preview');p.textContent=`✓ ${currentDailyTab}: ${daily.length}d · $${total.toLocaleString()} · $${Math.round(total/daily.length).toLocaleString()}/day`;p.style.display='block';document.getElementById('daily-error').style.display='none';setLiveStatus('live',currentDailyTab+' imported');setTimeout(closeDailyModal,1200);}
 document.getElementById('daily-modal').addEventListener('click',e=>{if(e.target===document.getElementById('daily-modal'))closeDailyModal();});
 
